@@ -9,9 +9,11 @@ public class Images {
     //Tiles
     public static Texture airTile;
     public static Texture temp;
+    public static Texture dirtTile;
 
     public static void init() {
         temp = new Texture("core//res//images//tiles//temp.png");
         airTile = new Texture("core//res//images//tiles//airTile.png");
+        dirtTile = new Texture("core/res/images/tiles/dirtTile.png");
     }
 }

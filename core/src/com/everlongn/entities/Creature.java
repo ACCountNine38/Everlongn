@@ -25,10 +25,4 @@ public abstract class Creature extends Entity {
         x += velX;
         y += velY;
     }
-
-    @Override
-    public abstract void tick();
-
-    @Override
-    public abstract void render(SpriteBatch batch);
 }

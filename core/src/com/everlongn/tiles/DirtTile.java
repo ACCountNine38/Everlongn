@@ -5,7 +5,7 @@ import com.everlongn.assets.Images;
 import com.everlongn.tiles.Tile;
 
 public class DirtTile extends Tile {
-    public DirtTile(int id) {
-        super(new Texture("core//res//images//tiles//temp.png"), id, true);
+    public DirtTile(int x, int y) {
+        super(Images.dirtTile, x, y, 1, true);
     }
 }
