@@ -9,12 +9,15 @@ public class EntityManager {
     private ControlCenter c;
 
     public static ArrayList<Entity> entities;
+    public static Player player;
 
     public EntityManager(ControlCenter c, Player player) {
         this.c = c;
 
         entities = new ArrayList<Entity>();
-        entities.add(player);
+
+        this.player = player;
+        entities.add(this.player);
     }
 
     public void tick() {

@@ -8,13 +8,8 @@ import com.everlongn.utils.Tool;
 public abstract class Tile {
     public static int TILESIZE = 50;
 
-    //public static Tile tiles[] = new Tile[256];
     protected Texture texture;
     protected int id;
-
-    //Tile initialization
-    //public static Tile airTile = new AirTile(0);
-    //public static Tile dirtTile = new DirtTile(1);
 
     protected Body body;
 
@@ -30,14 +25,12 @@ public abstract class Tile {
         this.x = x;
         this.y = y;
 
-        body = Tool.createBox(x*Tile.TILESIZE, y*Tile.TILESIZE, TILESIZE, TILESIZE, solid);
+        body = Tool.createBox(x*Tile.TILESIZE, y*Tile.TILESIZE, TILESIZE, TILESIZE, solid, 1f);
     }
 
     public static Tile createNew(int x, int y, int id) {
-        if(id == 0)
-            return new AirTile(x, y);
-        else if(id == 1)
-            return new DirtTile(x, y);
+        if(id == 1)
+            return new EarthTile(x, y);
 
         return null;
     }
@@ -47,9 +40,9 @@ public abstract class Tile {
     }
 
     public void render(SpriteBatch batch) {
-        //body.setTransform((int)x, (int)y, 0);
-
+        batch.begin();
         batch.draw(texture, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
+        batch.end();
     }
 
     public boolean isSolid() {
@@ -63,4 +56,6 @@ public abstract class Tile {
     public Texture getTexture() {
         return texture;
     }
+
+    public Body getBody() { return body; }
 }

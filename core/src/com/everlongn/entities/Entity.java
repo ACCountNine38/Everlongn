@@ -8,26 +8,26 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public abstract class Entity {
-
     protected int health, maxHealth, resistance, maxResistance;
-    protected float x, y; //protected allow extended class to have access to them
+    protected float x, y, density; //protected allow extended class to have access to them
     protected int width, height;
     protected String name;
     protected ArrayList<String> type = new ArrayList<String>();
     protected boolean active = true;
 
     protected ControlCenter c;
-    protected SpriteBatch batch;
+    //protected SpriteBatch batch;
 
     protected Body body;
 
-    public Entity(ControlCenter c, float x, float y, int width, int height) {
+    public Entity(ControlCenter c, float x, float y, int width, int height, float density) {
         this.c = c;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-        batch = c.getSpriteBatch();
+        this.density = density;
+        //batch = c.getSpriteBatch();
 
         // default values
         maxHealth = 100;
@@ -36,9 +36,17 @@ public abstract class Entity {
         resistance = 10;
         name = "UNNAMED";
 
-        body = Tool.createBox((int)(x), (int)(y), width, height, false);
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density);
     }
 
     public abstract void tick();
     public abstract void render(SpriteBatch batch);
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
 }

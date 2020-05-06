@@ -3,19 +3,23 @@ package com.everlongn.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.everlongn.assets.Images;
 import com.everlongn.states.StateManager;
+import com.everlongn.utils.TextManager;
 
 import static com.everlongn.utils.Constants.PPM;
 
 public class ControlCenter extends ApplicationAdapter {
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = true, DEBUG_RENDER = false;
 	public static final float SCALE = 1f;
-
+	public static int width, height;
 	/*
 	  Box2D world, where you put the physial body into
 	  handles physics and calculations
@@ -25,33 +29,42 @@ public class ControlCenter extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private StateManager stateManager;
 
+	public ControlCenter(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
+		TextManager.batch = batch;
 		Images.init();
 
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();
 
-		TextManager.batch = batch;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width/SCALE, height/SCALE);
 		stateManager = new StateManager(this);
+
+		Pixmap pixmap = new Pixmap(Gdx.files.internal("core//res//images//UI//Cursor.png"));
+		Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
+		pixmap.dispose();
 	}
 
 	// note (0, 0) is now at bottom left not top left
 	@Override
 	public void render () {
 		stateManager.tick(Gdx.graphics.getDeltaTime());
-
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		// allows the use of alpha channel
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-		batch.begin(); // begins drawing process
+		//batch.begin(); // begins drawing process
 		stateManager.render();
-		batch.end();
+		//batch.end();
+
 	}
 
 	@Override

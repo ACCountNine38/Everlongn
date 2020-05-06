@@ -1,17 +1,13 @@
 package com.everlongn.entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.game.Inputs;
-
-import java.util.ArrayList;
 
 public abstract class Creature extends Entity {
     protected float speed, velX, velY;;
     protected int direction, damage;
 
-    public Creature(ControlCenter c, float x, float y, int width, int height) {
-        super(c, x, y, width, height);
+    public Creature(ControlCenter c, float x, float y, int width, int height, float density) {
+        super(c, x, y, width, height, density);
 
         // default values
         this.speed = speed;

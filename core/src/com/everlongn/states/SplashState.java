@@ -15,14 +15,14 @@ public class SplashState extends State {
     @Override
     public void tick(float delta) {
         count += delta;
-        if(count >= 2) {
+        if(count >= 0.5) { // 2 seconds
             stateManager.setState(StateManager.CurrentState.GAMESTATE);
         }
     }
 
     @Override
     public void render() {
-        Gdx.gl.glClearColor(0.5f,0.5f,0.5f,0.5f);
+        Gdx.gl.glClearColor(0f,0f,0f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
