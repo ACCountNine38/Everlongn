@@ -268,7 +268,7 @@ public class Inventory {
 
         if(inventory[i + row*8].stackable) {
             batch.draw(UI.selectedSlot, 440 + i * 60, ControlCenter.height - 75 - row * 60, 20, 20);
-            TextManager.draw("" + inventory[i + row*8].count, 450 + i * 60, ControlCenter.height - 60 - row * 60, Color.WHITE, 1, true);
+            TextManager.draw("" + inventory[i + row*8].count, 450 + i * 60, ControlCenter.height - 59 - row * 60, Color.WHITE, 1, true);
         }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)  && !itemPicking) {

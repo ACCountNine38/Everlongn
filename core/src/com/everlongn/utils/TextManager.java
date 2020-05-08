@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.game.ControlCenter;
 
 public class TextManager {
-    private static BitmapFont bfont = new BitmapFont();
+    private static BitmapFont bfont = new BitmapFont(Gdx.files.internal("chalk14.fnt"));
     private static GlyphLayout layout = new GlyphLayout();
 
     public static SpriteBatch batch;
