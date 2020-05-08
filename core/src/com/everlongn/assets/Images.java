@@ -7,5 +7,6 @@ public class Images {
         Backgrounds.init();
         UI.init();
         Items.init();
+        Entities.init();
     }
 }

@@ -8,12 +8,15 @@ import com.everlongn.assets.Images;
 import com.everlongn.assets.Tiles;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
+import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
     private Sprite grass = new Sprite(Hurbs.grass1);
     private boolean rotate = false;
 
     private boolean leftFilled, rightFilled;
+
+    private boolean decayed;
 
     public EarthTile(int x, int y) {
         super(Tiles.earthTile, x, y, 1, true);
@@ -24,10 +27,18 @@ public class EarthTile extends Tile {
 
     @Override()
     public void tick() {
+        super.tick();
+
         if(x-1 >= 0 && GameState.tiles[x-1][y] != null) {
             leftFilled = true;
         } else {
             leftFilled = false;
+            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
+                decayed = true;
+                texture = Tiles.decayLeft;
+                GameState.world.destroyBody(body);
+                body = Tool.createDecayTile(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, 0);
+            }
         }
 
         if(x+1 < GameState.worldWidth && GameState.tiles[x+1][y] != null) {
@@ -38,6 +49,13 @@ public class EarthTile extends Tile {
                 return;
             }
             rightFilled = false;
+
+            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
+                decayed = true;
+                texture = Tiles.decayRight;
+                GameState.world.destroyBody(body);
+                body = Tool.createDecayTile(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, 1);
+            }
         }
     }
 
@@ -46,15 +64,15 @@ public class EarthTile extends Tile {
         batch.begin();
         batch.draw(texture, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
 
-        if(leftFilled) {
+        if(leftFilled && !decayed) {
             batch.draw(Tiles.blackTile, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE/5, TILESIZE);
         }
 
-        if(rightFilled) {
+        if(rightFilled && !decayed) {
             batch.draw(Tiles.blackTile, x*Tile.TILESIZE - TILESIZE/2 + TILESIZE/5*4, y*Tile.TILESIZE - TILESIZE/2, TILESIZE/5, TILESIZE);
         }
 
-        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
+        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && !decayed) {
             if(rotate)
                 batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
             else

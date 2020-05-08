@@ -106,8 +106,11 @@ public class Inventory {
     public void checkDragItem(int i) {
         // check if the items can be stacked together
         if(inventory[i] != null && inventory[i].id == draggedItem.id && inventory[i].stackable &&
-                !inventory[i].isFull() && !inventory[draggedIndex].isFull()) {
+               !inventory[i].isFull() && !inventory[draggedIndex].isFull()) {
 
+            if(i == draggedIndex) {
+                return;
+            }
             if(inventory[i].count + draggedItem.count > inventory[i].capacity) {
                 draggedItem.count = inventory[i].count + draggedItem.count - inventory[i].capacity;
                 inventory[i].count = inventory[i].capacity;
@@ -118,39 +121,56 @@ public class Inventory {
                 inventory[draggedIndex] = null;
             }
             draggedItem = null;
-
         } else {
-            if (inventory[i] == null) {
-                inventory[draggedIndex] = null;
-            } else {
-                inventory[draggedIndex] = inventory[i];
-            }
 
-            selectedIndex = i;
+            inventory[draggedIndex] = inventory[i];
             inventory[i] = draggedItem;
+            if(i < 8)
+                selectedIndex = i;
             draggedItem = null;
         }
     }
 
     public void checkPickItem(int i) {
         if(itemPicking) {
-            if (inventory[i] == null) {
-                inventory[i] = pickedItem;
-                pickedItem = null;
-                itemPicking = false;
-            } else if(inventory[i].id == pickedItem.id) {
-                if(inventory[i].count + pickedItem.count > inventory[i].capacity) {
-                    pickedItem.count -= inventory[i].capacity - inventory[i].count;
-                    inventory[i].count = inventory[i].capacity;
-                } else {
-                    inventory[i].count += pickedItem.count;
+            if(i == selectedIndex) {
+                if(inventory[selectedIndex] == null) {
+                    inventory[selectedIndex] = pickedItem;
                     pickedItem = null;
                     itemPicking = false;
+                } else if(inventory[selectedIndex].id == pickedItem.id) {
+                    if(inventory[selectedIndex].count + pickedItem.count <= inventory[selectedIndex].capacity) {
+                        inventory[selectedIndex].count += pickedItem.count;
+                        pickedItem = null;
+                        itemPicking = false;
+                    } else {
+                        pickedItem.count -= inventory[selectedIndex].capacity - inventory[selectedIndex].count;
+                        inventory[selectedIndex].count = inventory[selectedIndex].capacity;
+                    }
+                } else {
+                    Item tempItem = inventory[selectedIndex];
+                    inventory[selectedIndex] = pickedItem;
+                    pickedItem = tempItem;
                 }
             } else {
-                Item tempItem = inventory[i];
-                inventory[i] = pickedItem;
-                pickedItem = tempItem;
+                if (inventory[i] == null) {
+                    inventory[i] = pickedItem;
+                    pickedItem = null;
+                    itemPicking = false;
+                } else if (inventory[i].id == pickedItem.id) {
+                    if (inventory[i].count + pickedItem.count > inventory[i].capacity) {
+                        pickedItem.count -= inventory[i].capacity - inventory[i].count;
+                        inventory[i].count = inventory[i].capacity;
+                    } else {
+                        inventory[i].count += pickedItem.count;
+                        pickedItem = null;
+                        itemPicking = false;
+                    }
+                } else {
+                    Item tempItem = inventory[i];
+                    inventory[i] = pickedItem;
+                    pickedItem = tempItem;
+                }
             }
         }
     }
@@ -161,7 +181,6 @@ public class Inventory {
 
         if(extended)
             renderExtendedInventory(batch);
-
         if(draggedItem != null && !(Gdx.input.getX() > dragBoundX && Gdx.input.getX() < dragBoundX + 50 &&
                 Gdx.input.getY() > dragBoundY && Gdx.input.getY() < dragBoundY + 50)) {
             batch.draw(draggedItem.texture, Gdx.input.getX() - 20, ControlCenter.height - Gdx.input.getY() - 20, 40, 40);
@@ -185,8 +204,10 @@ public class Inventory {
 
     public void renderHotbar(SpriteBatch batch) {
         for(int i = 0; i < 8; i++) {
-            if(i == selectedIndex) {
+            if(Gdx.input.getX() > 405 + i * 60 && Gdx.input.getX() < 455 + i * 60 &&
+                    Gdx.input.getY() < 70 && Gdx.input.getY() > 20) {
                 batch.draw(UI.selectedSlot, 405 + i * 60, ControlCenter.height - 70, 50, 50);
+
                 // checks if an item is being dragged in the inventory
                 if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                     checkDragItem(i);
@@ -196,28 +217,18 @@ public class Inventory {
                 if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                     checkPickItem(i);
                 }
-            } else {
-                if(Gdx.input.getX() > 405 + i * 60 && Gdx.input.getX() < 455 + i * 60 &&
-                        Gdx.input.getY() < 70 && Gdx.input.getY() > 20) {
-                    batch.draw(UI.selectedSlot, 405 + i * 60, ControlCenter.height - 70, 50, 50);
 
-                    // checks if an item is being dragged in the inventory
-                    if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                        checkDragItem(i);
-                    }
-
-                    // checks if an item is being picked out in the inventory
-                    if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-                        checkPickItem(i);
-                    }
-
-                    if(Gdx.input.justTouched()) {
-                        selectedIndex = i;
-                    }
-                } else {
-                    batch.draw(UI.hotbarSlot, 405 + i * 60, ControlCenter.height - 70, 50, 50);
+                if(Gdx.input.justTouched()) {
+                    selectedIndex = i;
                 }
+            } else {
+                batch.draw(UI.hotbarSlot, 405 + i * 60, ControlCenter.height - 70, 50, 50);
             }
+
+            if(i == selectedIndex) {
+                batch.draw(UI.selectedSlot, 405 + i * 60, ControlCenter.height - 70, 50, 50);
+            }
+
             if(inventory[i] != null) {
                 drawItem(batch, i, 0);
             }
@@ -230,18 +241,16 @@ public class Inventory {
                 if(Gdx.input.getX() > 405 + i * 60 && Gdx.input.getX() < 455 + i * 60 &&
                         Gdx.input.getY() < 70 + r * 60 && Gdx.input.getY() > 20 + r * 60) {
                     batch.draw(UI.selectedSlot, 405 + i * 60, ControlCenter.height - 70 - r * 60, 50, 50);
-                    if(Gdx.input.justTouched()) {
-                        selectedIndex = i + r*8;
-                    }
 
                     // checks if an item is being dragged in the inventory
                     if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                        checkDragItem(i);
+                        checkDragItem(i + 8*r);
                     }
 
                     // checks if an item is being picked out in the inventory
                     if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-                        checkPickItem(i);
+                        //System.out.println(selectedIndex + " " + (i + 8*r));
+                        checkPickItem(i + 8*r);
                     }
                 } else {
                     batch.draw(UI.inventorySlot, 405 + i * 60, ControlCenter.height - 70 - r * 60, 50, 50);

@@ -7,10 +7,6 @@ public class Backgrounds {
     public static Texture tempBackground;
     public static Texture dreamLayer1, dreamLayer2, dreamLayer3;
 
-//    public static TextureRegion[][] dream1;
-//    public static TextureRegion[][] dream2;
-//    public static TextureRegion[][] dream3;
-
     public static TextureRegion[][][] dream;
 
     public static void init() {

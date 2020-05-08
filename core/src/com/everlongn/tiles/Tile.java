@@ -3,6 +3,7 @@ package com.everlongn.tiles;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.Tool;
 
 public abstract class Tile {
@@ -21,11 +22,10 @@ public abstract class Tile {
         this.texture = texture;
         this.id = id;
         this.solid = solid;
-        //tiles[id] = this;
         this.x = x;
         this.y = y;
 
-        body = Tool.createBox(x*Tile.TILESIZE, y*Tile.TILESIZE, TILESIZE, TILESIZE, solid, 1f);
+        //body = Tool.createBox(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE, solid, 1f);
     }
 
     public static Tile createNew(int x, int y, int id) {
@@ -36,7 +36,13 @@ public abstract class Tile {
     }
 
     public void tick() {
-
+//        if(x > GameState.xStart && x < GameState.xEnd && y > GameState.yStart && y < GameState.xEnd && body == null) {
+//            body = Tool.createBox(x*TILESIZE, y*TILESIZE, TILESIZE, TILESIZE, solid, 1f);
+//        } else {
+//            if(body != null) {
+//                GameState.world.destroyBody(body);
+//            }
+//        }
     }
 
     public void render(SpriteBatch batch) {
@@ -57,5 +63,14 @@ public abstract class Tile {
         return texture;
     }
 
-    public Body getBody() { return body; }
+    public Body getBody() {
+        if(body == null)
+            return null;
+        else
+            return body;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
+    }
 }
