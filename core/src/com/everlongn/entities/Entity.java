@@ -8,17 +8,17 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public abstract class Entity {
-    protected int health, maxHealth, resistance, maxResistance;
-    protected float x, y, density; //protected allow extended class to have access to them
-    protected int width, height;
-    protected String name;
-    protected ArrayList<String> type = new ArrayList<String>();
-    protected boolean active = true;
+    public int health, maxHealth, resistance, maxResistance;
+    public float x, y, density; //protected allow extended class to have access to them
+    public int width, height;
+    public String name;
+    public ArrayList<String> type = new ArrayList<String>();
+    public boolean active = true;
 
-    protected ControlCenter c;
+    public ControlCenter c;
     //protected SpriteBatch batch;
 
-    protected Body body;
+    public Body body;
 
     public Entity(ControlCenter c, float x, float y, int width, int height, float density) {
         this.c = c;
@@ -49,4 +49,5 @@ public abstract class Entity {
     public void setBody(Body body) {
         this.body = body;
     }
+
 }

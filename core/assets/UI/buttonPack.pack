@@ -1,0 +1,12 @@
+
+buttonPack.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+worldSelect
+  rotate: false
+  xy: 2, 2
+  size: 463, 99
+  orig: 463, 99
+  offset: 0, 0
+  index: -1

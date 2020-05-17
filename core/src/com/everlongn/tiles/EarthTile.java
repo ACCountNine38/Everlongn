@@ -1,17 +1,14 @@
 package com.everlongn.tiles;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.everlongn.assets.Hurbs;
-import com.everlongn.assets.Images;
+import com.everlongn.assets.Herbs;
 import com.everlongn.assets.Tiles;
 import com.everlongn.states.GameState;
-import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
-    private Sprite grass = new Sprite(Hurbs.grass1);
+    private Sprite grass = new Sprite(Herbs.grass1);
     private boolean rotate = false;
 
     private boolean leftFilled, rightFilled;
@@ -36,8 +33,10 @@ public class EarthTile extends Tile {
             if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
                 decayed = true;
                 texture = Tiles.decayLeft;
-                GameState.world.destroyBody(body);
-                body = Tool.createDecayTile(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, 0);
+                if (body != null) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0);
+                }
             }
         }
 
@@ -53,8 +52,10 @@ public class EarthTile extends Tile {
             if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
                 decayed = true;
                 texture = Tiles.decayRight;
-                GameState.world.destroyBody(body);
-                body = Tool.createDecayTile(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, 1);
+                if (body != null) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1);
+                }
             }
         }
     }

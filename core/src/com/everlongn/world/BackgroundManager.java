@@ -1,21 +1,14 @@
 package com.everlongn.world;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Backgrounds;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
-import com.everlongn.utils.Constants;
 
 public class BackgroundManager {
 
     public static Vector2[] layers = new Vector2[3];
-
-    public static TextureRegion[][] onscreen = new TextureRegion[30][20];
 
     public void render(SpriteBatch batch) {
         batch.begin();

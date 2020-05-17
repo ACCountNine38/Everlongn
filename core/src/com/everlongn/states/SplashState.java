@@ -22,7 +22,7 @@ public class SplashState extends State {
     public void tick(float delta) {
         count += delta;
         if(count >= 0.5) { // 2 seconds
-            stateManager.setState(StateManager.CurrentState.GAMESTATE);
+            stateManager.setState(StateManager.CurrentState.MENU_STATE);
         }
     }
 

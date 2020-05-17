@@ -6,18 +6,21 @@ import java.util.Stack;
 
 public class StateManager {
     private final ControlCenter c;
-    private Stack<State> states;
+    public static Stack<State> states;
 
     public enum CurrentState {
         SPLASH,
-        MENUSTATE,
-        GAMESTATE
+        MENU_STATE,
+        WORLD_SELECTION_STATE,
+        WORLD_CREATION_STATE,
+        WORLD_LOADING_STATE,
+        GAME_STATE
     }
 
     public StateManager(ControlCenter c) {
         this.c = c;
         this.states = new Stack<State>();
-        this.setState(CurrentState.SPLASH); // initial state
+        this.setState(CurrentState.MENU_STATE); // initial state
     }
 
     public void tick(float delta) {
@@ -52,8 +55,10 @@ public class StateManager {
     private State getState(CurrentState state) {
         switch(state) {
             case SPLASH: return new SplashState(this);
-            case MENUSTATE: return new MenuState(this);
-            case GAMESTATE: return new GameState(this);
+            case MENU_STATE: return new MenuState(this);
+            case WORLD_SELECTION_STATE: return new WorldSelectionState(this);
+            case WORLD_CREATION_STATE: return new WorldCreationState(this);
+            case GAME_STATE: return new GameState(this);
         }
         return null;
     }

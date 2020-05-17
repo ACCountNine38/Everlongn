@@ -18,7 +18,7 @@ import static com.everlongn.utils.Constants.PPM;
 public class ControlCenter extends ApplicationAdapter {
 
 	public static boolean DEBUG = true, DEBUG_RENDER = false;
-	public static final float SCALE = 1f;
+	public static float SCALE = 1f;
 	public static int width, height;
 	/*
 	  Box2D world, where you put the physial body into
@@ -47,7 +47,7 @@ public class ControlCenter extends ApplicationAdapter {
 		camera.setToOrtho(false, width/SCALE, height/SCALE);
 		stateManager = new StateManager(this);
 
-		Pixmap pixmap = new Pixmap(Gdx.files.internal("core//res//images//UI//Cursor.png"));
+		Pixmap pixmap = new Pixmap(Gdx.files.internal("UI/Cursor.png"));
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
 		pixmap.dispose();
 	}

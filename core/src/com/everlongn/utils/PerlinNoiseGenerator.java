@@ -1,10 +1,8 @@
 package com.everlongn.utils;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.math.MathUtils;
-import com.everlongn.states.GameState;
+import com.everlongn.states.WorldGenerationState;
 
 public class PerlinNoiseGenerator {
 
@@ -12,7 +10,7 @@ public class PerlinNoiseGenerator {
         float[][] noise = new float[width][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                noise[x][y] = GameState.r.nextFloat();
+                noise[x][y] = WorldGenerationState.r.nextFloat();
             }
         }
         return noise;

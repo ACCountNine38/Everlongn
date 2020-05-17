@@ -4,15 +4,12 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
-import com.everlongn.assets.Backgrounds;
 import com.everlongn.assets.Entities;
-import com.everlongn.assets.Tiles;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
@@ -22,22 +19,25 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Player extends Creature {
 
-    public static boolean jump, canJump = true, movingHorizontal;
+    public static boolean jump, fall, canJump = true, movingHorizontal, airborn;
 
     private PointLight light;
     private PointLight sun;
     private int direction = 1;
-    private boolean cameraXStopped;
-    private float elapsedTime, airbornTime;
+    private boolean cameraXStopped, fallUpdate;
+    private float elapsedTime, airbornTime, fallUpdateTimer;
     /*
       0 - left
       1 - right
     */
 
     private Animation<TextureRegion>[] legsRun = new Animation[2];
+    private Animation<TextureRegion>[] legsJump = new Animation[2];
     private Animation<TextureRegion>[] armsRun = new Animation[2];
     private Animation<TextureRegion>[] headRun = new Animation[2];
     private Animation<TextureRegion>[] chestRun = new Animation[2];
+
+    public static int currentChunkX, currentChunkY;
 
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
         super(c, x, y, width, height, density);
@@ -45,6 +45,7 @@ public class Player extends Creature {
         this.y = y;
         this.width = width;
         this.height = height;
+
         speed = 5;
 
         type.add("player");
@@ -52,21 +53,27 @@ public class Player extends Creature {
                 body.getPosition().x,
                 body.getPosition().y);
 
-        legsRun[0] = new Animation(1f/40f, Entities.legRun[0]);
-        legsRun[1] = new Animation(1f/40f, Entities.legRun[1]);
+        legsRun[0] = new Animation<>(1f/50f, Entities.legRun[0]);
+        legsRun[1] = new Animation<>(1f/50f, Entities.legRun[1]);
 
-        armsRun[0] = new Animation(1f/40f, Entities.armRun[0]);
-        armsRun[1] = new Animation(1f/40f, Entities.armRun[1]);
+        legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
+        legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
 
-        chestRun[0] = new Animation(1f/40f, Entities.chestRun[0]);
-        chestRun[1] = new Animation(1f/40f, Entities.chestRun[1]);
+        armsRun[0] = new Animation<>(1f/50f, Entities.armRun[0]);
+        armsRun[1] = new Animation<>(1f/50f, Entities.armRun[1]);
 
-        headRun[0] = new Animation(1f/40f, Entities.headRun[0]);
-        headRun[1] = new Animation(1f/40f, Entities.headRun[1]);
+        chestRun[0] = new Animation<>(1f/50f, Entities.chestRun[0]);
+        chestRun[1] = new Animation<>(1f/50f, Entities.chestRun[1]);
+
+        headRun[0] = new Animation<>(1f/50f, Entities.headRun[0]);
+        headRun[1] = new Animation<>(1f/50f, Entities.headRun[1]);
     }
 
     @Override
     public void tick() {
+        currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
+        currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
+
         light.setPosition(body.getPosition().x,
                 body.getPosition().y);
         cameraUpdate();
@@ -74,20 +81,32 @@ public class Player extends Creature {
 
         elapsedTime += Gdx.graphics.getDeltaTime();
 
-        if(body.getLinearVelocity().y == 0) {
+        if(body.getLinearVelocity().y <= 0 && airbornTime > 0.01 && !fall && jump) {
+            fall = true;
             jump = false;
+            fallUpdateTimer = 0;
+            fallUpdate = true;
         }
+
+        if(fallUpdate) {
+            fallUpdateTimer += Gdx.graphics.getDeltaTime();
+        }
+
+        if(fall && body.getLinearVelocity().y > -0.5f && fallUpdateTimer > 0.3f) {
+            fall = false;
+            fallUpdate = false;
+        }
+
+        if(jump && !Gdx.input.isKeyPressed(Input.Keys.W)) {
+            body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y/1.15f);
+        }
+
         if(!canJump) {
             airbornTime += Gdx.graphics.getDeltaTime();
-            if(airbornTime >= 1) {
+            if(airbornTime >= 0.5) {
                 canJump = true;
             }
         }
-    }
-
-    public void updatePlayer() {
-        x = body.getPosition().x*PPM;
-        y = body.getPosition().y*PPM;
     }
 
     public void inputUpdate() {
@@ -102,11 +121,15 @@ public class Player extends Creature {
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && (Math.abs(body.getLinearVelocity().y) < 0.334 ||
-                (body.getLinearVelocity().y > speed - 0.4 && body.getLinearVelocity().y < speed - 0.3))) {
+                (body.getLinearVelocity().y > speed - 0.44 && body.getLinearVelocity().y < speed - 0.3))) {
             body.applyForceToCenter(0, 300/(body.getLinearVelocity().y/8 + 1), false);
             jump = true;
             canJump = false;
             airbornTime = 0;
+            airborn = true;
+
+            legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
+            legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -160,21 +183,29 @@ public class Player extends Creature {
         ControlCenter.camera.update();
     }
 
-
     public void render(SpriteBatch batch) {
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.begin();
-        if(movingHorizontal) {
-            batch.draw(legsRun[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
+
+        if(body.getLinearVelocity().x != 0f) {
+            if(jump || fall) {
+                batch.draw(legsJump[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            } else {
+                batch.draw(legsRun[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            }
             batch.draw(armsRun[direction].getKeyFrame(elapsedTime, true),
                     body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
             batch.draw(chestRun[direction].getKeyFrame(elapsedTime, true),
                     body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
+
             batch.draw(headRun[direction].getKeyFrame(elapsedTime, true),
                     body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
+
         } else {
             batch.draw(Entities.headRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
@@ -182,20 +213,13 @@ public class Player extends Creature {
                     body.getPosition().y * PPM - 5, 114, 114);
             batch.draw(Entities.armRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
-            batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-
-            legsRun[0] = new Animation(1f/40f, Entities.legRun[0]);
-            legsRun[1] = new Animation(1f/40f, Entities.legRun[1]);
-
-            armsRun[0] = new Animation(1f/40f, Entities.armRun[0]);
-            armsRun[1] = new Animation(1f/40f, Entities.armRun[1]);
-
-            chestRun[0] = new Animation(1f/40f, Entities.chestRun[0]);
-            chestRun[1] = new Animation(1f/40f, Entities.chestRun[1]);
-
-            headRun[0] = new Animation(1f/40f, Entities.headRun[0]);
-            headRun[1] = new Animation(1f/40f, Entities.headRun[1]);
+            if(jump || fall) {
+                batch.draw(legsJump[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            } else {
+                batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            }
         }
         batch.end();
     }

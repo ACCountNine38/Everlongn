@@ -9,14 +9,14 @@ import com.everlongn.utils.Tool;
 public abstract class Tile {
     public static int TILESIZE = 50;
 
-    protected Texture texture;
-    protected int id;
+    public Texture texture;
+    public int id;
 
-    protected Body body;
+    public Body body;
 
-    protected boolean solid;
+    public boolean solid;
 
-    protected int x, y;
+    public int x, y;
 
     public Tile(Texture texture, int x, int y, int id, boolean solid) {
         this.texture = texture;
