@@ -34,6 +34,8 @@ public class Inventory {
         addItem(Item.log.createNew(9));
         addItem(Item.log.createNew(9));
         addItem(Item.log.createNew(9));
+        addItem(UtilItem.shadowStaff.createNew(1));
+        addItem(UtilItem.shadowStaff.createNew(1));
     }
 
     public void tick() {

@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Entities {
     public static TextureRegion[][] legRun, armRun, chestRun, headRun, legJump;
+    public static TextureRegion[] armsHold;
 
-    public static Texture legRunSprite, armRunSprite, chestRunSprite, headRunSprite, legJumpSprite;
+    public static Texture legRunSprite, armRunSprite, chestRunSprite, headRunSprite, legJumpSprite, armHoldSprite;
 
     public static void init() {
         legRunSprite = new Texture(Gdx.files.internal("player/legsRun.png"),true);
@@ -23,6 +24,15 @@ public class Entities {
 
         headRunSprite = new Texture(Gdx.files.internal("player/headRun.png"), true);
         headRunSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        armHoldSprite = new Texture(Gdx.files.internal("player/armsHold.png"), true);
+        armHoldSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        armsHold = new TextureRegion[2];
+        armsHold[1] = new TextureRegion(armHoldSprite, 0, 0, 500, 500);
+        TextureRegion temp0 = new TextureRegion(armHoldSprite, 0, 0, 500, 500);
+        temp0.flip(true, false);
+        armsHold[0] = temp0;
 
         legRun = new TextureRegion[2][60];
         legJump = new TextureRegion[2][60];

@@ -5,12 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Inventory;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.world.BackgroundManager;
@@ -19,25 +18,25 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Player extends Creature {
 
-    public static boolean jump, fall, canJump = true, movingHorizontal, airborn;
+    public static boolean jump, fall, canJump = true, movingHorizontal, airborn, onhold;
 
     private PointLight light;
-    private PointLight sun;
     private int direction = 1;
     private boolean cameraXStopped, fallUpdate;
-    private float elapsedTime, airbornTime, fallUpdateTimer;
+    private float armsTimer, headTimer, legsTimer, bodyTimer, airbornTime, fallUpdateTimer, armRotation, currentSpeed;
     /*
       0 - left
       1 - right
     */
+    private Animation[] legsRun = new Animation[2];
+    private Animation[] legsJump = new Animation[2];
+    private Animation[] armsRun = new Animation[2];
+    private Animation[] headRun = new Animation[2];
+    private Animation[] chestRun = new Animation[2];
 
-    private Animation<TextureRegion>[] legsRun = new Animation[2];
-    private Animation<TextureRegion>[] legsJump = new Animation[2];
-    private Animation<TextureRegion>[] armsRun = new Animation[2];
-    private Animation<TextureRegion>[] headRun = new Animation[2];
-    private Animation<TextureRegion>[] chestRun = new Animation[2];
+    public static int currentChunkX, currentChunkY, horizontalForce;
 
-    public static int currentChunkX, currentChunkY;
+    private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
         super(c, x, y, width, height, density);
@@ -53,20 +52,20 @@ public class Player extends Creature {
                 body.getPosition().x,
                 body.getPosition().y);
 
-        legsRun[0] = new Animation<>(1f/50f, Entities.legRun[0]);
-        legsRun[1] = new Animation<>(1f/50f, Entities.legRun[1]);
+        legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
+        legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
 
-        legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
-        legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
+        legsJump[0] = new Animation(1f/70f, Entities.legJump[0], true);
+        legsJump[1] = new Animation(1f/70f, Entities.legJump[1], true);
 
-        armsRun[0] = new Animation<>(1f/50f, Entities.armRun[0]);
-        armsRun[1] = new Animation<>(1f/50f, Entities.armRun[1]);
+        armsRun[0] = new Animation(1f/70f, Entities.armRun[0], true);
+        armsRun[1] = new Animation(1f/70f, Entities.armRun[1], true);
 
-        chestRun[0] = new Animation<>(1f/50f, Entities.chestRun[0]);
-        chestRun[1] = new Animation<>(1f/50f, Entities.chestRun[1]);
+        chestRun[0] = new Animation(1f/70f, Entities.chestRun[0], true);
+        chestRun[1] = new Animation(1f/70f, Entities.chestRun[1], true);
 
-        headRun[0] = new Animation<>(1f/50f, Entities.headRun[0]);
-        headRun[1] = new Animation<>(1f/50f, Entities.headRun[1]);
+        headRun[0] = new Animation(1f/70f, Entities.headRun[0], true);
+        headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
     }
 
     @Override
@@ -78,8 +77,12 @@ public class Player extends Creature {
                 body.getPosition().y);
         cameraUpdate();
         inputUpdate();
+        animationUpdate();
 
-        elapsedTime += Gdx.graphics.getDeltaTime();
+        armsTimer += Gdx.graphics.getDeltaTime();
+        headTimer += Gdx.graphics.getDeltaTime();
+        legsTimer += Gdx.graphics.getDeltaTime();
+        bodyTimer += Gdx.graphics.getDeltaTime();
 
         if(body.getLinearVelocity().y <= 0 && airbornTime > 0.01 && !fall && jump) {
             fall = true;
@@ -107,17 +110,72 @@ public class Player extends Creature {
                 canJump = true;
             }
         }
+        checkItemOnHold();
+    }
+
+    public void animationUpdate() {
+        if(legAnimation) {
+            legsRun[0].tick(Gdx.graphics.getDeltaTime());
+            legsRun[1].tick(Gdx.graphics.getDeltaTime());
+        }
+
+        if(jumpAnimation) {
+            legsJump[0].tick(Gdx.graphics.getDeltaTime());
+            legsJump[1].tick(Gdx.graphics.getDeltaTime());
+        }
+
+        if(armAnimation) {
+            armsRun[0].tick(Gdx.graphics.getDeltaTime());
+            armsRun[1].tick(Gdx.graphics.getDeltaTime());
+        }
+
+        if(bodyAnimation) {
+            chestRun[0].tick(Gdx.graphics.getDeltaTime());
+            chestRun[1].tick(Gdx.graphics.getDeltaTime());
+        }
+
+        if(headAnimation) {
+            headRun[0].tick(Gdx.graphics.getDeltaTime());
+            headRun[1].tick(Gdx.graphics.getDeltaTime());
+        }
+    }
+
+    public void checkItemOnHold() {
+        if(Inventory.inventory[Inventory.selectedIndex] == null) {
+            return;
+        }
+        if(Inventory.inventory[Inventory.selectedIndex].id >= 200 && Inventory.inventory[Inventory.selectedIndex].id < 300) {
+            onhold = true;
+        } else {
+            onhold = false;
+        }
+
+        armRotation = (float)Math.atan2(((body.getPosition().y * PPM - 5) - Gdx.input.getY()), ((body.getPosition().x * PPM + width / 2 - 57) - Gdx.input.getX()));
     }
 
     public void inputUpdate() {
-        int horizontalForce = 0;
+        horizontalForce = 0;
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;
+            currentSpeed += 0.2f;
+            if(currentSpeed >= speed) {
+                currentSpeed = speed;
+            }
             direction = 0;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             horizontalForce = 1;
+            currentSpeed += 0.2f;
+            if(currentSpeed >= speed) {
+                currentSpeed = speed;
+            }
             direction = 1;
+        }
+
+        if(horizontalForce == 0 && currentSpeed > 0) {
+            currentSpeed -= 0.2;
+            if(currentSpeed <= 0)
+                currentSpeed = 0;
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && (Math.abs(body.getLinearVelocity().y) < 0.334 ||
@@ -128,8 +186,12 @@ public class Player extends Creature {
             airbornTime = 0;
             airborn = true;
 
-            legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
-            legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
+            legsJump[0].currentIndex = 0;
+            legsJump[1].currentIndex = 0;
+            legsRun[0].currentIndex = 0;
+            legsRun[1].currentIndex = 0;
+//            legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
+//            legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -154,7 +216,11 @@ public class Player extends Creature {
             movingHorizontal = false;
         }
 
-        body.setLinearVelocity(horizontalForce*speed, body.getLinearVelocity().y);
+        if(direction == 0)
+            body.setLinearVelocity(-currentSpeed, body.getLinearVelocity().y);
+        else {
+            body.setLinearVelocity(currentSpeed, body.getLinearVelocity().y);
+        }
     }
 
     public void cameraUpdate() {
@@ -187,38 +253,99 @@ public class Player extends Creature {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.begin();
 
-        if(body.getLinearVelocity().x != 0f) {
+        if(horizontalForce != 0) {
             if(jump || fall) {
-                batch.draw(legsJump[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+                jumpAnimation = true;
+                batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
             } else {
-                batch.draw(legsRun[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+                legAnimation = true;
+                batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
             }
-            batch.draw(armsRun[direction].getKeyFrame(elapsedTime, true),
-                    body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-            batch.draw(chestRun[direction].getKeyFrame(elapsedTime, true),
+            if(!onhold) {
+                armAnimation = true;
+                batch.draw(armsRun[direction].getFrame(),
+                        body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            } else {
+                batch.draw(Entities.armsHold[direction],
+                        body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            }
+            bodyAnimation = true;
+            batch.draw(chestRun[direction].getFrame(),
                     body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
 
-            batch.draw(headRun[direction].getKeyFrame(elapsedTime, true),
+            headAnimation = true;
+            batch.draw(headRun[direction].getFrame(),
                     body.getPosition().x * PPM + width / 2 - 57,
                     body.getPosition().y * PPM - 5, 114, 114);
 
         } else {
-            batch.draw(Entities.headRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-            batch.draw(Entities.chestRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-            batch.draw(Entities.armRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-            if(jump || fall) {
-                batch.draw(legsJump[direction].getKeyFrame(elapsedTime, true), body.getPosition().x * PPM + width / 2 - 57,
+            if(headAnimation && headRun[direction].currentIndex > 15) {
+                batch.draw(headRun[direction].getFrame(),
+                        body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
             } else {
-                batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                headAnimation = false;
+                batch.draw(Entities.headRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
+                headRun[0].currentIndex = 0;
+                headRun[1].currentIndex = 0;
+            }
+
+            if(bodyAnimation && chestRun[direction].currentIndex > 15) {
+                batch.draw(chestRun[direction].getFrame(),
+                        body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            } else {
+                bodyAnimation = false;
+                batch.draw(Entities.chestRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+                chestRun[0].currentIndex = 0;
+                chestRun[1].currentIndex = 0;
+            }
+
+            if (!onhold) {
+                if(armAnimation && armsRun[direction].currentIndex > 15) {
+                    batch.draw(armsRun[direction].getFrame(),
+                            body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                } else {
+                    armAnimation = false;
+                    batch.draw(Entities.armRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                    armsRun[0].currentIndex = 0;
+                    armsRun[1].currentIndex = 0;
+                }
+            } else {
+                armAnimation = false;
+                batch.draw(Entities.armsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+                armsRun[0].currentIndex = 0;
+                armsRun[1].currentIndex = 0;
+            }
+
+            if (jump || fall) {
+                jumpAnimation = true;
+                batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+            } else {
+                if(legAnimation && legsRun[direction].currentIndex > 15) {
+                    batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                } else {
+                    legAnimation = false;
+                    jumpAnimation = false;
+                    batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                    legsRun[0].currentIndex = 0;
+                    legsRun[1].currentIndex = 0;
+                    legsJump[0].currentIndex = 0;
+                    legsJump[1].currentIndex = 0;
+                }
             }
         }
         batch.end();

@@ -23,13 +23,13 @@ public class Item {
 //new String[]{"miscellaneous"},
     //----------
 
-    protected int width, height, id, x, y, count, capacity;
-    protected long timeDropped;
-    protected boolean stackable, degeneratable, pickedUp;
-    protected String name, description;
-    protected Texture texture;
+    public int width, height, id, x, y, count, capacity;
+    public long timeDropped;
+    public boolean stackable, degeneratable, pickedUp;
+    public String name, description;
+    public Texture texture;
     //protected String[] type;
-    protected Body body;
+    public Body body;
 //,
 //    String[] type
     public Item(Texture texture, String name, int id, boolean stackable, boolean degeneratable,
@@ -70,7 +70,6 @@ public class Item {
         return i;
     }
 
-    // debug feature
     public Item createNew(int count) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description);
         i.pickedUp = true;

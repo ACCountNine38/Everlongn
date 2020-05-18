@@ -1,16 +1,16 @@
 package com.everlongn.entities;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Animation {
-    public Texture[] textures;
+    public TextureRegion[] textures;
     public float update, timer;
     public boolean looping;
 
     public int currentIndex;
 
-    public Animation(Texture[] textures, float update, boolean looping) {
+    public Animation(float update, TextureRegion[] textures, boolean looping) {
         this.textures = textures;
         this.update = update;
         this.looping = looping;
@@ -18,7 +18,7 @@ public class Animation {
 
     public void tick(float delta) {
         timer += delta;
-        if(timer == update) {
+        if(timer >= update) {
             currentIndex++;
             if(currentIndex >= textures.length) {
                 if(looping)
@@ -30,7 +30,7 @@ public class Animation {
         }
     }
 
-    public Texture getFrame() {
+    public TextureRegion getFrame() {
         return textures[currentIndex];
     }
 }
