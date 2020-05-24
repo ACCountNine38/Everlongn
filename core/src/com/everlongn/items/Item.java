@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Items;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class Item {
     public Item createNew(int x, int y) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
-        body = Tool.createBox(x, y, width, height, false, 1);
+        body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_ITEM, Constants.BIT_TILE, (short)0);
         return i;
     }
 

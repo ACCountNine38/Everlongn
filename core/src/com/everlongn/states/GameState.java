@@ -93,7 +93,8 @@ public class GameState extends State {
                             for(int y = j*chunkSize; y < j*chunkSize + chunkSize; y++) {
                                 if(tiles[x][y] != null) {
                                     tiles[x][y].setBody(Tool.createBox(x * Tile.TILESIZE, y * Tile.TILESIZE, Tile.TILESIZE,
-                                            Tile.TILESIZE, true, 1f));
+                                            Tile.TILESIZE, true, 1f,
+                                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_ITEM), (short)0));
                                     tiles[x][y].tick();
                                 }
                             }

@@ -10,11 +10,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.dream.Scavenger;
+import com.everlongn.entities.projectiles.Shadow;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 import com.everlongn.world.BackgroundManager;
 
@@ -45,8 +47,6 @@ public class Player extends Creature {
 
     private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
-    public static ParticleEffect continuousWhiteParticle;
-
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
         super(c, x, y, width, height, density, 5);
         this.x = x;
@@ -74,19 +74,12 @@ public class Player extends Creature {
         headRun[0] = new Animation(1f/70f, Entities.headRun[0], true);
         headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
 
-        continuousWhiteParticle = new ParticleEffect();
-        continuousWhiteParticle.load(Gdx.files.internal("particles/continuousWhiteParticle"), Gdx.files.internal(""));
-        continuousWhiteParticle.getEmitters().first().setPosition(x + width/2, y);
-        continuousWhiteParticle.start();
-
-        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false);
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
+                Constants.BIT_PLAYER, (short)(Constants.BIT_ENEMY | Constants.BIT_TILE), (short)0);
     }
 
     @Override
     public void tick() {
-        continuousWhiteParticle.getEmitters().first().setPosition(body.getPosition().x * PPM + width / 2,
-                body.getPosition().y * PPM - 5);
-        continuousWhiteParticle.update(Gdx.graphics.getDeltaTime());
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
@@ -366,8 +359,15 @@ public class Player extends Creature {
 
     public void inputUpdate() {
         horizontalForce = 0;
-        if(Gdx.input.isKeyPressed(Input.Keys.T) && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            EntityManager.entities.add(new Scavenger(c, x - 300, y + 100));
+        if(Gdx.input.isKeyJustPressed(Input.Keys.T) && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            EntityManager.entities.add(new Scavenger(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100));
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+            int xForce = 200;
+            if(direction == 0)
+                xForce = -200;
+            int yForce = 100;
+            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, width, height, this, direction, xForce, yForce));
         }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;
@@ -465,8 +465,6 @@ public class Player extends Creature {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-
-        //continuousWhiteParticle.draw(batch);
 
         if(horizontalForce != 0) {
             if(jump || fall) {

@@ -23,6 +23,10 @@ public class EntityManager {
     public void tick() {
         for(int i = 0; i < entities.size(); i++) {
             entities.get(i).tick();
+            if(!entities.get(i).active) {
+                entities.remove(entities.get(i));
+                i--;
+            }
         }
     }
 
