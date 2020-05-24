@@ -1,8 +1,10 @@
 package com.everlongn.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ public abstract class Entity {
         resistance = 10;
         name = "UNNAMED";
 
-        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density);
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, true);
     }
 
     public abstract void tick();
@@ -50,4 +52,17 @@ public abstract class Entity {
         this.body = body;
     }
 
+    public void setMaxHealth(int health) {
+        maxHealth = health;
+        this.health = health;
+    }
+
+    public void setMaxResistance(int resistance) {
+        maxResistance = resistance;
+        this.resistance = resistance;
+    }
+
+    public Rectangle getBound() {
+        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, width, height);
+    }
 }

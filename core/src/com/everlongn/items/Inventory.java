@@ -32,10 +32,9 @@ public class Inventory {
         addItem(Item.log.createNew(88));
         addItem(Item.log.createNew(9));
         addItem(Item.log.createNew(9));
-        addItem(Item.log.createNew(9));
-        addItem(Item.log.createNew(9));
+        addItem(Melee.broadSword.createNew(1));
         addItem(UtilItem.shadowStaff.createNew(1));
-        addItem(UtilItem.shadowStaff.createNew(1));
+        addItem(Melee.barkBane.createNew(1));
     }
 
     public void tick() {

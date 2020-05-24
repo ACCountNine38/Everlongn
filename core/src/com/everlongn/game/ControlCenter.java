@@ -64,7 +64,6 @@ public class ControlCenter extends ApplicationAdapter {
 		//batch.begin(); // begins drawing process
 		stateManager.render();
 		//batch.end();
-
 	}
 
 	@Override

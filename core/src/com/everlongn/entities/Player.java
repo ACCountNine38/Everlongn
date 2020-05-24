@@ -4,26 +4,33 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
+import com.everlongn.entities.dream.Scavenger;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
+import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
+import com.everlongn.utils.Tool;
 import com.everlongn.world.BackgroundManager;
 
 import static com.everlongn.utils.Constants.PPM;
 
 public class Player extends Creature {
 
-    public static boolean jump, fall, canJump = true, movingHorizontal, airborn, onhold;
+    public static boolean jump, fall, canJump = true, movingHorizontal, airborn, onhold,
+            weaponActive = true, meleeAttack, meleeRecharge, halt;
 
     private PointLight light;
     private int direction = 1;
-    private boolean cameraXStopped, fallUpdate;
-    private float armsTimer, headTimer, legsTimer, bodyTimer, airbornTime, fallUpdateTimer, armRotation, currentSpeed;
+    private boolean cameraXStopped, fallUpdate, armSwingUp = true;
+    private float airbornTime, fallUpdateTimer, currentSpeed, targetAngle;
+    public static float aimAngle, haltForce;
+    public static float armRotationRight, armRotationLeft;
     /*
       0 - left
       1 - right
@@ -38,14 +45,14 @@ public class Player extends Creature {
 
     private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
+    public static ParticleEffect continuousWhiteParticle;
+
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
-        super(c, x, y, width, height, density);
+        super(c, x, y, width, height, density, 5);
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-
-        speed = 5;
 
         type.add("player");
         light = new PointLight(GameState.rayHandler, 100, Color.WHITE, 250/PPM,
@@ -66,10 +73,20 @@ public class Player extends Creature {
 
         headRun[0] = new Animation(1f/70f, Entities.headRun[0], true);
         headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
+
+        continuousWhiteParticle = new ParticleEffect();
+        continuousWhiteParticle.load(Gdx.files.internal("particles/continuousWhiteParticle"), Gdx.files.internal(""));
+        continuousWhiteParticle.getEmitters().first().setPosition(x + width/2, y);
+        continuousWhiteParticle.start();
+
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false);
     }
 
     @Override
     public void tick() {
+        continuousWhiteParticle.getEmitters().first().setPosition(body.getPosition().x * PPM + width / 2,
+                body.getPosition().y * PPM - 5);
+        continuousWhiteParticle.update(Gdx.graphics.getDeltaTime());
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
@@ -78,11 +95,6 @@ public class Player extends Creature {
         cameraUpdate();
         inputUpdate();
         animationUpdate();
-
-        armsTimer += Gdx.graphics.getDeltaTime();
-        headTimer += Gdx.graphics.getDeltaTime();
-        legsTimer += Gdx.graphics.getDeltaTime();
-        bodyTimer += Gdx.graphics.getDeltaTime();
 
         if(body.getLinearVelocity().y <= 0 && airbornTime > 0.01 && !fall && jump) {
             fall = true;
@@ -150,11 +162,213 @@ public class Player extends Creature {
             onhold = false;
         }
 
-        armRotation = (float)Math.atan2(((body.getPosition().y * PPM - 5) - Gdx.input.getY()), ((body.getPosition().x * PPM + width / 2 - 57) - Gdx.input.getX()));
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && Inventory.inventory[Inventory.selectedIndex] instanceof Melee && !meleeAttack) {
+            meleeAttack = true;
+            targetAngle = 155;
+            if(aimAngle < 155)
+                armSwingUp = true;
+            else {
+                targetAngle = 0;
+            }
+        }
+
+        if(direction == 1) {
+            if(meleeAttack) {
+                if(aimAngle < 0) {
+                    aimAngle = -aimAngle;
+                }
+                if(meleeRecharge) {
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                    if (Gdx.input.getX() < ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                        ControlCenter.width / 2),
+                                Gdx.input.getY() - ControlCenter.height / 2));
+                    }
+
+                    if(aimAngle < tempAngle - 5) {
+                        aimAngle+=5;
+                    } else if(aimAngle > tempAngle + 5) {
+                        aimAngle-=5;
+                    } else {
+                        meleeAttack = false;
+                        meleeRecharge = false;
+                    }
+                } else {
+                    if (armSwingUp) {
+                        aimAngle += Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                        if (aimAngle >= targetAngle) {
+                            aimAngle = targetAngle;
+                            targetAngle = 0;
+                            armSwingUp = false;
+                        }
+                    } else {
+                        if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                            if (!fall && !jump) {
+                                aimAngle -= Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                            } else {
+                                aimAngle -= 1;
+                                if(haltForce < 35) {
+                                    haltForce += 1;
+                                }
+                                halt = true;
+                            }
+                        } else {
+                            aimAngle -= Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                        }
+
+                        if (aimAngle < targetAngle) {
+                            aimAngle = targetAngle;
+                            meleeRecharge = true;
+
+                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM,
+                                    Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
+
+                            // checks target for attack
+                            if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
+                                                    + haltForce * 50;
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    force, 250, false);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    force, 250, false);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            haltForce = 0;
+                            halt = false;
+                        }
+                    }
+                }
+            } else {
+                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() < ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+            }
+            armRotationRight = aimAngle + 45 - 90;
+        } else if(direction == 0) {
+            if(meleeAttack) {
+                if(aimAngle > 0) {
+                    aimAngle = -aimAngle;
+                }
+                if(meleeRecharge) {
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                    if (Gdx.input.getX() > ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                        ControlCenter.width / 2),
+                                Gdx.input.getY() - ControlCenter.height / 2));
+                    }
+
+                    if(aimAngle < tempAngle - 5) {
+                        aimAngle+=5;
+                    } else if(aimAngle > tempAngle + 5) {
+                        aimAngle-=5;
+                    } else {
+                        meleeAttack = false;
+                        meleeRecharge = false;
+                    }
+                } else {
+                    if (armSwingUp) {
+                        aimAngle -= Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                        if (aimAngle <= -targetAngle) {
+                            aimAngle = -targetAngle;
+                            targetAngle = 0;
+                            armSwingUp = false;
+                        }
+                    } else {
+                        if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                            if (!fall && !jump) {
+                                aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                            } else {
+                                aimAngle += 1;
+                                if(haltForce < 35) {
+                                    haltForce += 1;
+                                }
+                                halt = true;
+                            }
+                        } else {
+                            aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                        }
+                        if (aimAngle > -targetAngle) {
+                            aimAngle = -targetAngle;
+                            meleeRecharge = true;
+                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width, body.getPosition().y*PPM,
+                                    Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
+
+                            // checks target for attack
+                            if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
+                                                    + haltForce * 50;
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    -force, 250, false);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    -force, 250, false);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            haltForce = 0;
+                            halt = false;
+                        }
+                    }
+                }
+            } else {
+                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() > ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+            }
+            armRotationRight = aimAngle + 45 - 360;
+        }
+
     }
 
     public void inputUpdate() {
         horizontalForce = 0;
+        if(Gdx.input.isKeyPressed(Input.Keys.T) && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            EntityManager.entities.add(new Scavenger(c, x - 300, y + 100));
+        }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;
             currentSpeed += 0.2f;
@@ -250,8 +464,9 @@ public class Player extends Creature {
     }
 
     public void render(SpriteBatch batch) {
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         batch.begin();
+
+        //continuousWhiteParticle.draw(batch);
 
         if(horizontalForce != 0) {
             if(jump || fall) {
@@ -269,9 +484,41 @@ public class Player extends Creature {
                         body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
             } else {
-                batch.draw(Entities.armsHold[direction],
-                        body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
+                if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                    batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5,
+                            57, 74,
+                            114, 114, 1f, 1f, armRotationRight);
+                } else {
+                    batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5,
+                            57, 74,
+                            114, 114, 1f, 1f, armRotationRight);
+                    batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5,
+                            57, 74,
+                            114, 114, 1f, 1f, -armRotationLeft);
+                }
+
+                if(Inventory.inventory[Inventory.selectedIndex] != null) {
+                    if (direction == 0) {
+                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                body.getPosition().x * PPM + width / 2 - 33 - (Inventory.inventory[Inventory.selectedIndex].width - Inventory.inventory[Inventory.selectedIndex].holdX),
+                                body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width/2 - Inventory.inventory[Inventory.selectedIndex].holdX)*2,
+                                Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                1f, 1f, armRotationRight);
+                    } else {
+                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                body.getPosition().x * PPM + width / 2 + 33 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                Inventory.inventory[Inventory.selectedIndex].holdX - 33,
+                                Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                1f, 1f, armRotationRight);
+                    }
+                }
             }
             bodyAnimation = true;
             batch.draw(chestRun[direction].getFrame(),
@@ -322,8 +569,59 @@ public class Player extends Creature {
                 }
             } else {
                 armAnimation = false;
-                batch.draw(Entities.armsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
+                if(!weaponActive && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                    batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                    batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+
+                    if (direction == 1) {
+                        batch.draw(Inventory.inventory[Inventory.selectedIndex].texture,
+                                body.getPosition().x * PPM + width / 2 - 57 + 90 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
+                    } else {
+                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                body.getPosition().x * PPM + width / 2 - 57 + 24 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
+                    }
+                } else {
+                    if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                        batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5,
+                                57, 74,
+                                114, 114, 1f, 1f, armRotationRight);
+                    } else {
+                        batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5,
+                                57, 74,
+                                114, 114, 1f, 1f, armRotationRight);
+                        batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5,
+                                57, 74,
+                                114, 114, 1f, 1f, -armRotationLeft);
+                    }
+                    if(Inventory.inventory[Inventory.selectedIndex] != null) {
+                        if (direction == 0) {
+                            batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                    body.getPosition().x * PPM + width / 2 - 33 - (Inventory.inventory[Inventory.selectedIndex].width - Inventory.inventory[Inventory.selectedIndex].holdX),
+                                    body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                    Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width/2 - Inventory.inventory[Inventory.selectedIndex].holdX)*2,
+                                    Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                    Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                    1f, 1f, armRotationRight);
+                        } else {
+                            batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                    body.getPosition().x * PPM + width / 2 + 33 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                    body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                    Inventory.inventory[Inventory.selectedIndex].holdX - 33,
+                                    Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                    Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                    1f, 1f, armRotationRight);
+                        }
+                    }
+                }
                 armsRun[0].currentIndex = 0;
                 armsRun[1].currentIndex = 0;
             }

@@ -9,7 +9,7 @@ import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 
 public class Tool {
-    public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density) {
+    public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density, boolean friction) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -36,7 +36,9 @@ public class Tool {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = density;
-        fixtureDef.friction = 0;
+        if(!friction) {
+            fixtureDef.friction = 0;
+        }
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -63,7 +65,7 @@ public class Tool {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = density;
-        fixtureDef.friction = 0;
+        //fixtureDef.friction = 0;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
@@ -97,7 +99,7 @@ public class Tool {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
-        fixtureDef.friction = 0;
+        //fixtureDef.friction = 0;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;

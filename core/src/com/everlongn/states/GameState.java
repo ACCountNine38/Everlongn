@@ -6,13 +6,12 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
+import com.everlongn.entities.dream.Scavenger;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.tiles.EarthTile;
@@ -57,7 +56,6 @@ public class GameState extends State {
 
         inventory = new Inventory(c);
         background = new BackgroundManager();
-
     }
 
     public void tick(float delta) {
@@ -70,7 +68,7 @@ public class GameState extends State {
         rayHandler.update();
         entityManager.tick();
         batch.setProjectionMatrix(camera.combined);
-        rayHandler.setCombinedMatrix(camera.combined.cpy().scl(PPM));
+        rayHandler.setCombinedMatrix(camera);
     }
 
     public void updateTiles() {
@@ -148,6 +146,10 @@ public class GameState extends State {
                     20, 120, Color.WHITE, 1, false);
             TextManager.draw("Jump: " + Player.jump + "   Fall: " + Player.fall,
                     20, 140, Color.WHITE, 1, false);
+            TextManager.draw("Aim: " + Player.aimAngle + "   Melee Attack: " + Player.meleeAttack,
+                    20, 160, Color.WHITE, 1, false);
+            TextManager.draw("Halt: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
+                    20, 180, Color.WHITE, 1, false);
         }
 
         if(screenTransitionAlpha > 0) {
