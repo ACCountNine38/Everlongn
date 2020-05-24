@@ -2,6 +2,7 @@ package com.everlongn.entities;
 
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
+import com.everlongn.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -71,7 +72,7 @@ public abstract class Creature extends Entity {
         if(!target.active) {
             target = null;
         }
-        if(target.body.getPosition().x < body.getPosition().x) {
+        if(target.body.getPosition().x*Constants.PPM + target.width/2 < body.getPosition().x*Constants.PPM + width/2) {
             direction = 0;
         } else {
             direction = 1;

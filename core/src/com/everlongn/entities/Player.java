@@ -208,7 +208,7 @@ public class Player extends Creature {
                                 aimAngle -= Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                             } else {
                                 aimAngle -= 1;
-                                if(haltForce < 35) {
+                                if(haltForce < 45) {
                                     haltForce += 1;
                                 }
                                 halt = true;
@@ -232,7 +232,7 @@ public class Player extends Creature {
                                             Creature c = (Creature)EntityManager.entities.get(i);
                                             c.stunned = true;
                                             float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
-                                                    + haltForce * 50;
+                                                    + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     force, 250, false);
                                         }
@@ -303,7 +303,7 @@ public class Player extends Creature {
                                 aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                             } else {
                                 aimAngle += 1;
-                                if(haltForce < 35) {
+                                if(haltForce < 45) {
                                     haltForce += 1;
                                 }
                                 halt = true;
@@ -325,7 +325,7 @@ public class Player extends Creature {
                                             Creature c = (Creature)EntityManager.entities.get(i);
                                             c.stunned = true;
                                             float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
-                                                    + haltForce * 50;
+                                                    + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     -force, 250, false);
                                         }
