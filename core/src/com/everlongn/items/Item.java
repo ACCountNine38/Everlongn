@@ -37,16 +37,17 @@ public class Item {
     public TextureRegion[] display;
 
     // weapon abstract properties
-    public float drawSpeed, swingSpeed;
     public String[] elemental;
 
     // melee weapon properties
     public int damage, force;
     public float critChance;
     public boolean heavy;
+    public float drawSpeed, swingSpeed;
 
     // magic weapon properties
-    public int healthConsumption;
+    public int healthConsumption, burst;
+    public float refreshSpeed;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
@@ -106,5 +107,9 @@ public class Item {
         batch.begin();
         batch.draw(texture, x, y, width, height);
         batch.end();
+    }
+
+    public void onClick() {
+
     }
 }

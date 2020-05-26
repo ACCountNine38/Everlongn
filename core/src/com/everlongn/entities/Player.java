@@ -4,14 +4,15 @@ import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.dream.Scavenger;
 import com.everlongn.entities.projectiles.Shadow;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
@@ -19,6 +20,10 @@ import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 import com.everlongn.world.BackgroundManager;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -37,6 +42,7 @@ public class Player extends Creature {
       0 - left
       1 - right
     */
+
     private Animation[] legsRun = new Animation[2];
     private Animation[] legsJump = new Animation[2];
     private Animation[] armsRun = new Animation[2];
@@ -44,6 +50,8 @@ public class Player extends Creature {
     private Animation[] chestRun = new Animation[2];
 
     public static int currentChunkX, currentChunkY, horizontalForce;
+
+    public static Queue<Shadow> shadows = new LinkedList<Shadow>();
 
     private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
@@ -155,17 +163,120 @@ public class Player extends Creature {
             onhold = false;
         }
 
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && Inventory.inventory[Inventory.selectedIndex] instanceof Melee && !meleeAttack) {
-            meleeAttack = true;
-            targetAngle = 155;
-            if(aimAngle < 155)
-                armSwingUp = true;
-            else {
-                targetAngle = 0;
+        if(Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack) {
+                meleeAttack = true;
+                targetAngle = 155;
+                if (aimAngle < 155)
+                    armSwingUp = true;
+                else {
+                    targetAngle = 0;
+                }
             }
+            checkMeleeCombat();
+        } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
+            meleeAttack = false;
+            checkArcaneCombat();
+        }
+    }
+
+    public void checkMeleeCombat() {
+        if(direction == 0) {
+            if(meleeAttack) {
+                if(aimAngle > 0) {
+                    aimAngle = -aimAngle;
+                }
+                if(meleeRecharge) {
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                    if (Gdx.input.getX() > ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                        ControlCenter.width / 2),
+                                Gdx.input.getY() - ControlCenter.height / 2));
+                    }
+
+                    if(aimAngle < tempAngle - 5) {
+                        aimAngle+=5;
+                    } else if(aimAngle > tempAngle + 5) {
+                        aimAngle-=5;
+                    } else {
+                        meleeAttack = false;
+                        meleeRecharge = false;
+                    }
+                } else {
+                    if (armSwingUp) {
+                        aimAngle -= Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                        if (aimAngle <= -targetAngle) {
+                            aimAngle = -targetAngle;
+                            targetAngle = 0;
+                            armSwingUp = false;
+                        }
+                    } else {
+                        if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                            if (!fall && !jump) {
+                                aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                            } else {
+                                aimAngle += 1;
+                                if(haltForce < 45) {
+                                    haltForce += 1;
+                                }
+                                halt = true;
+                            }
+                        } else {
+                            aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                        }
+                        if (aimAngle > -targetAngle) {
+                            aimAngle = -targetAngle;
+                            meleeRecharge = true;
+                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width, body.getPosition().y*PPM,
+                                    Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
+
+                            // checks target for attack
+                            if(Inventory.inventory[Inventory.selectedIndex].heavy) {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
+                                                    + haltForce * 30;
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    -force, 250, false);
+                                        }
+                                    }
+                                }
+                            } else {
+                                for(int i = 0; i < EntityManager.entities.size(); i++) {
+                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
+                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                            Creature c = (Creature)EntityManager.entities.get(i);
+                                            c.stunned = true;
+                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
+                                            EntityManager.entities.get(i).body.applyForceToCenter(
+                                                    -force, 250, false);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            haltForce = 0;
+                            halt = false;
+                        }
+                    }
+                }
+            } else {
+                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() > ControlCenter.width / 2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+            }
+            armRotationRight = aimAngle + 45 - 360;
         }
 
-        if(direction == 1) {
+        else {
             if(meleeAttack) {
                 if(aimAngle < 0) {
                     aimAngle = -aimAngle;
@@ -260,106 +371,51 @@ public class Player extends Creature {
                 }
             }
             armRotationRight = aimAngle + 45 - 90;
-        } else if(direction == 0) {
-            if(meleeAttack) {
-                if(aimAngle > 0) {
-                    aimAngle = -aimAngle;
-                }
-                if(meleeRecharge) {
-                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                    if (Gdx.input.getX() > ControlCenter.width/2) {
-                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
-                                        ControlCenter.width / 2),
-                                Gdx.input.getY() - ControlCenter.height / 2));
-                    }
+        }
+    }
 
-                    if(aimAngle < tempAngle - 5) {
-                        aimAngle+=5;
-                    } else if(aimAngle > tempAngle + 5) {
-                        aimAngle-=5;
-                    } else {
-                        meleeAttack = false;
-                        meleeRecharge = false;
-                    }
-                } else {
-                    if (armSwingUp) {
-                        aimAngle -= Inventory.inventory[Inventory.selectedIndex].drawSpeed;
-                        if (aimAngle <= -targetAngle) {
-                            aimAngle = -targetAngle;
-                            targetAngle = 0;
-                            armSwingUp = false;
-                        }
-                    } else {
-                        if(Inventory.inventory[Inventory.selectedIndex].heavy) {
-                            if (!fall && !jump) {
-                                aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
-                            } else {
-                                aimAngle += 1;
-                                if(haltForce < 45) {
-                                    haltForce += 1;
-                                }
-                                halt = true;
-                            }
-                        } else {
-                            aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
-                        }
-                        if (aimAngle > -targetAngle) {
-                            aimAngle = -targetAngle;
-                            meleeRecharge = true;
-                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width, body.getPosition().y*PPM,
-                                    Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
-
-                            // checks target for attack
-                            if(Inventory.inventory[Inventory.selectedIndex].heavy) {
-                                for(int i = 0; i < EntityManager.entities.size(); i++) {
-                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
-                                        if(EntityManager.entities.get(i) instanceof Creature) {
-                                            Creature c = (Creature)EntityManager.entities.get(i);
-                                            c.stunned = true;
-                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
-                                                    + haltForce * 30;
-                                            EntityManager.entities.get(i).body.applyForceToCenter(
-                                                    -force, 250, false);
-                                        }
-                                    }
-                                }
-                            } else {
-                                for(int i = 0; i < EntityManager.entities.size(); i++) {
-                                    if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
-                                        if(EntityManager.entities.get(i) instanceof Creature) {
-                                            Creature c = (Creature)EntityManager.entities.get(i);
-                                            c.stunned = true;
-                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
-                                            EntityManager.entities.get(i).body.applyForceToCenter(
-                                                    -force, 250, false);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            haltForce = 0;
-                            halt = false;
-                        }
-                    }
-                }
-            } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+    public void checkArcaneCombat() {
+        if(direction == 0) {
+            aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                    Gdx.input.getY() - ControlCenter.height / 2));
+            if (Gdx.input.getX() > ControlCenter.width / 2) {
+                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                ControlCenter.width / 2),
                         Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() > ControlCenter.width/2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
-                                    ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                }
             }
             armRotationRight = aimAngle + 45 - 360;
+        } else {
+            aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                    Gdx.input.getY() - ControlCenter.height / 2));
+            if (Gdx.input.getX() < ControlCenter.width/2) {
+                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+            }
+
+            armRotationRight = aimAngle + 45 - 90;
         }
 
+        if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shadow Manipulator")) {
+            if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                Shadow shadow = new Shadow(c, body.getPosition().x * PPM + width / 2, body.getPosition().y * PPM, width, height, this, direction, 0, 0, true);
+                shadows.add(shadow);
+                EntityManager.entities.add(shadow);
+            }
+
+            else if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+                if(!shadows.isEmpty()) {
+                    Shadow shadow = shadows.poll();
+                    body.setTransform(shadow.body.getPosition().x - width/2, shadow.body.getPosition().y, 0);
+                    shadow.life = Shadow.maxLife;
+                }
+            }
+        }
     }
 
     public void inputUpdate() {
         horizontalForce = 0;
-        if(Gdx.input.isKeyJustPressed(Input.Keys.T) && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Scavenger(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
@@ -367,7 +423,7 @@ public class Player extends Creature {
             if(direction == 0)
                 xForce = -200;
             int yForce = 100;
-            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, width, height, this, direction, xForce, yForce));
+            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, width, height, this, direction, xForce, yForce, false));
         }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.everlongn.assets.Entities;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.Projectile;
 import com.everlongn.game.ControlCenter;
@@ -14,11 +15,12 @@ public class Shadow extends Projectile {
     public ParticleEffect movingParticle;
     public Player player;
     public int direction;
+    public static float maxLife = 60;
 
-    public float life;
-    public boolean lifeOut;
+    public float life, finishCounter, figureAlpha;
+    public boolean lifeOut, casted;
 
-    public Shadow(ControlCenter c, float x, float y, int width, int height, Player player, int direction, float forceX, float forceY) {
+    public Shadow(ControlCenter c, float x, float y, int width, int height, Player player, int direction, float forceX, float forceY, boolean casted) {
         super(c, x, y, width, height, 1);
         this.player = player;
         this.direction = direction;
@@ -31,29 +33,54 @@ public class Shadow extends Projectile {
                 Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0);
 
         moveByForce(new Vector2(forceX, forceY));
+
+        if(casted)
+            figureAlpha = 1;
     }
 
     @Override
     public void tick() {
         life += Gdx.graphics.getDeltaTime();
-        if(life > 5) {
+        if(life > maxLife) {
             movingParticle.getEmitters().get(0).setContinuous(false);
             lifeOut = true;
         }
 
         if(lifeOut && movingParticle.isComplete()) {
+            finishCounter += Gdx.graphics.getDeltaTime();
+        }
+
+        if(finishCounter == 1) {
             active = false;
         }
+
+        if(lifeOut) {
+            figureAlpha -= 0.01;
+            if(figureAlpha < 0) {
+                figureAlpha = 0;
+            }
+        }
+
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.update(Gdx.graphics.getDeltaTime());
 
         body.setLinearVelocity(body.getLinearVelocity().x/1.03f, body.getLinearVelocity().y);
+
+        if(Math.abs(body.getLinearVelocity().x) < 0.25 && figureAlpha < 1 && !lifeOut) {
+            figureAlpha += 0.01;
+            if(figureAlpha > 1) {
+                figureAlpha = 1;
+            }
+        }
     }
 
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
         movingParticle.draw(batch);
+        batch.setColor(0f, 0f, 0f, figureAlpha);
+        batch.draw(Entities.shadowFriend[direction], body.getPosition().x*Constants.PPM - 114/2, body.getPosition().y*Constants.PPM, 114, 114);
+        batch.setColor(1f, 1f, 1f, 1f);
         batch.end();
     }
 }

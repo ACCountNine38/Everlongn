@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
     public static Texture logSprite, stoneSprite;
-    public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite;
+    public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite;
 
     public static TextureRegion log, stone;
-    public static TextureRegion shadowStaffL, shadowStaffR, darkBaneL, darkBaneR, broadSwordL, broadSwordR;
+    public static TextureRegion shadowStaffL, shadowStaffR, darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
@@ -41,5 +41,12 @@ public class Items {
         temp = new TextureRegion(broadSwordSprite, 0, 0, broadSwordSprite.getWidth(), broadSwordSprite.getHeight());
         temp.flip(true, false);
         broadSwordL = temp;
+
+        dragonDanceSprite = new Texture(Gdx.files.internal("melee/dragonDance.png"), true);
+        dragonDanceSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        dragonDanceR = new TextureRegion(dragonDanceSprite, 0, 0, dragonDanceSprite.getWidth(), dragonDanceSprite.getHeight());
+        temp = new TextureRegion(dragonDanceSprite, 0, 0, dragonDanceSprite.getWidth(), dragonDanceSprite.getHeight());
+        temp.flip(true, false);
+        dragonDanceL = temp;
     }
 }
