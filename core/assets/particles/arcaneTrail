@@ -6,15 +6,15 @@ lowMin: 250.0
 lowMax: 250.0
 - Count - 
 min: 0
-max: 200
+max: 1000
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 250.0
-highMax: 250.0
+highMin: 200.0
+highMax: 200.0
 relative: false
 scalingCount: 1
-scaling0: 0.49019608
+scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Life - 
@@ -68,7 +68,7 @@ highMin: 32.0
 highMax: 32.0
 relative: false
 scalingCount: 1
-scaling0: 0.39215687
+scaling0: 0.27450982
 timelineCount: 1
 timeline0: 0.0
 - Y Scale - 
@@ -81,7 +81,7 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 1
-scaling0: 1.0
+scaling0: 0.4117647
 timelineCount: 1
 timeline0: 0.0
 - Angle - 
@@ -92,7 +92,7 @@ highMin: 45.0
 highMax: 135.0
 relative: false
 scalingCount: 3
-scaling0: 1.0
+scaling0: 0.5686275
 scaling1: 0.0
 scaling2: 0.0
 timelineCount: 3
@@ -121,18 +121,18 @@ relative: false
 scalingCount: 4
 scaling0: 0.0
 scaling1: 1.0
-scaling2: 0.75
+scaling2: 0.28070176
 scaling3: 0.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.2
-timeline2: 0.8
+timeline1: 0.21917808
+timeline2: 0.5273973
 timeline3: 1.0
 - Options - 
 attached: false
 continuous: true
 aligned: false
-additive: true
+additive: false
 behind: false
 premultipliedAlpha: false
 spriteMode: single
