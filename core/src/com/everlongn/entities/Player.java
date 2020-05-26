@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.dream.Scavenger;
+import com.everlongn.entities.projectiles.ArcaneTrail;
 import com.everlongn.entities.projectiles.Shadow;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
@@ -408,6 +409,16 @@ public class Player extends Creature {
                     Shadow shadow = shadows.poll();
                     body.setTransform(shadow.body.getPosition().x - width/2, shadow.body.getPosition().y, 0);
                     shadow.life = Shadow.maxLife;
+                }
+            }
+        } else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Caster")) {
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                if(direction == 0) {
+                    ArcaneTrail arcaneTrail = new ArcaneTrail(c, body.getPosition().x * PPM + width / 2, body.getPosition().y * PPM, width, height, 1, direction, armRotationRight = aimAngle + 45 - 360);
+                    EntityManager.entities.add(arcaneTrail);
+                } else {
+                    ArcaneTrail arcaneTrail = new ArcaneTrail(c, body.getPosition().x * PPM + width / 2, body.getPosition().y * PPM, width, height, 1, direction, armRotationRight = aimAngle + 45 - 90);
+                    EntityManager.entities.add(arcaneTrail);
                 }
             }
         }

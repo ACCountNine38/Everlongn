@@ -35,6 +35,7 @@ public class Inventory {
         addItem(Melee.broadSword.createNew(1));
         addItem(Arcane.shadowStaff.createNew(1));
         addItem(Melee.dragondance);
+        addItem(Arcane.arcaneCaster);
     }
 
     public void tick() {
