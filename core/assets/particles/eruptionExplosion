@@ -2,16 +2,16 @@ Untitled
 - Delay -
 active: false
 - Duration - 
-lowMin: 450.0
-lowMax: 450.0
+lowMin: 250.0
+lowMax: 250.0
 - Count - 
 min: 0
-max: 400
+max: 200
 - Emission - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 450.0
-highMax: 450.0
+highMin: 250.0
+highMax: 250.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -81,13 +81,13 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 3
-scaling0: 0.74509805
-scaling1: 0.47058824
-scaling2: 0.23529412
+scaling0: 0.9831461
+scaling1: 0.5
+scaling2: 0.101123594
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.39041096
-timeline2: 0.6712329
+timeline1: 0.49905124
+timeline2: 0.65844405
 - Angle - 
 active: true
 lowMin: 0.0
@@ -111,9 +111,9 @@ active: false
 active: false
 - Tint - 
 colorsCount: 3
-colors0: 0.0
-colors1: 0.0
-colors2: 0.0
+colors0: 1.0
+colors1: 0.92156863
+colors2: 0.92156863
 timelineCount: 1
 timeline0: 0.0
 - Transparency - 
@@ -136,7 +136,7 @@ timeline3: 1.0
 attached: false
 continuous: false
 aligned: false
-additive: false
+additive: true
 behind: false
 premultipliedAlpha: false
 spriteMode: single
