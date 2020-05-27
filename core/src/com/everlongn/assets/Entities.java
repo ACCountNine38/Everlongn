@@ -6,10 +6,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Entities {
     public static TextureRegion[][] legRun, armRun, chestRun, headRun, legJump;
-    public static TextureRegion[] armsHoldLeft, armsHoldRight, doubleArmsHold;
+    public static TextureRegion[] armsHoldLeft, armsHoldRight, doubleArmsHold, shadowFriend;
 
     public static Texture legRunSprite, armRunSprite, chestRunSprite, headRunSprite, legJumpSprite,
-            armHoldLeftSprite, armHoldRightSprite, doubleArmsHoldSprite;
+            armHoldLeftSprite, armHoldRightSprite, doubleArmsHoldSprite, shadowFriendSprite;
 
     public static void init() {
         legRunSprite = new Texture(Gdx.files.internal("player/legsRun.png"),true);
@@ -35,9 +35,18 @@ public class Entities {
         doubleArmsHoldSprite = new Texture(Gdx.files.internal("player/doubleArmsHold.png"), true);
         doubleArmsHoldSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
+        shadowFriendSprite = new Texture(Gdx.files.internal("player/shadowFriend.png"), true);
+        shadowFriendSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        shadowFriend = new TextureRegion[2];
+        shadowFriend[1] = new TextureRegion(shadowFriendSprite, 0, 0, 2083, 2083);
+        TextureRegion temp0 = new TextureRegion(shadowFriendSprite, 0, 0, 2083, 2083);
+        temp0.flip(true, false);
+        shadowFriend[0] = temp0;
+
         armsHoldLeft = new TextureRegion[2];
         armsHoldLeft[1] = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
-        TextureRegion temp0 = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
+        temp0 = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
         temp0.flip(true, false);
         armsHoldLeft[0] = temp0;
 

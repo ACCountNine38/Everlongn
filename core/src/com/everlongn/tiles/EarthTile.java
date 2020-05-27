@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.Herbs;
 import com.everlongn.assets.Tiles;
 import com.everlongn.states.GameState;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
@@ -35,7 +36,8 @@ public class EarthTile extends Tile {
                 texture = Tiles.decayLeft;
                 if (body != null) {
                     GameState.world.destroyBody(body);
-                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0);
+                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_ITEM), (short)0);
                 }
             }
         }
@@ -54,7 +56,8 @@ public class EarthTile extends Tile {
                 texture = Tiles.decayRight;
                 if (body != null) {
                     GameState.world.destroyBody(body);
-                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1);
+                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_ITEM), (short)0);
                 }
             }
         }

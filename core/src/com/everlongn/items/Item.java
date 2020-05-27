@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Items;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 import java.util.ArrayList;
@@ -36,16 +37,17 @@ public class Item {
     public TextureRegion[] display;
 
     // weapon abstract properties
-    public float drawSpeed, swingSpeed;
     public String[] elemental;
 
     // melee weapon properties
     public int damage, force;
     public float critChance;
     public boolean heavy;
+    public float drawSpeed, swingSpeed;
 
     // magic weapon properties
-    public int healthConsumption;
+    public int healthConsumption, burst;
+    public float refreshSpeed;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
@@ -83,7 +85,7 @@ public class Item {
     public Item createNew(int x, int y) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
-        body = Tool.createBox(x, y, width, height, false, 1);
+        body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_ITEM, Constants.BIT_TILE, (short)0);
         return i;
     }
 
@@ -105,5 +107,9 @@ public class Item {
         batch.begin();
         batch.draw(texture, x, y, width, height);
         batch.end();
+    }
+
+    public void onClick() {
+
     }
 }

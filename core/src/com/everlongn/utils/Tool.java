@@ -9,7 +9,8 @@ import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 
 public class Tool {
-    public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density, boolean friction) {
+    public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density, boolean friction,
+                                    short cBits, short mBits, short gIndex) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -39,12 +40,16 @@ public class Tool {
         if(!friction) {
             fixtureDef.friction = 0;
         }
+        fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.filter.maskBits = mBits;
+        fixtureDef.filter.groupIndex = gIndex;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
     }
 
-    public static Body createBox(int x, int y, int width, int height, boolean isStatic, float density) {
+    public static Body createBox(int x, int y, int width, int height, boolean isStatic, float density,
+                                 short cBits, short mBits, short gIndex) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -66,12 +71,16 @@ public class Tool {
         fixtureDef.shape = shape;
         fixtureDef.density = density;
         //fixtureDef.friction = 0;
+        fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.filter.maskBits = mBits;
+        fixtureDef.filter.groupIndex = gIndex;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
     }
 
-    public static Body createDecayTile(int x, int y, int direction) {
+    public static Body createDecayTile(int x, int y, int direction,
+                                       short cBits, short mBits, short gIndex) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -100,8 +109,12 @@ public class Tool {
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
         //fixtureDef.friction = 0;
+        fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.filter.maskBits = mBits;
+        fixtureDef.filter.groupIndex = gIndex;
         body.createFixture(fixtureDef);
         shape.dispose();
         return body;
     }
+
 }
