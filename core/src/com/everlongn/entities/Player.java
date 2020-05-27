@@ -1,16 +1,15 @@
 package com.everlongn.entities;
 
-import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.dream.Scavenger;
 import com.everlongn.entities.projectiles.ArcaneTrail;
+import com.everlongn.entities.projectiles.ArcaneEruption;
 import com.everlongn.entities.projectiles.Shadow;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
@@ -22,7 +21,6 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 import com.everlongn.world.BackgroundManager;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -33,12 +31,12 @@ public class Player extends Creature {
     public static boolean jump, fall, canJump = true, movingHorizontal, airborn, onhold,
             weaponActive = true, meleeAttack, meleeRecharge, halt;
 
-    private PointLight light;
+    //private PointLight light;
     private int direction = 1;
     private boolean cameraXStopped, fallUpdate, armSwingUp = true;
     private float airbornTime, fallUpdateTimer, currentSpeed, targetAngle;
-    public static float aimAngle, haltForce;
-    public static float armRotationRight, armRotationLeft;
+    public static float aimAngle, haltForce, shootAngle, cdr;
+    public static float armRotationRight, armRotationLeft = 15;
     /*
       0 - left
       1 - right
@@ -56,6 +54,8 @@ public class Player extends Creature {
 
     private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
+    private ParticleEffect smoke;
+
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
         super(c, x, y, width, height, density, 5);
         this.x = x;
@@ -64,9 +64,9 @@ public class Player extends Creature {
         this.height = height;
 
         type.add("player");
-        light = new PointLight(GameState.rayHandler, 100, Color.WHITE, 250/PPM,
-                body.getPosition().x,
-                body.getPosition().y);
+//        light = new PointLight(GameState.rayHandler, 100, Color.WHITE, 250/PPM,
+//                body.getPosition().x,
+//                body.getPosition().y);
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
         legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
@@ -92,8 +92,8 @@ public class Player extends Creature {
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
-        light.setPosition(body.getPosition().x,
-                body.getPosition().y);
+//        light.setPosition(body.getPosition().x,
+//                body.getPosition().y);
         cameraUpdate();
         inputUpdate();
         animationUpdate();
@@ -407,18 +407,108 @@ public class Player extends Creature {
             else if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
                 if(!shadows.isEmpty()) {
                     Shadow shadow = shadows.poll();
-                    body.setTransform(shadow.body.getPosition().x - width/2, shadow.body.getPosition().y, 0);
+                    body.setTransform(shadow.body.getPosition().x, shadow.body.getPosition().y, 0);
+                    body.setLinearVelocity(0, 0);
                     shadow.life = Shadow.maxLife;
+
+                    smoke = new ParticleEffect();
+                    smoke.load(Gdx.files.internal("particles/shadowTrail"), Gdx.files.internal(""));
+                    smoke.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+                    smoke.start();
                 }
             }
-        } else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Caster")) {
-            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-                if(direction == 0) {
-                    ArcaneTrail arcaneTrail = new ArcaneTrail(c, body.getPosition().x * PPM + width / 2, body.getPosition().y * PPM, width, height, 1, direction, armRotationRight = aimAngle + 45 - 360);
-                    EntityManager.entities.add(arcaneTrail);
-                } else {
-                    ArcaneTrail arcaneTrail = new ArcaneTrail(c, body.getPosition().x * PPM + width / 2, body.getPosition().y * PPM, width, height, 1, direction, armRotationRight = aimAngle + 45 - 90);
-                    EntityManager.entities.add(arcaneTrail);
+        }
+
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Caster")) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                cdr += Gdx.graphics.getDeltaTime();
+
+                if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    cdr = 0;
+
+                    if (direction == 0) {
+                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneTrail arcaneTrail = new ArcaneTrail(c,
+                                body.getPosition().x * PPM + width / 2 + xAim,
+                                body.getPosition().y * PPM + 46 + 23 + yAim,
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneTrail);
+                    } else {
+                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneTrail arcaneTrail = new ArcaneTrail(c,
+                                (body.getPosition().x * PPM + width / 2) + xAim,
+                                (body.getPosition().y * PPM + 46 + 23) + yAim,
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneTrail);
+                    }
+                }
+            }
+        }
+
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Eruption")) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                cdr += Gdx.graphics.getDeltaTime();
+
+                if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    cdr = 0;
+
+                    if (direction == 0) {
+                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                                body.getPosition().x * PPM + width / 2 + xAim,
+                                body.getPosition().y * PPM + 46 + 23 + yAim,
+                                10, direction, shootAngle,
+                                (float)Math.sin(shootAngle)*100, -(float)Math.cos(shootAngle)*100);
+                        EntityManager.entities.add(arcaneTrail);
+                    } else {
+                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                                (body.getPosition().x * PPM + width / 2) + xAim,
+                                (body.getPosition().y * PPM + 46 + 23) + yAim,
+                                10, direction, shootAngle,
+                                (float)Math.sin(shootAngle)*100, -(float)Math.cos(shootAngle)*100);
+                        EntityManager.entities.add(arcaneTrail);
+                    }
                 }
             }
         }
@@ -549,7 +639,7 @@ public class Player extends Creature {
                         body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
             } else {
-                if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
                     batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
                             body.getPosition().y * PPM - 5,
                             57, 74,
@@ -652,7 +742,7 @@ public class Player extends Creature {
                                 Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
                     }
                 } else {
-                    if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                    if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
                         batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
                                 body.getPosition().y * PPM - 5,
                                 57, 74,

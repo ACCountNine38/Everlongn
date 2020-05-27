@@ -44,18 +44,6 @@ public class Entities {
         temp0.flip(true, false);
         shadowFriend[0] = temp0;
 
-        armsHoldLeft = new TextureRegion[2];
-        armsHoldLeft[1] = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
-        temp0 = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
-        temp0.flip(true, false);
-        armsHoldLeft[0] = temp0;
-
-        armsHoldRight = new TextureRegion[2];
-        armsHoldRight[1] = new TextureRegion(armHoldRightSprite, 0, 0, 500, 500);
-        temp0 = new TextureRegion(armHoldRightSprite, 0, 0, 500, 500);
-        temp0.flip(true, false);
-        armsHoldRight[0] = temp0;
-
         doubleArmsHold = new TextureRegion[2];
         doubleArmsHold[1] = new TextureRegion(doubleArmsHoldSprite, 0, 0, 500, 500);
         temp0 = new TextureRegion(doubleArmsHoldSprite, 0, 0, 500, 500);
@@ -97,5 +85,17 @@ public class Entities {
                 }
             }
         }
+
+        armsHoldLeft = new TextureRegion[2];
+        armsHoldLeft[1] = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
+        temp0 = new TextureRegion(armHoldLeftSprite, 0, 0, 500, 500);
+        temp0.flip(true, false);
+        armsHoldLeft[0] = temp0;
+
+        armsHoldRight = new TextureRegion[2];
+        armsHoldRight[1] = new TextureRegion(armHoldRightSprite, 0, 0, 500, 500);
+        temp0 = new TextureRegion(armHoldRightSprite, 0, 0, 500, 500);
+        temp0.flip(true, false);
+        armsHoldRight[0] = temp0;
     }
 }

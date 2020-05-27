@@ -5,12 +5,17 @@ import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Creature;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.Constants;
+import com.everlongn.utils.Tool;
 
 import static com.everlongn.utils.Constants.PPM;
 
 public class Scavenger extends Creature {
     public Scavenger(ControlCenter c, float x, float y) {
         super(c, x, y, 50, 100, 1, 4);
+
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, true,
+                Constants.BIT_ENEMY, (short)(Constants.BIT_PLAYER | Constants.BIT_TILE | Constants.BIT_PROJECTILE), (short)0);
 
         enemyList.add("player");
 

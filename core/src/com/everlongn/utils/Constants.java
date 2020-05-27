@@ -9,5 +9,5 @@ public class Constants {
     public static final short BIT_TILE = 2;
     public static final short BIT_PARTICLE = 4;
     public static final short BIT_ENEMY = 8;
-    public static final short BIT_ITEM = 16;
+    public static final short BIT_PROJECTILE = 16;
 }

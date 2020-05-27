@@ -38,8 +38,8 @@ public abstract class Entity {
         resistance = 10;
         name = "UNNAMED";
 
-        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, true,
-                Constants.BIT_ENEMY, (short)(Constants.BIT_PLAYER | Constants.BIT_TILE), (short)0);
+//        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, true,
+//                Constants.BIT_ENEMY, (short)(Constants.BIT_PLAYER | Constants.BIT_TILE), (short)0);
     }
 
     public abstract void tick();

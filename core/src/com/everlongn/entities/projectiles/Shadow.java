@@ -24,13 +24,13 @@ public class Shadow extends Projectile {
         super(c, x, y, width, height, 1);
         this.player = player;
         this.direction = direction;
+        body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
+                Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0);
+
         movingParticle = new ParticleEffect();
         movingParticle.load(Gdx.files.internal("particles/shadowTrail"), Gdx.files.internal(""));
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.start();
-
-        body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
-                Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0);
 
         moveByForce(new Vector2(forceX, forceY));
 
