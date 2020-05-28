@@ -85,7 +85,7 @@ public class Item {
     public Item createNew(int x, int y) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
-        body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0);
+        body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, this);
         return i;
     }
 

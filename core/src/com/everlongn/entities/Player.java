@@ -84,7 +84,7 @@ public class Player extends Creature {
         headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
-                Constants.BIT_PLAYER, (short)(Constants.BIT_ENEMY | Constants.BIT_TILE), (short)0);
+                Constants.BIT_PLAYER, (short)(Constants.BIT_ENEMY | Constants.BIT_TILE), (short)0, this);
     }
 
     @Override
@@ -488,7 +488,7 @@ public class Player extends Creature {
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 10, direction, shootAngle,
-                                (float)Math.sin(shootAngle)*100, -(float)Math.cos(shootAngle)*100);
+                                (float)Math.sin(shootAngle)*75, -(float)Math.cos(shootAngle)*75);
                         EntityManager.entities.add(arcaneTrail);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -506,7 +506,7 @@ public class Player extends Creature {
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 10, direction, shootAngle,
-                                (float)Math.sin(shootAngle)*100, -(float)Math.cos(shootAngle)*100);
+                                (float)Math.sin(shootAngle)*75, -(float)Math.cos(shootAngle)*75);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }

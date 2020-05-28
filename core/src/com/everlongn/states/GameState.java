@@ -18,6 +18,7 @@ import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
 import com.everlongn.world.BackgroundManager;
+import com.everlongn.world.WorldContactListener;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -56,6 +57,7 @@ public class GameState extends State {
 
         inventory = new Inventory(c);
         background = new BackgroundManager();
+        world.setContactListener(new WorldContactListener());
     }
 
     public void tick(float delta) {
@@ -94,7 +96,7 @@ public class GameState extends State {
                                 if(tiles[x][y] != null) {
                                     tiles[x][y].setBody(Tool.createBox(x * Tile.TILESIZE, y * Tile.TILESIZE, Tile.TILESIZE,
                                             Tile.TILESIZE, true, 1f,
-                                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0));
+                                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this.getClass()));
                                     tiles[x][y].tick();
                                 }
                             }

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public abstract class Creature extends Entity {
     public float speed, currentSpeed, sightRadius, knockbackResistance;
     public int direction, damage;
-    public boolean stunned;
 
     public Entity target;
     public ArrayList<String> enemyList = new ArrayList<String>();
@@ -36,14 +35,22 @@ public abstract class Creature extends Entity {
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/knockbackResistance, body.getLinearVelocity().y);
-            if(Math.abs(body.getLinearVelocity().x) < 1) {
+            if(body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
                 stunned = false;
             }
         }
+
+//        else {
+//            body.setLinearVelocity(body.getLinearVelocity().x/knockbackResistance, body.getLinearVelocity().y);
+//            if(Math.abs(body.getLinearVelocity().x) < 0.75f && body.getLinearVelocity().y < 0.75f && body.getLinearVelocity().y >= 0) {
+//                stunned = false;
+//            }
+//        }
     }
 
     public void findTarget() {
         Entity possibleTarget = null;
+
         for(int i = 0; i < EntityManager.entities.size(); i++) {
             Entity e = EntityManager.entities.get(i);
             if(e instanceof Creature && e != this) {

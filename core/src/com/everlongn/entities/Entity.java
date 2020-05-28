@@ -15,7 +15,7 @@ public abstract class Entity {
     public int width, height;
     public String name;
     public ArrayList<String> type = new ArrayList<String>();
-    public boolean active = true;
+    public boolean active = true, stunned, knockbackResistant, vulnerableToArcane;
 
     public ControlCenter c;
     //protected SpriteBatch batch;

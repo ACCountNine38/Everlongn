@@ -7,8 +7,11 @@ public class Arcane extends Weapon {
     public static Arcane shadowStaff = new Arcane(Items.shadowStaffR, "Shadow Manipulator", 200, false, false, 100, 100, 1, "Your shadow seem a bit abnormal...",
             53, 58, new TextureRegion[]{Items.shadowStaffL, Items.shadowStaffR}, new String[]{"Shadow", "Arcane"}, 10, 2, 0);
 
-    public static Arcane arcaneCaster = new Arcane(Items.arcaneCasterR, "Arcane Eruption", 201, false, true, 100, 100, 1, "Power beyond your understanding...",
+    public static Arcane arcaneCaster = new Arcane(Items.arcaneCasterR, "Arcane Caster", 201, false, true, 100, 100, 1, "Power beyond your understanding...",
             52, 58, new TextureRegion[]{Items.arcaneCasterL, Items.arcaneCasterR}, new String[]{"Arcane"}, 10, 0.8f, 0);
+
+    public static Arcane arcaneEruption = new Arcane(Items.shadowStaffR, "Arcane Eruption", 202, false, true, 100, 100, 1, "Power beyond your understanding...",
+            52, 58, new TextureRegion[]{Items.shadowStaffL, Items.shadowStaffR}, new String[]{"Arcane"}, 10, 0.8f, 0);
 
     public Arcane(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,
                   int healthConsumption, float refreshSpeed, int burst) {

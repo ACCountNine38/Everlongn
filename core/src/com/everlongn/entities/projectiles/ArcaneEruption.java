@@ -3,69 +3,111 @@ package com.everlongn.entities.projectiles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class ArcaneEruption extends Projectile {
-    public ParticleEffect movingParticle;
+    public ParticleEffect movingParticle, explosion;
     public int direction;
-    public static float maxLife = 8;
 
-    public float life, finishCounter, figureAlpha, angle;
-    public boolean lifeOut, casted;
+    public float angle;
 
     public ArcaneEruption(ControlCenter c, float x, float y, float density, int direction, float angle, float forceX, float forceY) {
-        super(c, x, y, 5, 5, density);
+        super(c, x, y, 4, 4, density);
         this.direction = direction;
         this.angle = angle;
 
         body = Tool.createEntity((int) (x), (int) (y), width, height, false, density, false,
-                (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0);
+                (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0, this);
 
         moveByForce(new Vector2(forceX, forceY));
 
         movingParticle = new ParticleEffect();
-        movingParticle.load(Gdx.files.internal("particles/arcaneTrail"), Gdx.files.internal(""));
+        movingParticle.load(Gdx.files.internal("particles/eruptionTrail"), Gdx.files.internal(""));
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.start();
+
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/eruptionExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+
     }
 
     @Override
     public void tick() {
-        body.setLinearVelocity((float)(body.getLinearVelocity().x/1.03), body.getLinearVelocity().y);
-//        if ((Math.abs(body.getLinearVelocity().x) < Math.abs(speedX) - 0.5 || Math.abs(body.getLinearVelocity().x) > Math.abs(speedX) + 0.5 ||
-//                Math.abs(body.getLinearVelocity().y) < Math.abs(speedY) - 0.5 || Math.abs(body.getLinearVelocity().y) > Math.abs(speedY) + 0.5)
-//                && !lifeOut && casted) {
-//            lifeOut = true;
-//            movingParticle.getEmitters().get(0).setContinuous(false);
-//        }
-//        moveByVelocityX();
-//        moveByVelocityY();
-        casted = true;
+        if(!lifeOut) {
+            body.setLinearVelocity((float) (body.getLinearVelocity().x / 1.03), body.getLinearVelocity().y);
+        } else {
+            body.setLinearVelocity(0, 0);
 
-        life += Gdx.graphics.getDeltaTime();
-        if (life > maxLife) {
-            lifeOut = true;
-            movingParticle.getEmitters().get(0).setContinuous(false);
+            if(!exploded) {
+                explosionTimer += Gdx.graphics.getDeltaTime();
+                if(explosionTimer > 0.01) {
+                    explode();
+                    exploded = true;
+                }
+            }
         }
 
-        if (lifeOut && movingParticle.isComplete()) {
+        if (lifeOut && explosion.isComplete() && movingParticle.isComplete()) {
             GameState.world.destroyBody(body);
             active = false;
         }
 
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.update(Gdx.graphics.getDeltaTime());
+
+        if(lifeOut) {
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
+        }
     }
 
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
         movingParticle.draw(batch);
+        if(lifeOut) {
+            explosion.draw(batch);
+        }
         batch.end();
+    }
+
+    public void explode() {
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 60, body.getPosition().y*Constants.PPM+2 - 60,
+                120, 120);
+
+        for(int i = 0; i < EntityManager.entities.size(); i++) {
+            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
+                if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
+                    Creature c = (Creature)EntityManager.entities.get(i);
+
+                    c.stunned = true;
+
+                    float force = 800 + (float)Math.random()*200;
+                    float angle = (float)(Math.random()*(Math.PI/6) + Math.PI/8);
+                    // c.body.getPosition().x*Constants.PPM + c.width/2 < body.getPosition().x*Constants.PPM + 2
+                    if(direction == 0) {
+                        c.body.applyForceToCenter(
+                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
+                    } else {
+                        c.body.applyForceToCenter(
+                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void finish() {
+        lifeOut = true;
+        movingParticle.getEmitters().get(0).setContinuous(false);
+        explosion.start();
     }
 }

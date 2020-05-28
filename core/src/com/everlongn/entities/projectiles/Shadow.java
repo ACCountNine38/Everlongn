@@ -25,7 +25,7 @@ public class Shadow extends Projectile {
         this.player = player;
         this.direction = direction;
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
-                Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0);
+                Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0, this);
 
         movingParticle = new ParticleEffect();
         movingParticle.load(Gdx.files.internal("particles/shadowTrail"), Gdx.files.internal(""));
@@ -82,5 +82,10 @@ public class Shadow extends Projectile {
         batch.draw(Entities.shadowFriend[direction], body.getPosition().x*Constants.PPM - 114/2, body.getPosition().y*Constants.PPM, 114, 114);
         batch.setColor(1f, 1f, 1f, 1f);
         batch.end();
+    }
+
+    @Override
+    public void finish() {
+
     }
 }

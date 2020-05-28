@@ -20,6 +20,7 @@ import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Chunk;
 import com.everlongn.world.BackgroundManager;
+import com.everlongn.world.WorldContactListener;
 
 public class WorldLoadingState extends State {
     private String currentStage = "Loading...";

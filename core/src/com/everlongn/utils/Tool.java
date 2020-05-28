@@ -10,7 +10,7 @@ import com.everlongn.tiles.Tile;
 
 public class Tool {
     public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density, boolean friction,
-                                    short cBits, short mBits, short gIndex) {
+                                    short cBits, short mBits, short gIndex, Object object) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -23,8 +23,7 @@ public class Tool {
 
         def.position.set(x/Constants.PPM, y/Constants.PPM);
         def.fixedRotation = true;
-        // creates the body and puts it into the world
-        body = GameState.world.createBody(def);
+
         PolygonShape shape = new PolygonShape();
 
         Vector2[] vertices = {new Vector2(width / 2 / Constants.PPM, height / Constants.PPM),
@@ -43,13 +42,15 @@ public class Tool {
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;
         fixtureDef.filter.groupIndex = gIndex;
-        body.createFixture(fixtureDef);
+        // creates the body and puts it into the world
+        body = GameState.world.createBody(def);
+        body.createFixture(fixtureDef).setUserData(object);
         shape.dispose();
         return body;
     }
 
     public static Body createBox(int x, int y, int width, int height, boolean isStatic, float density,
-                                 short cBits, short mBits, short gIndex) {
+                                 short cBits, short mBits, short gIndex, Object object) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -62,8 +63,7 @@ public class Tool {
 
         def.position.set(x/Constants.PPM, y/Constants.PPM);
         def.fixedRotation = true;
-        // creates the body and puts it into the world
-        body = GameState.world.createBody(def);
+
         PolygonShape shape = new PolygonShape();
         //size is taken from the center, size 50 by 50
         shape.setAsBox(width/2/Constants.PPM, height/2/Constants.PPM); // divide PPM to turn into box2D units
@@ -74,13 +74,15 @@ public class Tool {
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;
         fixtureDef.filter.groupIndex = gIndex;
-        body.createFixture(fixtureDef);
+        // creates the body and puts it into the world
+        body = GameState.world.createBody(def);
+        body.createFixture(fixtureDef).setUserData(object);
         shape.dispose();
         return body;
     }
 
     public static Body createDecayTile(int x, int y, int direction,
-                                       short cBits, short mBits, short gIndex) {
+                                       short cBits, short mBits, short gIndex, Object object) {
         Body body;
         // describes the physical properties the body have
         BodyDef def = new BodyDef();
@@ -89,8 +91,7 @@ public class Tool {
 
         def.position.set(x/Constants.PPM, y/Constants.PPM);
         def.fixedRotation = true;
-        // creates the body and puts it into the world
-        body = GameState.world.createBody(def);
+
         PolygonShape shape = new PolygonShape();
 
         Vector2[] verticies;
@@ -112,7 +113,9 @@ public class Tool {
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;
         fixtureDef.filter.groupIndex = gIndex;
-        body.createFixture(fixtureDef);
+        // creates the body and puts it into the world
+        body = GameState.world.createBody(def);
+        body.createFixture(fixtureDef).setUserData(object);
         shape.dispose();
         return body;
     }

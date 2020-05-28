@@ -28,14 +28,15 @@ public class Inventory {
 
     public Inventory(ControlCenter c) {
         this.c = c;
-        addItem(Item.stone.createNew(1));
-        addItem(Item.log.createNew(88));
-        addItem(Item.log.createNew(9));
-        addItem(Item.log.createNew(9));
+//        addItem(Item.stone.createNew(1));
+//        addItem(Item.log.createNew(88));
+//        addItem(Item.log.createNew(9));
+//        addItem(Item.log.createNew(9));
         addItem(Melee.broadSword.createNew(1));
         addItem(Arcane.shadowStaff.createNew(1));
         addItem(Melee.dragondance);
         addItem(Arcane.arcaneCaster);
+        addItem(Arcane.arcaneEruption);
     }
 
     public void tick() {
