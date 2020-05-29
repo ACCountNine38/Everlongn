@@ -81,14 +81,14 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 4
-scaling0: 1.0
-scaling1: 1.0
-scaling2: 1.0
+scaling0: 0.0
+scaling1: 0.5
+scaling2: 0.49438202
 scaling3: 1.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.30136988
-timeline2: 0.6643836
+timeline1: 0.20113853
+timeline2: 0.5294118
 timeline3: 1.0
 - Angle - 
 active: true
@@ -126,13 +126,13 @@ highMax: 1.0
 relative: false
 scalingCount: 4
 scaling0: 0.31578946
-scaling1: 0.6315789
-scaling2: 0.33333334
+scaling1: 0.9122807
+scaling2: 0.6315789
 scaling3: 0.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.21917808
-timeline2: 0.65753424
+timeline1: 0.23287672
+timeline2: 0.6643836
 timeline3: 1.0
 - Options - 
 attached: false
