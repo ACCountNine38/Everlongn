@@ -81,14 +81,14 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 4
-scaling0: 0.0
+scaling0: 0.5
 scaling1: 0.5
-scaling2: 0.49438202
-scaling3: 1.0
+scaling2: 0.5
+scaling3: 2.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.20113853
-timeline2: 0.5294118
+timeline1: 0.10113853
+timeline2: 0.3294118
 timeline3: 1.0
 - Angle - 
 active: true

@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
     public static Texture logSprite, stoneSprite;
-    public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite;
+    public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
+        arcaneRicochetSprite;
 
     public static TextureRegion log, stone;
-    public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR;
+    public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
+            arcaneRicochetL, arcaneRicochetR;
     public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
 
     public static void init() {
@@ -28,6 +30,20 @@ public class Items {
         TextureRegion temp = new TextureRegion(arcaneCasterSprite, 0, 0, arcaneCasterSprite.getWidth(), arcaneCasterSprite.getHeight());
         temp.flip(true, false);
         arcaneCasterL = temp;
+
+        arcaneEruptionSprite = new Texture(Gdx.files.internal("arcane/arcaneEruption.png"), true);
+        arcaneEruptionSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        arcaneEruptionR = new TextureRegion(arcaneEruptionSprite, 0, 0, arcaneEruptionSprite.getWidth(), arcaneEruptionSprite.getHeight());
+        temp = new TextureRegion(arcaneEruptionSprite, 0, 0, arcaneEruptionSprite.getWidth(), arcaneEruptionSprite.getHeight());
+        temp.flip(true, false);
+        arcaneEruptionL = temp;
+
+        arcaneRicochetSprite = new Texture(Gdx.files.internal("arcane/arcaneRicochet.png"), true);
+        arcaneRicochetSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        arcaneRicochetR = new TextureRegion(arcaneRicochetSprite, 0, 0, arcaneRicochetSprite.getWidth(), arcaneRicochetSprite.getHeight());
+        temp = new TextureRegion(arcaneRicochetSprite, 0, 0, arcaneRicochetSprite.getWidth(), arcaneRicochetSprite.getHeight());
+        temp.flip(true, false);
+        arcaneRicochetL = temp;
 
         shadowStaffSprite = new Texture(Gdx.files.internal("arcane/shadowStaff.png"), true);
         shadowStaffSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
