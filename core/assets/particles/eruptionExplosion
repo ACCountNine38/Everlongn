@@ -20,16 +20,16 @@ timeline0: 0.0
 - Life - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 500.0
-highMax: 1000.0
+highMin: 300.0
+highMax: 750.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
-scaling1: 1.0
-scaling2: 0.23529412
+scaling1: 0.39215687
+scaling2: 0.25490198
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.49315068
+timeline1: 0.65068495
 timeline2: 1.0
 independent: false
 - Life Offset - 
@@ -77,18 +77,18 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 30.0
-highMax: 300.0
+highMin: 450.0
+highMax: 450.0
 relative: false
 scalingCount: 4
-scaling0: 0.0
-scaling1: 0.5
-scaling2: 0.49438202
+scaling0: 0.49019608
+scaling1: 0.54901963
+scaling2: 0.627451
 scaling3: 1.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.20113853
-timeline2: 0.5294118
+timeline1: 0.24657534
+timeline2: 0.5890411
 timeline3: 1.0
 - Angle - 
 active: true
