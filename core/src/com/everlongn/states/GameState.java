@@ -165,7 +165,7 @@ public class GameState extends State {
                     20, 100, Color.WHITE, 1, false);
             TextManager.draw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
                     20, 120, Color.WHITE, 1, false);
-            TextManager.draw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall,
+            TextManager.draw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall + "   Can Jump: " + EntityManager.player.canJump,
                     20, 140, Color.WHITE, 1, false);
             TextManager.draw("Aim: " + Player.aimAngle + "   Melee Attack: " + Player.meleeAttack,
                     20, 160, Color.WHITE, 1, false);

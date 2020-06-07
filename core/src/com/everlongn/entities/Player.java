@@ -108,7 +108,6 @@ public class Player extends Creature {
         if(!(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption") &&
                 Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !inventoryHold)) {
             eruptionCharge.getEmitters().get(0).setContinuous(false);
-            eruptionHold = false;
         }
 
         // check arcane light
@@ -134,6 +133,21 @@ public class Player extends Creature {
             if(airbornTimer > 0.25) {
                 airborn = false;
             }
+        }
+
+        // check jump timer
+        if(body.getLinearVelocity().y > previousVelY - 0.01 && body.getLinearVelocity().y < previousVelY + 0.01) {
+            yChangeTimer += Gdx.graphics.getDeltaTime();
+            if (yChangeTimer > 0.1) {
+                fall = false;
+                canJump = true;
+                yChangeTimer = 0;
+            }
+        } else {
+            fall = true;
+            canJump = false;
+            previousVelY = body.getLinearVelocity().y;
+            yChangeTimer = 0;
         }
     }
 

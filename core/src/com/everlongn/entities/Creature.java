@@ -8,7 +8,7 @@ import com.everlongn.utils.Constants;
 import java.util.ArrayList;
 
 public abstract class Creature extends Entity {
-    public float speed, currentSpeed, sightRadius, knockbackResistance;
+    public float speed, currentSpeed, sightRadius, knockbackResistance, yChangeTimer, previousVelY;
     public int direction, damage;
     public boolean canJump, jump, fall, airborn;
 

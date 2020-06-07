@@ -21,18 +21,12 @@ public class Tool {
         def.position.set(x/Constants.PPM, y/Constants.PPM);
         def.fixedRotation = true;
 
-        EdgeShape shape = new EdgeShape();
-        shape.set(0, 0, width, height);
-//        PolygonShape shape = new PolygonShape();
-//
-//        Vector2[] vertices = {new Vector2(0, 0),
-//                new Vector2(0, height/Constants.PPM),
-//                new Vector2(width/Constants.PPM, height/Constants.PPM), new Vector2(width/ Constants.PPM, 0)};
+        PolygonShape shape = new PolygonShape();
 
-//        Vector2[] vertices = {new Vector2(width / 2 / Constants.PPM, height / Constants.PPM),
-//                new Vector2(width / Constants.PPM, height/2/Constants.PPM),
-//                new Vector2(width / 2 / Constants.PPM, 0), new Vector2(0, height/2/Constants.PPM)};
-        //shape.set(vertices);
+        Vector2[] vertices = {new Vector2(width / 2 / Constants.PPM, height / Constants.PPM),
+                new Vector2(width / Constants.PPM, height/2/Constants.PPM),
+                new Vector2(width / 2 / Constants.PPM, 0), new Vector2(0, height/2/Constants.PPM)};
+        shape.set(vertices);
 
         //size is taken from the center, size 50 by 50
         //shape.setAsBox(width/2/Constants.PPM, height/2/Constants.PPM); // divide PPM to turn into box2D units
