@@ -1,5 +1,6 @@
 package com.everlongn.states;
 
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -19,6 +20,8 @@ import com.everlongn.game.ControlCenter;
 import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Chunk;
+import com.everlongn.walls.EarthWall;
+import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
 
@@ -27,16 +30,17 @@ public class WorldLoadingState extends State {
     public GlyphLayout layout = new GlyphLayout();
     public static BitmapFont loadingFont = new BitmapFont(Gdx.files.internal("fonts/chalk22.fnt"));
 
-    public FileHandle file;
+    public FileHandle tilemap, wallmap;
 
     private boolean generated;
     private int currentStep, numSteps;
     private float count;
 
-    public WorldLoadingState(StateManager stateManager, FileHandle file) {
+    public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap) {
         super(stateManager);
 
-        this.file = file;
+        this.tilemap = tilemap;
+        this.wallmap = wallmap;
         currentStep = 0;
         numSteps = 4;
     }
@@ -54,7 +58,7 @@ public class WorldLoadingState extends State {
             initializing();
         } else if (step == 1) {
             currentStage = "Loading Realm...";
-            loadWorld(file);
+            loadWorld(tilemap, wallmap);
         } else if(step == 2) {
             currentStage = "Loading Chunks...";
 
@@ -74,7 +78,7 @@ public class WorldLoadingState extends State {
     }
 
     public void createPlayer() {
-        GameState.entityManager = new EntityManager(c, new Player(c, GameState.spawnX*Tile.TILESIZE, GameState.spawnY*Tile.TILESIZE, 18, 60, 2.5f));
+        GameState.entityManager = new EntityManager(c, new Player(c, GameState.spawnX*Tile.TILESIZE, GameState.spawnY*Tile.TILESIZE, 25, 110, 2.5f));
 
         Vector3 position = ControlCenter.camera.position;
         position.x = GameState.spawnX*Tile.TILESIZE;
@@ -92,17 +96,21 @@ public class WorldLoadingState extends State {
         ControlCenter.camera.update();//397 × 581
     }
 
-    public void loadWorld(FileHandle file) {
-        Pixmap pixmap = new Pixmap(file);
+    public void loadWorld(FileHandle tilemap, FileHandle wallmap) {
+        Pixmap tiles = new Pixmap(tilemap);
+        Pixmap walls = new Pixmap(wallmap);
 
-        GameState.worldWidth = pixmap.getWidth();
-        GameState.worldHeight = pixmap.getHeight();
+        GameState.worldWidth = tiles.getWidth();
+        GameState.worldHeight = tiles.getHeight();
 
         GameState.tiles = new Tile[GameState.worldWidth][GameState.worldHeight];
+        GameState.walls = new Wall[GameState.worldWidth][GameState.worldHeight];
+        GameState.lightmap = new PointLight[GameState.worldWidth][GameState.worldHeight];
 
+        // loading tiles
         for(int y=0; y < GameState.worldHeight; y++){
             for(int x=0; x < GameState.worldWidth; x++){
-                int color = pixmap.getPixel(x, y);
+                int color = tiles.getPixel(x, y);
                 String hexColor = Integer.toHexString(color);
                 int red = color >>> 24;
                 int green = (color & 0xFF0000) >>> 16;
@@ -115,6 +123,22 @@ public class WorldLoadingState extends State {
                 else if(red == 255 && green == 255 && blue == 255) {
                     GameState.spawnX = x;
                     GameState.spawnY = GameState.worldHeight - 1 - y;
+                }
+            }
+        }
+
+        // loading walls
+        for(int y=0; y < GameState.worldHeight; y++){
+            for(int x=0; x < GameState.worldWidth; x++){
+                int color = walls.getPixel(x, y);
+                String hexColor = Integer.toHexString(color);
+                int red = color >>> 24;
+                int green = (color & 0xFF0000) >>> 16;
+                int blue = (color & 0xFF00) >>> 8;
+                int alpha = color & 0xFF;
+
+                if(red == 1 && green == 1 && blue == 1) {
+                    GameState.walls[x][GameState.worldHeight - 1 - y] = new EarthWall(x, GameState.worldHeight - 1 - y);
                 }
             }
         }
@@ -132,6 +156,9 @@ public class WorldLoadingState extends State {
         GameState.world = new World(new Vector2(0, -20f), false);
         GameState.rayHandler = new RayHandler(GameState.world);
         GameState.debug = new Box2DDebugRenderer();
+
+        GameState.rayHandler = new RayHandler(GameState.world);
+        GameState.rayHandler.setAmbientLight(0f);
     }
 
     @Override

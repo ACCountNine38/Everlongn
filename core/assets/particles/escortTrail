@@ -14,7 +14,7 @@ highMin: 350.0
 highMax: 350.0
 relative: false
 scalingCount: 1
-scaling0: 1.0
+scaling0: 0.5
 timelineCount: 1
 timeline0: 0.0
 - Life - 
@@ -81,7 +81,7 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 1
-scaling0: 0.7058824
+scaling0: 0.3058824
 timelineCount: 1
 timeline0: 0.0
 - Angle - 
@@ -121,12 +121,12 @@ relative: false
 scalingCount: 4
 scaling0: 0.0
 scaling1: 1.0
-scaling2: 0.75
+scaling2: 0.55
 scaling3: 0.0
 timelineCount: 4
 timeline0: 0.0
 timeline1: 0.2
-timeline2: 0.8
+timeline2: 0.6
 timeline3: 1.0
 - Options - 
 attached: false

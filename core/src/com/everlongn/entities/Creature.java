@@ -1,5 +1,6 @@
 package com.everlongn.entities;
 
+import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.utils.Constants;
@@ -9,11 +10,15 @@ import java.util.ArrayList;
 public abstract class Creature extends Entity {
     public float speed, currentSpeed, sightRadius, knockbackResistance;
     public int direction, damage;
+    public boolean canJump, jump, fall, airborn;
 
     public Entity target;
     public ArrayList<String> enemyList = new ArrayList<String>();
 
     public Animation[] chase, attack;
+
+    // variable wheel is used for jump detection
+    public Body wheel;
 
     public Creature(ControlCenter c, float x, float y, int width, int height, float density, float speed) {
         super(c, x, y, width, height, density);

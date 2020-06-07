@@ -19,14 +19,14 @@ public class Item {
     //----------miscellaneous item declarations
 
     public static Item log = new Item(Items.log, "wood", 0, true, true,
-            50, 50, 99,"doesn't look very healthy...", 0, 0, null);
+            50, 50, 50, 50, 99,"doesn't look very healthy...", 0, 0, null);
     public static Item stone = new Item(Items.stone, "stone", 1, true, true,
-            50, 50, 99, "looks very durable", 0, 0, null);
+            50, 50, 44, 44, 99, "looks very durable", 0, 0, null);
 
 //new String[]{"miscellaneous"},
     //----------
 
-    public int width, height, id, x, y, count, capacity;
+    public int width, height, id, x, y, count, capacity, itemWidth, itemHeight;
     public long timeDropped;
     public boolean stackable, degeneratable, pickedUp;
     public String name, description;
@@ -50,7 +50,7 @@ public class Item {
     public float refreshSpeed;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
-                int width, int height, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
+                int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
         this.texture = new Sprite(texture);
         this.name = name;
         this.id = id;
@@ -60,6 +60,8 @@ public class Item {
         this.description = description;
         this.width = width;
         this.height = height;
+        this.itemWidth = itemWidth;
+        this.itemHeight = itemHeight;
         this.capacity = capacity;
         this.holdX = holdX;
         this.holdY = holdY;
@@ -83,14 +85,14 @@ public class Item {
     }
 
     public Item createNew(int x, int y) {
-        Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description, holdX, holdY, display);
+        Item i = new Item(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
         body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, this);
         return i;
     }
 
     public Item createNew(int count) {
-        Item i = new Item(texture, name, id, stackable, degeneratable, width, height, capacity, description, holdX, holdY, display);
+        Item i = new Item(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
         i.pickedUp = true;
         i.count = count;
         return i;

@@ -1,16 +1,16 @@
 package com.everlongn.entities;
 
+import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.dream.Scavenger;
-import com.everlongn.entities.projectiles.ArcaneTrail;
-import com.everlongn.entities.projectiles.ArcaneEruption;
-import com.everlongn.entities.projectiles.Shadow;
+import com.everlongn.entities.projectiles.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
@@ -28,19 +28,25 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Player extends Creature {
 
-    public static boolean jump, fall, canJump = true, movingHorizontal, airborn, onhold,
+    public static boolean movingHorizontal, onhold,
             weaponActive = true, meleeAttack, meleeRecharge, halt;
 
-    //private PointLight light;
-    private int direction = 1;
-    private boolean cameraXStopped, fallUpdate, armSwingUp = true;
-    private float airbornTime, fallUpdateTimer, currentSpeed, targetAngle;
-    public static float aimAngle, haltForce, shootAngle, cdr;
-    public static float armRotationRight, armRotationLeft = 15;
-    /*
-      0 - left
-      1 - right
-    */
+    private int direction = 1; // 0 - left, 1- right
+
+    private boolean cameraXStopped, armSwingUp = true;
+
+    // global item related variables
+    public static boolean inCombat, inventoryHold;
+
+    // special item related variables
+    private boolean eruptionHold;
+    public static Queue<Shadow> shadows = new LinkedList<Shadow>();
+    public PointLight arcaneLight;
+    public boolean casted;
+    public float arcaneLightSize, maxLightRadius;
+
+    // animation variables ------
+    private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
 
     private Animation[] legsRun = new Animation[2];
     private Animation[] legsJump = new Animation[2];
@@ -48,13 +54,17 @@ public class Player extends Creature {
     private Animation[] headRun = new Animation[2];
     private Animation[] chestRun = new Animation[2];
 
+    private float currentSpeed, targetAngle;
+    public static float aimAngle, haltForce, shootAngle, cdr, camX, camY;
+    public static float armRotationRight, armRotationLeft = 15;
+
     public static int currentChunkX, currentChunkY, horizontalForce;
 
-    public static Queue<Shadow> shadows = new LinkedList<Shadow>();
+    private ParticleEffect smoke, eruptionCharge;
+    public static float forceCharge, forceMax, airbornTimer;
 
-    private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
-
-    private ParticleEffect smoke;
+    // Testing variables
+    public PointLight testLight;
 
     public Player(ControlCenter c, float x, float y, int width, int height, float density) {
         super(c, x, y, width, height, density, 5);
@@ -64,9 +74,6 @@ public class Player extends Creature {
         this.height = height;
 
         type.add("player");
-//        light = new PointLight(GameState.rayHandler, 100, Color.WHITE, 250/PPM,
-//                body.getPosition().x,
-//                body.getPosition().y);
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
         legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
@@ -85,45 +92,86 @@ public class Player extends Creature {
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
                 Constants.BIT_PLAYER, (short)(Constants.BIT_ENEMY | Constants.BIT_TILE), (short)0, this);
+
+        eruptionCharge = new ParticleEffect();
+        eruptionCharge.load(Gdx.files.internal("particles/eruptionHold"), Gdx.files.internal(""));
+        eruptionCharge.getEmitters().get(0).setContinuous(false);
+        testLight = new PointLight(GameState.rayHandler, 400, Color.BLACK, 0,
+                body.getPosition().x * Constants.PPM,
+                body.getPosition().y * Constants.PPM + 60);
+        arcaneLight = new PointLight(GameState.rayHandler, 400, new Color(0.05f, 0.05f, 0.05f, 1), 0,
+                body.getPosition().x * Constants.PPM,
+                body.getPosition().y * Constants.PPM + 80);
+    }
+
+    public void checkSpecialCase() {
+        if(!(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption") &&
+                Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !inventoryHold)) {
+            eruptionCharge.getEmitters().get(0).setContinuous(false);
+            eruptionHold = false;
+        }
+
+        // check arcane light
+        if(casted || eruptionHold) {
+            arcaneLightSize += 20;
+            if(arcaneLightSize >= maxLightRadius) {
+                arcaneLightSize = maxLightRadius;
+                casted = false;
+            }
+        } else {
+            arcaneLightSize -= 20;
+            if(arcaneLightSize <= 0) {
+                arcaneLightSize = 0;
+            }
+        }
+        if(arcaneLightSize > 0) {
+            arcaneLight.setDistance(arcaneLightSize);
+        }
+
+        // airborn check
+        if(airborn) {
+            airbornTimer += Gdx.graphics.getDeltaTime();
+            if(airbornTimer > 0.25) {
+                airborn = false;
+            }
+        }
     }
 
     @Override
     public void tick() {
+        checkSpecialCase();
+
+        testLight.setPosition(body.getPosition().x * Constants.PPM,
+                body.getPosition().y * Constants.PPM);
+
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
-//        light.setPosition(body.getPosition().x,
-//                body.getPosition().y);
         cameraUpdate();
         inputUpdate();
         animationUpdate();
 
-        if(body.getLinearVelocity().y <= 0 && airbornTime > 0.01 && !fall && jump) {
+        if(body.getLinearVelocity().y <= 0 && jump && !airborn) {
             fall = true;
             jump = false;
-            fallUpdateTimer = 0;
-            fallUpdate = true;
         }
 
-        if(fallUpdate) {
-            fallUpdateTimer += Gdx.graphics.getDeltaTime();
+        if(body.getLinearVelocity().y > 30) {
+            body.setLinearVelocity(body.getLinearVelocity().x, 0);
         }
 
-        if(fall && body.getLinearVelocity().y > -0.5f && fallUpdateTimer > 0.3f) {
-            fall = false;
-            fallUpdate = false;
+        if(body.getLinearVelocity().y < -30) {
+            body.setLinearVelocity(body.getLinearVelocity().x, -30);
         }
 
-        if(jump && !Gdx.input.isKeyPressed(Input.Keys.W)) {
+        if(jump && !Gdx.input.isKeyPressed(Input.Keys.W) && body.getLinearVelocity().y > 0) {
             body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y/1.15f);
         }
 
-        if(!canJump) {
-            airbornTime += Gdx.graphics.getDeltaTime();
-            if(airbornTime >= 0.5) {
-                canJump = true;
-            }
+        if(Gdx.input.isKeyPressed(Input.Keys.L)) {
+            GameState.lightsOn = !GameState.lightsOn;
         }
+
         checkItemOnHold();
     }
 
@@ -152,6 +200,15 @@ public class Player extends Creature {
             headRun[0].tick(Gdx.graphics.getDeltaTime());
             headRun[1].tick(Gdx.graphics.getDeltaTime());
         }
+
+        if(eruptionHold)
+            eruptionCharge.update(Gdx.graphics.getDeltaTime());
+        else {
+            if(!eruptionCharge.isComplete()) {
+                eruptionCharge.update(Gdx.graphics.getDeltaTime());
+            }
+        }
+
     }
 
     public void checkItemOnHold() {
@@ -164,9 +221,18 @@ public class Player extends Creature {
             onhold = false;
         }
 
+        if((inCombat && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) || inventoryHold) {
+            inCombat = false;
+        }
+
+        if(inventoryHold) {
+            return;
+        }
+
         if(Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack) {
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack) {
                 meleeAttack = true;
+                inCombat = true;
                 targetAngle = 155;
                 if (aimAngle < 155)
                     armSwingUp = true;
@@ -177,7 +243,17 @@ public class Player extends Creature {
             checkMeleeCombat();
         } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
             meleeAttack = false;
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                inCombat = true;
+            }
             checkArcaneCombat();
+        }
+
+        if(eruptionHold && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            eruptionHold = false;
+            eruptionCharge.getEmitters().get(0).setContinuous(false);
+            forceCharge = 0;
+            cdr = 0;
         }
     }
 
@@ -419,12 +495,25 @@ public class Player extends Creature {
             }
         }
 
-        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Caster")) {
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Caster")) {
+            maxLightRadius = 400;
+            if(direction == 0) {
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+                arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
+                        body.getPosition().y * PPM + 46 + 23 + yAim);
+            } else {
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+                arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
+                        (body.getPosition().y * PPM + 46 + 23) + yAim);
+            }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 cdr += Gdx.graphics.getDeltaTime();
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     cdr = 0;
+                    casted = true;
 
                     if (direction == 0) {
                         float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
@@ -441,7 +530,8 @@ public class Player extends Creature {
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle + (float)Math.PI/15);
+
                         EntityManager.entities.add(arcaneTrail);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -458,20 +548,124 @@ public class Player extends Creature {
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle - (float)Math.PI/15);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
             }
         }
 
-        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Arcane Eruption")) {
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption")) {
+            maxLightRadius = 800;
+            forceMax = 100;
+            if(direction == 0) {
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+                arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
+                        body.getPosition().y * PPM + 46 + 23 + yAim);
+            } else {
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+                arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
+                        (body.getPosition().y * PPM + 46 + 23) + yAim);
+            }
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                if(forceCharge < forceMax) {
+                    forceCharge += 0.5;
+                }
+                cdr += Gdx.graphics.getDeltaTime();
+
+                eruptionHold = true;
+                if(eruptionCharge.isComplete()) {
+                    eruptionCharge.getEmitters().get(0).setContinuous(true);
+                    eruptionCharge.start();
+                }
+
+                float xAim, yAim;
+
+                if(direction == 0) {
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (76);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
+                    eruptionCharge.getEmitters().first().setPosition(
+                            body.getPosition().x * PPM + width / 2 + xAim,
+                            body.getPosition().y * PPM + 69 + yAim);
+                } else {
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (76);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-76);
+                    eruptionCharge.getEmitters().first().setPosition(
+                            body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim);
+                }
+
+            } else {
+                if(eruptionHold) {
+                    if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                        cdr = 0;
+
+                        if (direction == 0) {
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180 - 30)) * (76);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180 - 30)) * (-76);
+
+                            // shoot angle is in radians
+                            if (Gdx.input.getX() <= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            } else {
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            }
+                            ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                                    body.getPosition().x * PPM + width / 2 + xAim,
+                                    body.getPosition().y * PPM + 69 + yAim,
+                                    10, direction, shootAngle,
+                                    (float)Math.sin(shootAngle + Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/30)*forceCharge);
+                            EntityManager.entities.add(arcaneTrail);
+                        } else {
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 30)) * (76);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 30)) * (-76);
+
+                            // shoot angle is in radians
+                            if (Gdx.input.getX() >= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            } else {
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            }
+                            ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                                    body.getPosition().x * PPM + width / 2 + xAim,
+                                    69 + body.getPosition().y * PPM + yAim,
+                                    10, direction, shootAngle,
+                                    (float)Math.sin(shootAngle - Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/30)*forceCharge);
+                            EntityManager.entities.add(arcaneTrail);
+                        }
+                    }
+                }
+                eruptionHold = false;
+                forceCharge = 0;
+                cdr = 0;
+                eruptionCharge.getEmitters().get(0).setContinuous(false);
+            }
+        }
+
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rebound")) {
+            maxLightRadius = 600;
+            if(direction == 0) {
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+                arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
+                        body.getPosition().y * PPM + 46 + 23 + yAim);
+            } else {
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+                arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
+                        (body.getPosition().y * PPM + 46 + 23) + yAim);
+            }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 cdr += Gdx.graphics.getDeltaTime();
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     cdr = 0;
-
+                    casted = true;
                     if (direction == 0) {
                         float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
@@ -484,12 +678,11 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                        ArcaneRebound arcaneRebound = new ArcaneRebound(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                10, direction, shootAngle,
-                                (float)Math.sin(shootAngle)*75, -(float)Math.cos(shootAngle)*75);
-                        EntityManager.entities.add(arcaneTrail);
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneRebound);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
@@ -502,15 +695,79 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneEruption arcaneTrail = new ArcaneEruption(c,
+                        ArcaneRebound arcaneRebound = new ArcaneRebound(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                10, direction, shootAngle,
-                                (float)Math.sin(shootAngle)*75, -(float)Math.cos(shootAngle)*75);
-                        EntityManager.entities.add(arcaneTrail);
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneRebound);
                     }
                 }
             }
+        }
+
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Escort") && ArcaneEscort.numEscort <= 15) {
+            maxLightRadius = 300;
+            if(direction == 0) {
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+                arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
+                        body.getPosition().y * PPM + 46 + 23 + yAim);
+            } else {
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+                arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
+                        (body.getPosition().y * PPM + 46 + 23) + yAim);
+            }
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                cdr += Gdx.graphics.getDeltaTime();
+
+                if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    cdr = 0;
+                    casted = true;
+                    if (direction == 0) {
+                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneEscort arcaneEscort = new ArcaneEscort(c,
+                                body.getPosition().x * PPM + width / 2 + xAim,
+                                body.getPosition().y * PPM + 46 + 23 + yAim,
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneEscort);
+                    } else {
+                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneEscort arcaneEscort = new ArcaneEscort(c,
+                                (body.getPosition().x * PPM + width / 2) + xAim,
+                                (body.getPosition().y * PPM + 46 + 23) + yAim,
+                                1, direction, shootAngle);
+                        EntityManager.entities.add(arcaneEscort);
+                    }
+                }
+            }
+        }
+
+        else {
+            eruptionHold = false;
+            eruptionCharge.getEmitters().get(0).setContinuous(false);
+            forceCharge = 0;
+            cdr = 0;
         }
     }
 
@@ -549,20 +806,18 @@ public class Player extends Creature {
                 currentSpeed = 0;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && (Math.abs(body.getLinearVelocity().y) < 0.334 ||
-                (body.getLinearVelocity().y > speed - 0.44 && body.getLinearVelocity().y < speed - 0.3))) {
-            body.applyForceToCenter(0, 300/(body.getLinearVelocity().y/8 + 1), false);
+        // jump
+        if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
+            body.applyForceToCenter(0, 800/(body.getLinearVelocity().y/10 + 1), false);
             jump = true;
+            fall = false;
             canJump = false;
-            airbornTime = 0;
             airborn = true;
 
             legsJump[0].currentIndex = 0;
             legsJump[1].currentIndex = 0;
             legsRun[0].currentIndex = 0;
             legsRun[1].currentIndex = 0;
-//            legsJump[0] = new Animation<>(1f/50f, Entities.legJump[0]);
-//            legsJump[1] = new Animation<>(1f/50f, Entities.legJump[1]);
         }
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -596,8 +851,10 @@ public class Player extends Creature {
 
     public void cameraUpdate() {
         Vector3 position = ControlCenter.camera.position;
-        position.x = ControlCenter.camera.position.x + (body.getPosition().x * PPM - ControlCenter.camera.position.x)*.1f;
-        position.y = ControlCenter.camera.position.y + (body.getPosition().y * PPM - ControlCenter.camera.position.y + Tile.TILESIZE/2*3)*.1f;
+        camX = ControlCenter.camera.position.x + (body.getPosition().x * PPM - ControlCenter.camera.position.x)*.1f;
+        camY = ControlCenter.camera.position.y + (body.getPosition().y * PPM - ControlCenter.camera.position.y + Tile.TILESIZE/2*3)*.1f;
+        position.x = camX;
+        position.y = camY;
 
         if(position.x - ControlCenter.width/2 < 0) {
             position.x = ControlCenter.width/2;
@@ -620,8 +877,20 @@ public class Player extends Creature {
         ControlCenter.camera.update();
     }
 
+    public static Vector3 mouseWorldPos() {
+        return ControlCenter.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    }
+
     public void render(SpriteBatch batch) {
         batch.begin();
+
+        if(eruptionHold)
+            eruptionCharge.draw(batch);
+        else {
+            if(!eruptionCharge.isComplete()) {
+                eruptionCharge.draw(batch);
+            }
+        }
 
         if(horizontalForce != 0) {
             if(jump || fall) {

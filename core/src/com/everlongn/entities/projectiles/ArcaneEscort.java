@@ -2,76 +2,131 @@ package com.everlongn.entities.projectiles;
 
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.Projectile;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Inventory;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
-public class ArcaneTrail extends Projectile {
+public class ArcaneEscort extends Projectile {
     public ParticleEffect movingParticle, explosion;
     public int direction;
     public static float maxLife = 8;
+    public static int numEscort = 0;
 
-    public float life, angle;
+    public float life, angle, currentAngle, angleUpdate;
+    public boolean reached, canRotate = true;
+    public int numRotations = 0;
 
-    public ArcaneTrail(ControlCenter c, float x, float y, float density, int direction, float angle) {
+    public ArcaneEscort(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
-                (short)Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
+                (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
-        float newAngle = (float)(angle - Math.PI/14 + Math.random()*(Math.PI/7));
-        float xMove = Math.abs((float)Math.sin(newAngle)*(12.5f));
-        if(direction == 0) {
-            speedX = -xMove;
-        } else {
-            speedX = xMove;
-        }
-        speedY = -(float)Math.cos(newAngle)*(12.5f);
+        currentAngle = angle;
 
         movingParticle = new ParticleEffect();
-        movingParticle.load(Gdx.files.internal("particles/arcaneTrail"), Gdx.files.internal(""));
+        movingParticle.load(Gdx.files.internal("particles/escortTrail"), Gdx.files.internal(""));
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-        movingParticle.getEmitters().add(new ParticleEmitterBox2D(GameState.world,movingParticle.getEmitters().first()));
-        movingParticle.getEmitters().removeIndex(0);
         movingParticle.start();
 
         explosion = new ParticleEffect();
-        explosion.load(Gdx.files.internal("particles/trailExplosion"), Gdx.files.internal(""));
+        explosion.load(Gdx.files.internal("particles/escortExplosion"), Gdx.files.internal(""));
         explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
 
-        maxMovingRadius = 200;
-        maxExplodingRadius = 300;
+        float mouseX = (Player.mouseWorldPos().x)/Constants.PPM;
+        float mouseY = (Player.mouseWorldPos().y)/Constants.PPM;
+
+        float aimAngle = (float)Math.atan2(mouseX - body.getPosition().x,
+                mouseY - body.getPosition().y);
+
+        currentAngle = aimAngle;
+
+        speedX = (float) Math.sin(aimAngle) * (10f);
+        speedY = (float) Math.cos(aimAngle) * (10f);
+
+        maxMovingRadius = 250;
+        maxExplodingRadius = 350;
+
         light = new PointLight(GameState.rayHandler, 300, new Color(Color.BLACK), 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);
+        numEscort++;
     }
 
     @Override
     public void tick() {
+        if(body.getLinearVelocity().x < -1) {
+            direction = 0;
+        } else if(body.getLinearVelocity().x > 1) {
+            direction = 1;
+        }
         if(!lifeOut) {
-            moveByVelocityX();
-            moveByVelocityY();
-            currentRadius+=15;
+            currentRadius+=10;
             if(currentRadius > maxMovingRadius)
                 currentRadius = maxMovingRadius;
             light.setDistance(currentRadius);
             light.setPosition(body.getPosition().x * Constants.PPM,
                     body.getPosition().y * Constants.PPM);
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) &&
+                    Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].name.equals("Escort")) {
+                life = 0;
+
+                float mouseX = (Player.mouseWorldPos().x)/Constants.PPM;
+                float mouseY = (Player.mouseWorldPos().y)/Constants.PPM;
+
+                double aimAngle = Math.atan2(mouseX - body.getPosition().x,
+                        mouseY - body.getPosition().y);
+
+                if(body.getPosition().x > mouseX - 4/Constants.PPM && body.getPosition().x < mouseX + 4/Constants.PPM &&
+                        body.getPosition().y > mouseY - 4/Constants.PPM && body.getPosition().y < mouseY + 4/Constants.PPM) {
+                    reached = true;
+                    if(canRotate) {
+                        numRotations++;
+                        canRotate = false;
+                    }
+                }
+                if(!reached) {
+                    currentAngle = (float) aimAngle;
+
+                    speedX = (float) Math.sin(currentAngle) * (10f);
+                    speedY = (float) Math.cos(currentAngle) * (10f);
+
+                    canRotate = true;
+                } else {
+                    speedX = (float) Math.sin(currentAngle + (numRotations-1)*Math.PI/10) * (10f);
+                    speedY = (float) Math.cos(currentAngle + (numRotations-1)*Math.PI/10) * (10f);
+                    angleUpdate += Gdx.graphics.getDeltaTime();
+                    if(angleUpdate > 0.2) {
+                        reached = false;
+                        angleUpdate = 0;
+                    }
+                }
+            } else {
+                life += Gdx.graphics.getDeltaTime();
+                if(life > maxLife && !lifeOut) {
+                    finish();
+                }
+            }
+
+            moveByVelocityX();
+            moveByVelocityY();
+
         } else {
             body.setLinearVelocity(0, 0);
+
             if(maxReached) {
                 currentRadius -= 25;
                 if (currentRadius <= 0)
@@ -83,9 +138,11 @@ public class ArcaneTrail extends Projectile {
                     maxReached = true;
                 }
             }
+
             light.setDistance(currentRadius);
             light.setPosition(body.getPosition().x * Constants.PPM,
                     body.getPosition().y * Constants.PPM);
+
             if(!exploded) {
                 explosionTimer += Gdx.graphics.getDeltaTime();
                 if(explosionTimer > 0.01) {
@@ -95,15 +152,10 @@ public class ArcaneTrail extends Projectile {
             }
         }
 
-        life += Gdx.graphics.getDeltaTime();
-        if(life > maxLife && !lifeOut) {
-            finish();
-        }
-
-        if(lifeOut && explosion.isComplete() && movingParticle.isComplete() && currentRadius <= 0) {
+        if(lifeOut && explosion.isComplete() && movingParticle.isComplete()) {
             GameState.world.destroyBody(body);
-            explosion.dispose();
             movingParticle.dispose();
+            explosion.dispose();
             light.remove();
             active = false;
         }
@@ -125,7 +177,7 @@ public class ArcaneTrail extends Projectile {
 
                     c.stunned = true;
 
-                    float force = 500 + (float)Math.random()*100;
+                    float force = 120;
                     float angle = (float)(Math.random()*(Math.PI/4));
                     if(direction == 0) {
                         c.body.applyForceToCenter(
@@ -156,5 +208,6 @@ public class ArcaneTrail extends Projectile {
         lifeOut = true;
         movingParticle.getEmitters().get(0).setContinuous(false);
         explosion.start();
+        numEscort--;
     }
 }

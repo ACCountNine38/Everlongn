@@ -1,39 +1,39 @@
-package com.everlongn.tiles;
+package com.everlongn.walls;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.states.GameState;
-import com.everlongn.utils.Tool;
+import com.everlongn.tiles.EarthTile;
+import com.everlongn.tiles.Tile;
 
-public abstract class Tile {
+public class Wall {
     public static int TILESIZE = 50;
 
-    public int x, y;
+    public int x, y, id;
     public TextureRegion texture;
-    public int id;
-    public boolean solid, soft;
+    public boolean solid;
 
-    public Body body;
+    public Rectangle bounds;
 
     // adjacency test variables
     public int numAdjacent = 0;
     public boolean left, right, up, down = false;
     public TextureRegion currentTexture;
 
-    public Tile(TextureRegion texture, int x, int y, int id, boolean solid, boolean soft) {
+    public Wall(TextureRegion texture, int x, int y, int id) {
         this.texture = texture;
         this.id = id;
+        this.solid = solid;
         this.x = x;
         this.y = y;
-        this.solid = solid;
-        this.soft = soft;
     }
 
-    public static Tile createNew(int x, int y, int id) {
-        if(id == 1)
-            return new EarthTile(x, y);
+    public static Wall createNew(int x, int y, int id) {
+        if (id == 1)
+            return new EarthWall(x, y);
 
         return null;
     }
@@ -44,7 +44,7 @@ public abstract class Tile {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-        batch.draw(texture, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
+        batch.draw(texture, x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, Tile.TILESIZE, Tile.TILESIZE);
         batch.end();
     }
 
@@ -55,32 +55,21 @@ public abstract class Tile {
         up = false;
         down = false;
 
-        if(x-1 >= 0 && GameState.tiles[x-1][y] != null) {
+        if(x-1 >= 0 && GameState.walls[x-1][y] != null) {
             left = true;
             numAdjacent++;
         }
-        if(x+1 < GameState.worldWidth && GameState.tiles[x+1][y] != null) {
+        if(x+1 < GameState.worldWidth && GameState.walls[x+1][y] != null) {
             right = true;
             numAdjacent++;
         }
-        if(y-1 >= 0 && GameState.tiles[x][y-1] != null) {
+        if(y-1 >= 0 && GameState.walls[x][y-1] != null) {
             down = true;
             numAdjacent++;
         }
-        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] != null) {
+        if(y+1 < GameState.worldHeight && GameState.walls[x][y+1] != null) {
             up = true;
             numAdjacent++;
         }
-    }
-
-    public Body getBody() {
-        if(body == null)
-            return null;
-        else
-            return body;
-    }
-
-    public void setBody(Body body) {
-        this.body = body;
     }
 }

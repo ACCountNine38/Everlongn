@@ -1,24 +1,28 @@
 package com.everlongn.states;
 
+import box2dLight.DirectionalLight;
+import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
-import com.everlongn.entities.dream.Scavenger;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
-import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
+import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
+
+import java.util.ArrayList;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -26,13 +30,14 @@ public class GameState extends State {
 
     public static Box2DDebugRenderer debug;
     public static EntityManager entityManager;
+    public static World world;
+    public static RayHandler rayHandler;
     public static Tile[][] tiles;
+    public static Wall[][] walls;
+    public static PointLight[][] lightmap;
 
     public static int spawnX, spawnY, xStart, xEnd, yStart, yEnd;
     public static int worldWidth, worldHeight;
-
-    public static World world;
-    public static RayHandler rayHandler;
 
     public static boolean frameSkip = true;
     public static OrthographicCamera hud, parallexBackground;
@@ -48,12 +53,14 @@ public class GameState extends State {
     public static Chunk[][] chunks;
     ///////////////////
 
+    // debug //
+    public static boolean lightsOn = true;
+    ///////////////////
+
     public GameState(StateManager stateManager) {
         super(stateManager);
 
         TextManager.bfont = new BitmapFont(Gdx.files.internal("fonts/chalk14.fnt"));
-
-        rayHandler.setAmbientLight(.2f);
 
         inventory = new Inventory(c);
         background = new BackgroundManager();
@@ -71,6 +78,8 @@ public class GameState extends State {
         entityManager.tick();
         batch.setProjectionMatrix(camera.combined);
         rayHandler.setCombinedMatrix(camera);
+        rayHandler.setBlurNum(3);
+        rayHandler.setShadows(true);
     }
 
     public void updateTiles() {
@@ -110,6 +119,10 @@ public class GameState extends State {
                             for(int y = j*chunkSize; y < j*chunkSize + chunkSize; y++) {
                                 if(tiles[x][y] != null) {
                                     world.destroyBody(tiles[x][y].getBody());
+                                } else {
+                                    if(lightmap[x][y] != null) {
+                                        lightmap[x][y] = null;
+                                    }
                                 }
                             }
                         }
@@ -123,18 +136,23 @@ public class GameState extends State {
         Gdx.gl.glClearColor(.82f, .82f, .83f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        //rayHandler.updateAndRender();
+
         batch.setProjectionMatrix(parallexBackground.combined);
         background.render(batch);
 
         batch.setProjectionMatrix(ControlCenter.camera.combined);
-        entityManager.render(batch);
 
+        renderWalls(batch);
+        entityManager.render(batch);
         renderTiles(batch);
+
+        if(lightsOn)
+            rayHandler.render();
 
         batch.setProjectionMatrix(hud.combined);
         inventory.render(batch);
         batch.begin();
+
         if(ControlCenter.DEBUG) {
             TextManager.draw("FPS: " + Gdx.graphics.getFramesPerSecond(),
                     20, 40, Color.WHITE, 1, false);
@@ -147,12 +165,18 @@ public class GameState extends State {
                     20, 100, Color.WHITE, 1, false);
             TextManager.draw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
                     20, 120, Color.WHITE, 1, false);
-            TextManager.draw("Jump: " + Player.jump + "   Fall: " + Player.fall,
+            TextManager.draw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall,
                     20, 140, Color.WHITE, 1, false);
             TextManager.draw("Aim: " + Player.aimAngle + "   Melee Attack: " + Player.meleeAttack,
                     20, 160, Color.WHITE, 1, false);
             TextManager.draw("Halt: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
                     20, 180, Color.WHITE, 1, false);
+            TextManager.draw("Inventory Hold: " + Player.inventoryHold + "   In Combat: " + Player.inCombat,
+                    20, 200, Color.WHITE, 1, false);
+        }
+
+        if(Player.forceCharge > 0) {
+            batch.draw(Tiles.blackTile, Gdx.input.getX() - 50 + 8, ControlCenter.height-Gdx.input.getY() - 30, Player.forceCharge/Player.forceMax * 100, 10);
         }
 
         if(screenTransitionAlpha > 0) {
@@ -172,6 +196,23 @@ public class GameState extends State {
             for (int x = xStart; x < xEnd; x++) {
                 if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null)
                     tiles[x][y].render(batch);
+
+                if (lightmap[x][y] == null && tiles[x][y] == null) {
+                    if (walls[x][y] == null) {
+                        lightmap[x][y] = new PointLight(rayHandler, 100, Color.BLACK, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
+                    } else if(walls[x][y].numAdjacent != 4) {
+                        lightmap[x][y] = new PointLight(rayHandler, 100, Color.BLACK, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
+                    }
+                }
+            }
+        }
+    }
+
+    public void renderWalls(SpriteBatch batch) {
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && walls[x][y] != null)
+                    walls[x][y].render(batch);
             }
         }
     }

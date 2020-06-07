@@ -17,6 +17,8 @@ import com.everlongn.utils.ImageLabel;
 import com.everlongn.utils.TextButton;
 import com.everlongn.utils.WorldSelectButton;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class WorldSelectionState extends State  implements InputProcessor {
@@ -72,14 +74,22 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 String read = entry.readString();
                 String[] data = read.split("\n");
 
+                boolean hardcore = false;
                 if(data[4].equals("Hardcore")) {
-                    worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
-                            data[0], data[1], data[2], Integer.parseInt(data[3]), true, data[5], Gdx.files.external("everlongn/worlds/" + data[0] + ".png")));
-                } else {
-                    worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
-                            data[0], data[1], data[2], Integer.parseInt(data[3]), false, data[5], Gdx.files.external("everlongn/worlds/" + data[0] + ".png")));
+                    hardcore = true;
                 }
-                numWorlds++;
+
+                FileHandle tilemap = Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png");
+                FileHandle wallMap = Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png");
+
+                if(tilemap.exists() && wallMap.exists()) {
+                    worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
+                            data[0], data[1], data[2], Integer.parseInt(data[3]), hardcore, data[5],
+                            Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png"),
+                            Gdx.files.external("everlongn/realms/" + data[0] + "/wall.png")));
+
+                    numWorlds++;
+                }
             }
         }
     }
@@ -94,7 +104,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 if(StateManager.states.size() >= 1) {
                     StateManager.states.pop().dispose();
                 }
-                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).file));
+                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap));
             }
             return;
         }

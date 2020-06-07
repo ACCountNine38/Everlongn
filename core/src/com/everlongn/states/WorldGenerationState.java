@@ -23,8 +23,9 @@ public class WorldGenerationState extends State {
     private int horizon, underground, chunkSize, worldWidth, worldHeight, spawnX, spawnY, seed, numSteps, currentStep;
     private String name, size, difficulty, mode, currentStage = "Setting Up...";
 
-    private Pixmap caveMap, pixmap;
+    private Pixmap caveMap, tileMap, wallMap;
     private ArrayList<Integer> elevation;
+    private ArrayList<String> biomes;
 
     private int currentElevation, caveInstance;
     private float count;
@@ -45,13 +46,12 @@ public class WorldGenerationState extends State {
     @Override
     public void tick(float delta) {
         updateLayers(delta);
-
         if(!generated) {
             generate(currentStep);
         } else {
             currentStage = "Complete...";
             count += delta;
-            if(count >= 0.5) { // 2 seconds
+            if(count >= 0.5) {
                 stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
             }
         }
@@ -63,17 +63,18 @@ public class WorldGenerationState extends State {
             r.setSeed(seed);
 
             elevation = new ArrayList<Integer>();
+            biomes = new ArrayList<String>();
 
-            chunkSize = 25;
+            chunkSize = 50;
             if(size.equals("Small")) {
                 worldWidth = 1500;
-                worldHeight = 300;
+                worldHeight = 400;
             } else if(size.equals("Medium")) {
                 worldWidth = 2000;
-                worldHeight = 400;
+                worldHeight = 500;
             } else if(size.equals("Large")) {
                 worldWidth = 3000;
-                worldHeight = 500;
+                worldHeight = 600;
             }
 
             horizon = worldHeight/4;
@@ -81,11 +82,20 @@ public class WorldGenerationState extends State {
             currentElevation = horizon;
 
             for(int i = 0; i < worldWidth/chunkSize; i++) {
-                elevation.add(r.nextInt(38) - 20);
+                if(r.nextInt(10) < 2 && i != 0 && i != elevation.size()-1) {
+                    elevation.add(-(r.nextInt(25) + 15));
+                    biomes.add("mountain");
+                } else {
+                    elevation.add(4 - r.nextInt(9));
+                    biomes.add("plain");
+                }
             }
 
-            pixmap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
-            pixmap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
+            tileMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+            tileMap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
+
+            wallMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+            wallMap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
 
             // perlin noise generation
             caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 200, 5);
@@ -93,104 +103,112 @@ public class WorldGenerationState extends State {
         }
 
         else if(step == 2) {
-            currentStage = "Generating Realm...";
+            currentStage = "Generating Terrain...";
             for(int i = 0; i < worldWidth/chunkSize; i++) {
-                for(int j = 0; j < chunkSize; j++) {
-                    boolean drawn = false;
-                    if(currentElevation < elevation.get(i) + horizon) {
-                        if(currentElevation < elevation.get(i) + horizon) {
-                            currentElevation += r.nextInt(4);
-
-                            if(currentElevation > elevation.get(i) + horizon) {
-                                currentElevation = elevation.get(i) + horizon;
+                if(biomes.get(i).equals("mountain")) {
+                    int transition = 4;
+                    int adjusting = 0;
+                    int peekIndex = 0;
+                    int[] heights = new int[chunkSize];
+                    boolean isAdjusting = false;
+                    boolean reachedTop = false;
+                    for(int j = 0; j < chunkSize; j++) {
+                        boolean drawn = false;
+                        if(transition > 0) {
+                            if(!reachedTop) {
+                                transition--;
+                                // generating upwards
+                                if(r.nextInt(3) == 0)
+                                    currentElevation--;
                             }
-                            drawn = true;
-                            for(int h = currentElevation; h < worldHeight; h++) {
-                                if(h < underground) {
-                                    pixmap.drawPixel(i * chunkSize + j, h);
-                                } else {
-                                    int color = caveMap.getPixel(i * chunkSize + j, h);
-
-                                    int red = color >>> 24;
-                                    int green = (color & 0xFF0000) >>> 16;
-                                    int blue = (color & 0xFF00) >>> 8;
-                                    int alpha = color & 0xFF;
-
-                                    if (red < caveInstance && green < caveInstance && blue < caveInstance) {
-                                        pixmap.drawPixel(i * chunkSize + j, h);
-                                    }
+                        } else {
+                            if(adjusting > 0) {
+                                if (!reachedTop) {
+                                    adjusting--;
+                                    if(r.nextInt(3) == 0)
+                                        currentElevation--;
                                 }
-                            }
-                            if(i*chunkSize + j == worldWidth/2) {
-                                spawnX = i*chunkSize + j;
-                                spawnY = currentElevation - 1;
-                            }
-                        }
-                    } else if(currentElevation > elevation.get(i) + horizon) {
-                        if(currentElevation > elevation.get(i) + horizon) {
-                            currentElevation -= r.nextInt(4);
-
-                            if(currentElevation < elevation.get(i) + horizon) {
-                                currentElevation = elevation.get(i) + horizon;
-                            }
-                            drawn = true;
-                            for(int h = currentElevation; h < worldHeight; h++) {
-                                if(h < underground) {
-                                    pixmap.drawPixel(i * chunkSize + j, h);
-                                } else {
-                                    int color = caveMap.getPixel(i * chunkSize + j, h);
-
-                                    int red = color >>> 24;
-                                    int green = (color & 0xFF0000) >>> 16;
-                                    int blue = (color & 0xFF00) >>> 8;
-                                    int alpha = color & 0xFF;
-
-                                    if (red < caveInstance && green < caveInstance && blue < caveInstance) {
-                                        pixmap.drawPixel(i * chunkSize + j, h);
-                                    }
-                                }
-                            }
-                            if(i*chunkSize + j == worldWidth/2) {
-                                spawnX = i*chunkSize + j;
-                                spawnY = currentElevation - 1;
-                            }
-                        }
-                    }
-
-                    if(!drawn) {
-                        for(int h = currentElevation; h < worldHeight; h++) {
-                            if(h < underground) {
-                                pixmap.drawPixel(i * chunkSize + j, h);
                             } else {
-                                int color = caveMap.getPixel(i * chunkSize + j, h);
-
-                                int red = color >>> 24;
-                                int green = (color & 0xFF0000) >>> 16;
-                                int blue = (color & 0xFF00) >>> 8;
-                                int alpha = color & 0xFF;
-
-                                if (red < caveInstance && green < caveInstance && blue < caveInstance) {
-                                    pixmap.drawPixel(i * chunkSize + j, h);
+                                if (!reachedTop) {
+                                    int increment = r.nextInt(3) + 1;
+                                    currentElevation -= increment;
                                 }
                             }
                         }
-
-                        if(i*chunkSize + j == worldWidth/2) {
-                            spawnX = i*chunkSize + j;
-                            spawnY = currentElevation - 1;
+                        if(!reachedTop) {
+                            heights[j] = currentElevation;
+                        } else {
+                            if(j >= chunkSize - peekIndex) {
+                                currentElevation = heights[chunkSize - j - 1];
+                            }
                         }
+
+                        if(!reachedTop && !isAdjusting && elevation.get(i) + horizon + 5 >= currentElevation) {
+                            adjusting = 4;
+                            isAdjusting = true;
+                        }
+
+                        if(currentElevation <= elevation.get(i) + horizon && !reachedTop) {
+                            currentElevation = elevation.get(i) + horizon;
+                            reachedTop = true;
+                            peekIndex = j;
+                        }
+
+                        finishTerrainShape(i, j);
+                    }
+                } else {
+                    for(int j = 0; j < chunkSize; j++) {
+                        if (currentElevation < elevation.get(i) + horizon) {
+                            if (r.nextInt(4) == 1) {
+                                currentElevation++;
+                            }
+                        } else if (currentElevation > elevation.get(i) + horizon) {
+                            if (r.nextInt(4) == 1) {
+                                currentElevation--;
+                            }
+                        }
+
+                        finishTerrainShape(i, j);
                     }
                 }
             }
         }
-
         else if(step == 3) {
-            currentStage = "Finalizing...";
-            pixmap.setColor(1f, 1f, 1f, 1f);
-            pixmap.drawPixel(spawnX, spawnY);
+            currentStage = "Generating Caves...";
+            ArrayList<Integer> caveIndex = new ArrayList<Integer>();
+            for(int i = 2; i < biomes.size() - 2; i++) {
+                if(biomes.get(i).equals("mountain")) {
+                    if(r.nextInt(4) == 0) {
+                        caveIndex.add(i);
+                    }
+                }
+            }
 
-            FileHandle file = Gdx.files.external("everlongn/worlds/" + name + ".png");
-            PixmapIO.writePNG(file, pixmap);
+            while(caveIndex.size() < 3) {
+                for(int i = 2; i < biomes.size() - 2; i++) {
+                    if(biomes.get(i).equals("mountain") && !caveIndex.contains(i)) {
+                        if(r.nextInt(4) == 0) {
+                            caveIndex.add(i);
+                        }
+                    }
+                }
+            }
+
+            for(int i = 0; i < caveIndex.size(); i++) {
+                int direction = r.nextInt(2);
+                digMainCave(caveIndex.get(i), direction);
+            }
+        }
+        else if(step == 4) {
+            currentStage = "Finalizing...";
+            tileMap.setColor(1f, 1f, 1f, 1f);
+            tileMap.drawPixel(spawnX, spawnY);
+
+            FileHandle file = Gdx.files.external("everlongn/realms/" + name + "/tile.png");
+            PixmapIO.writePNG(file, tileMap);
+
+            FileHandle wallFile = Gdx.files.external("everlongn/realms/" + name + "/wall.png");
+            PixmapIO.writePNG(wallFile, wallMap);
 
             FileHandle data = Gdx.files.external("everlongn/data/" + name + ".txt");
             data.writeString(name + "\n", false);
@@ -203,16 +221,177 @@ public class WorldGenerationState extends State {
             Date date = new Date();
             data.writeString(formatter.format(date), true);
             data.writeString("\n", true);
-//            data.writeString(spawnX + "\n", true);
-//            data.writeString(spawnY + "\n", true);
 
-            pixmap.dispose();
+            tileMap.dispose();
         }
         currentStep++;
 
         if(currentStep == numSteps) {
             generated = true;
             return;
+        }
+    }
+
+    public void digMainCave(int startChunk, int direction) {
+        tileMap.setColor(1f, 0, 0, 1f);
+        int xStart = 0;
+        if(direction == 0) {
+            xStart = startChunk*chunkSize;
+        } else {
+            xStart = (startChunk + 1) * chunkSize;
+        }
+        int yStart = horizon - 2 - r.nextInt(8);
+        int yEnd = yStart - (r.nextInt(3) + 4);
+
+        int level1 = worldHeight/4*2;
+        int level2 = worldHeight/4*2;
+        int level3 = worldHeight/4*3;
+
+        while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1) {
+            if(yStart < horizon + 30) {
+                int limit = 6;
+                int low = 3;
+                for(int i = 0; i < yStart - yEnd; i++) {
+                    tileMap.drawPixel(xStart, yStart-i);
+                }
+                if(r.nextInt(2) == 0) {
+                    int random = r.nextInt(4);
+                    yStart += random;
+                    yEnd += random;
+                    if(yStart - yEnd > limit) {
+                        yEnd = yStart - limit;
+                    } else if(yStart - yEnd < low) {
+                        yEnd = yStart - low;
+                    }
+                }
+                if(direction == 0) {
+                    xStart++;
+                } else {
+                    xStart--;
+                }
+            }
+            else {
+                int limit = 20;
+                if(yStart > level3) {
+                    limit = 25;
+                } else if(yStart > level2) {
+                    limit = 20;
+                }
+                int low = 8;
+                for(int i = 0; i < yStart - yEnd; i++) {
+                    tileMap.drawPixel(xStart, yStart-i);
+                }
+                if(yStart < level1) {
+                    if(r.nextInt(250) == 0) {
+                        digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(600) + 50);
+                    }
+                }
+                if(yStart < level2) {
+                    yStart += r.nextInt(4);
+                    yEnd += r.nextInt(4);
+                    if (yStart - yEnd > limit) {
+                        yEnd = yStart - limit;
+                    } else if (yStart - yEnd < low) {
+                        yEnd = yStart - low;
+                    }
+                    if(r.nextInt(300) == 0) {
+                        digSubCave(xStart, yStart, direction, r.nextInt(500) + 50);
+                    }
+                } else if(yStart < level3) {
+                    if (r.nextInt(5) == 0) {
+                        yStart += r.nextInt(4);
+                        yEnd += r.nextInt(4);
+                        if (yStart - yEnd > limit) {
+                            yEnd = yStart - limit;
+                        } else if (yStart - yEnd < low) {
+                            yEnd = yStart - low;
+                        }
+                    }
+                    if(r.nextInt(450) == 0) {
+                        digSubCave(xStart, yStart, direction, r.nextInt(400) + 50);
+                    }
+                } else {
+                    if (r.nextInt(8) == 0) {
+                        yStart += r.nextInt(4);
+                        yEnd += r.nextInt(4);
+                        if (yStart - yEnd > limit) {
+                            yEnd = yStart - limit;
+                        } else if (yStart - yEnd < low) {
+                            yEnd = yStart - low;
+                        }
+                    }
+                }
+                if(direction == 0) {
+                    xStart++;
+                } else {
+                    xStart--;
+                }
+                if(r.nextInt(30) == 0) {
+                    if(direction == 0) {
+                        direction = 1;
+                    } else {
+                        direction = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    public void digSubCave(int xStart, int yStart, int direction, int numBlocks) {
+        int limit = 10;
+        int low = 4;
+
+        int yEnd = yStart - (r.nextInt(3) + 4);
+        while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1 && numBlocks > 0) {
+            numBlocks--;
+
+            if (r.nextInt(6) == 0) {
+                yStart += r.nextInt(3);
+                yEnd += r.nextInt(4);
+                if (yStart - yEnd > limit) {
+                    yEnd = yStart - limit;
+                } else if (yStart - yEnd < low) {
+                    yEnd = yStart - low;
+                }
+            }
+
+            for (int i = 0; i < yStart - yEnd; i++) {
+                tileMap.drawPixel(xStart, yStart - i);
+            }
+
+            if (direction == 0) {
+                xStart++;
+            } else {
+                xStart--;
+            }
+
+            if (r.nextInt(200) == 0) {
+                if (direction == 0) {
+                    direction = 1;
+                } else {
+                    direction = 0;
+                }
+            }
+            if (r.nextInt(600) == 0) {
+                digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(400) + 50);
+            }
+        }
+    }
+
+    public void finishTerrainShape(int i, int j) {
+        for(int h = currentElevation; h < worldHeight; h++) {
+            tileMap.drawPixel(i * chunkSize + j, h);
+//                int red = color >>> 24;
+//                int green = (color & 0xFF0000) >>> 16;
+//                int blue = (color & 0xFF00) >>> 8;
+//                int alpha = color & 0xFF;
+        }
+        for(int h = currentElevation + 2; h < worldHeight; h++) {
+            wallMap.drawPixel(i * chunkSize + j, h);
+        }
+        if(i*chunkSize + j == worldWidth/2) {
+            spawnX = i*chunkSize + j;
+            spawnY = currentElevation - 1;
         }
     }
 
