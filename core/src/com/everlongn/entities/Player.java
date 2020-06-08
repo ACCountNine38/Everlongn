@@ -60,8 +60,8 @@ public class Player extends Creature {
 
     public static int currentChunkX, currentChunkY, horizontalForce;
 
-    private ParticleEffect smoke, eruptionCharge, shadowCharge;
-    public static float forceCharge, forceMax, airbornTimer;
+    private ParticleEffect smoke, eruptionCharge, shadowCharge, shadowExplosion;
+    public static float forceCharge, forceMax, airbornTimer, particleTimer;
 
     // Testing variables
     public PointLight testLight;
@@ -96,11 +96,12 @@ public class Player extends Creature {
         // particle effects
         eruptionCharge = new ParticleEffect();
         eruptionCharge.load(Gdx.files.internal("particles/eruptionHold"), Gdx.files.internal(""));
-        eruptionCharge.getEmitters().get(0).setContinuous(false);
 
         shadowCharge = new ParticleEffect();
         shadowCharge.load(Gdx.files.internal("particles/shadowHold"), Gdx.files.internal(""));
-        shadowCharge.getEmitters().get(0).setContinuous(false);
+
+        shadowExplosion = new ParticleEffect();
+        shadowExplosion.load(Gdx.files.internal("particles/shadowExplosion"), Gdx.files.internal(""));
 
         testLight = new PointLight(GameState.rayHandler, 400, Color.BLACK, 0,
                 body.getPosition().x * Constants.PPM,
@@ -111,15 +112,6 @@ public class Player extends Creature {
     }
 
     public void checkSpecialCase() {
-        if(!(Inventory.inventory[Inventory.selectedIndex] != null &&
-                Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !inventoryHold)) {
-            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption")) {
-                eruptionCharge.getEmitters().get(0).setContinuous(false);
-            } else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shadow Manipulator")) {
-                shadowCharge.getEmitters().get(0).setContinuous(false);
-            }
-        }
-
         // check arcane light
         if(casted || eruptionHold) {
             arcaneLightSize += 20;
@@ -233,6 +225,21 @@ public class Player extends Creature {
             }
         }
 
+        if(shadowHold)
+            shadowCharge.update(Gdx.graphics.getDeltaTime());
+        else {
+            if(!shadowCharge.isComplete()) {
+                shadowCharge.update(Gdx.graphics.getDeltaTime());
+            }
+        }
+
+        if(blink) {
+            shadowExplosion.update(Gdx.graphics.getDeltaTime());
+        } else {
+            if(!shadowExplosion.isComplete()) {
+                shadowExplosion.update(Gdx.graphics.getDeltaTime());
+            }
+        }
     }
 
     public void checkItemOnHold() {
@@ -273,9 +280,11 @@ public class Player extends Creature {
             checkArcaneCombat();
         }
 
-        if(eruptionHold && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            eruptionHold = false;
-            eruptionCharge.getEmitters().get(0).setContinuous(false);
+        if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(eruptionHold)
+                eruptionHold = false;
+            if(shadowHold)
+                shadowHold = false;
             forceCharge = 0;
             cdr = 0;
         }
@@ -506,23 +515,24 @@ public class Player extends Creature {
                 }
                 cdr += Gdx.graphics.getDeltaTime();
 
-                shadowHold = true;
-                if(shadowCharge.isComplete()) {
-                    shadowCharge.getEmitters().get(0).setContinuous(true);
+                particleTimer+=Gdx.graphics.getDeltaTime();
+                if(particleTimer > 0.25) {
+                    shadowHold = true;
                     shadowCharge.start();
+                    particleTimer = 0;
                 }
 
                 float xAim, yAim;
 
                 if(direction == 0) {
-                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (76);
-                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (80);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-80);
                     shadowCharge.getEmitters().first().setPosition(
                             body.getPosition().x * PPM + width / 2 + xAim,
                             body.getPosition().y * PPM + 69 + yAim);
                 } else {
-                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (76);
-                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-76);
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (80);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-80);
                     shadowCharge.getEmitters().first().setPosition(
                             body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim);
                 }
@@ -532,8 +542,8 @@ public class Player extends Creature {
                         cdr = 0;
 
                         if (direction == 0) {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180 - 30)) * (76);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180 - 30)) * (-76);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180 - 30)) * (80);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180 - 30)) * (-80);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() <= ControlCenter.width / 2) {
@@ -551,8 +561,8 @@ public class Player extends Creature {
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
                         } else {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 30)) * (76);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 30)) * (-76);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 30)) * (80);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 30)) * (-80);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() >= ControlCenter.width / 2) {
@@ -579,17 +589,14 @@ public class Player extends Creature {
 
             if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
                 if(!shadows.isEmpty()) {
+                    shadowExplosion.getEmitters().get(0).setPosition(body.getPosition().x*PPM, body.getPosition().y*PPM + height/2);
+                    shadowExplosion.start();
+                    blink = true;
+
                     Shadow shadow = shadows.poll();
                     body.setTransform(shadow.body.getPosition().x, shadow.body.getPosition().y, 0);
                     body.setLinearVelocity(0, 0);
                     shadow.life = Shadow.maxLife;
-
-                    blink = true;
-
-                    smoke = new ParticleEffect();
-                    smoke.load(Gdx.files.internal("particles/shadowTrail"), Gdx.files.internal(""));
-                    smoke.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-                    smoke.start();
                 }
             }
         }
@@ -656,6 +663,7 @@ public class Player extends Creature {
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption")) {
+
             arcaneLight.setColor(ArcaneEruption.color);
             maxLightRadius = 800;
             forceMax = 100;
@@ -676,10 +684,11 @@ public class Player extends Creature {
                 }
                 cdr += Gdx.graphics.getDeltaTime();
 
-                eruptionHold = true;
-                if(eruptionCharge.isComplete()) {
-                    eruptionCharge.getEmitters().get(0).setContinuous(true);
+                particleTimer+=Gdx.graphics.getDeltaTime();
+                if(particleTimer > 0.25) {
+                    eruptionHold = true;
                     eruptionCharge.start();
+                    particleTimer = 0;
                 }
 
                 float xAim, yAim;
@@ -868,9 +877,7 @@ public class Player extends Creature {
 
         else {
             eruptionHold = false;
-            eruptionCharge.getEmitters().get(0).setContinuous(false);
             shadowHold = false;
-            shadowCharge.getEmitters().get(0).setContinuous(false);
             forceCharge = 0;
             cdr = 0;
         }
@@ -1002,6 +1009,14 @@ public class Player extends Creature {
         else {
             if(!shadowCharge.isComplete()) {
                 shadowCharge.draw(batch);
+            }
+        }
+
+        if(blink) {
+            shadowExplosion.draw(batch);
+        } else {
+            if(!shadowExplosion.isComplete()) {
+                shadowExplosion.draw(batch);
             }
         }
 

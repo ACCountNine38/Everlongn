@@ -73,9 +73,9 @@ public class GameState extends State {
             screenTransitionAlpha -= 0.008;
         }
         updateTiles();
-        inventory.tick();
         rayHandler.update();
         entityManager.tick();
+        inventory.tick();
         batch.setProjectionMatrix(camera.combined);
         rayHandler.setCombinedMatrix(camera);
         rayHandler.setBlurNum(3);

@@ -82,9 +82,9 @@ highMax: 200.0
 relative: false
 scalingCount: 4
 scaling0: 0.21568628
-scaling1: 0.5294118
-scaling2: 0.64705884
-scaling3: 0.33333334
+scaling1: 0.4294118
+scaling2: 0.54705884
+scaling3: 0.13333334
 timelineCount: 4
 timeline0: 0.0
 timeline1: 0.24657534
@@ -136,7 +136,7 @@ timeline2: 0.72602737
 timeline3: 1.0
 - Options - 
 attached: false
-continuous: true
+continuous: false
 aligned: false
 additive: false
 behind: false

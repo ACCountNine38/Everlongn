@@ -2,8 +2,8 @@ Untitled
 - Delay -
 active: false
 - Duration - 
-lowMin: 450.0
-lowMax: 450.0
+lowMin: 250.0
+lowMax: 250.0
 - Count - 
 min: 0
 max: 400
@@ -29,7 +29,7 @@ scaling1: 1.0
 scaling2: 0.23529412
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.49315068
+timeline1: 0.5
 timeline2: 1.0
 independent: false
 - Life Offset - 
@@ -81,13 +81,13 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 3
-scaling0: 0.74509805
-scaling1: 0.47058824
-scaling2: 0.23529412
+scaling0: 0.5882353
+scaling1: 0.7058824
+scaling2: 1.0
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.39041096
-timeline2: 0.6712329
+timeline1: 0.30821916
+timeline2: 0.93835616
 - Angle - 
 active: true
 lowMin: 0.0
@@ -124,13 +124,13 @@ highMax: 1.0
 relative: false
 scalingCount: 4
 scaling0: 0.0
-scaling1: 0.49438202
-scaling2: 0.16853933
+scaling1: 0.9122807
+scaling2: 0.2631579
 scaling3: 0.0
 timelineCount: 4
 timeline0: 0.0
-timeline1: 0.1954023
-timeline2: 0.7681992
+timeline1: 0.19863014
+timeline2: 0.63013697
 timeline3: 1.0
 - Options - 
 attached: false

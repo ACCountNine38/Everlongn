@@ -51,6 +51,8 @@ public class Shadow extends Projectile {
         }
 
         if(finishCounter == 1) {
+            movingParticle.dispose();
+            light.remove();
             active = false;
         }
 

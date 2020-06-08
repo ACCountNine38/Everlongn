@@ -333,6 +333,7 @@ public class Inventory {
             if(pickedItem != null && inventory[i + row*hotbarSize].id != pickedItem.id) {
                 return;
             }
+            itemPicking = true;
             if(inventory[i + row*hotbarSize].stackable) {
                 if(pickedItem == null) {
                     pickedItem = inventory[i + row*hotbarSize].createNew(1);
@@ -347,7 +348,6 @@ public class Inventory {
                 pickedItem = inventory[i + row*hotbarSize];
                 inventory[i + row*hotbarSize] = null;
             }
-            itemPicking = true;
         }
     }
 }

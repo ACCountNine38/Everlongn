@@ -125,8 +125,8 @@ public class ArcaneEruption extends Projectile {
     }
 
     public void explode() {
-        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 100, body.getPosition().y*Constants.PPM+2 - 100,
-                200, 200);
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 125, body.getPosition().y*Constants.PPM+2 - 125,
+                250, 250);
 
         for(int i = 0; i < EntityManager.entities.size(); i++) {
             if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
@@ -135,7 +135,7 @@ public class ArcaneEruption extends Projectile {
 
                     c.stunned = true;
 
-                    float force = 700 + actionForce * 10;
+                    float force = 700 + actionForce * 12.5f;
                     float angle = (float)(Math.random()*(Math.PI/6) + Math.PI/8);
                     // c.body.getPosition().x*Constants.PPM + c.width/2 < body.getPosition().x*Constants.PPM + 2
                     if(direction == 0) {
