@@ -25,6 +25,7 @@ public class ArcaneEscort extends Projectile {
     public float life, angle, currentAngle, angleUpdate;
     public boolean reached, canRotate = true;
     public int numRotations = 0;
+    public static Color color = new Color(0.02f, 0.02f, 0.04f, 1f);
 
     public ArcaneEscort(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);
@@ -59,7 +60,7 @@ public class ArcaneEscort extends Projectile {
         maxMovingRadius = 250;
         maxExplodingRadius = 350;
 
-        light = new PointLight(GameState.rayHandler, 300, new Color(Color.BLACK), 0,
+        light = new PointLight(GameState.rayHandler, 300, color, 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);

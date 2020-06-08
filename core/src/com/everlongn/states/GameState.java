@@ -49,7 +49,7 @@ public class GameState extends State {
 
     // world settings//
     public static FileHandle file;
-    public static int chunkSize = 25;
+    public static int chunkSize = 20;
     public static Chunk[][] chunks;
     ///////////////////
 
@@ -80,6 +80,21 @@ public class GameState extends State {
         rayHandler.setCombinedMatrix(camera);
         rayHandler.setBlurNum(3);
         rayHandler.setShadows(true);
+
+        if(Player.blink && !Player.blinkAlphaMax) {
+            screenTransitionAlpha+=0.2;
+            if(screenTransitionAlpha > 1) {
+                screenTransitionAlpha = 1;
+                Player.blinkAlphaMax = true;
+            }
+        } else if(Player.blink && Player.blinkAlphaMax) {
+            screenTransitionAlpha-=0.2;
+            if(screenTransitionAlpha < 0) {
+                screenTransitionAlpha = 0;
+                Player.blink = false;
+                Player.blinkAlphaMax = false;
+            }
+        }
     }
 
     public void updateTiles() {

@@ -11,22 +11,21 @@ import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.TextManager;
 
+import java.util.ArrayList;
+
 public class Inventory {
     public static Item[] inventory = new Item[18];
 
-    public static int maxInventorySize = 18;
-    public static int hotbarSize = 6;
-    public static int slotSize = 64;
-    public static int selectedIndex = 0;
+    public static int maxInventorySize = 18, hotbarSize = 6, slotSize = 64, selectedIndex = 0;
 
-    public static boolean extended, itemPicking;
+    public static boolean extended, itemPicking, canAct;
 
     private ControlCenter c;
 
     public static Item draggedItem, pickedItem;
 
     private int dragBoundX, dragBoundY, draggedIndex;
-    private float dragTimer;
+    private float dragTimer, rowY[] = new float[2];
 
     public Inventory(ControlCenter c) {
         this.c = c;
@@ -44,14 +43,6 @@ public class Inventory {
     }
 
     public void tick() {
-//        for(int i = 0; i < 6; i++) {
-//            for(int row = 0; row < 3; i++) {
-//                if (Gdx.input.getX() > (ControlCenter.width / 2 - ((slotSize + 5) * 3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width / 2 - ((slotSize + 5) * 3)) + i * (slotSize + 10) + slotSize &&
-//                        Gdx.input.getY() < 20 + slotSize + (row * (slotSize + 10)) && Gdx.input.getY() > 20 + (row * (slotSize + 10))) {
-//                    if(item)
-//                }
-//            }
-//        }
         if(Player.inventoryHold && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             Player.inventoryHold = false;
         }
@@ -72,6 +63,17 @@ public class Inventory {
             selectedIndex = 4;
         } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
             selectedIndex = 5;
+        }
+
+        if(extended && rowY[0] < slotSize + 10) {
+            rowY[0]+=10;
+        } else if(!extended && rowY[0] > 0) {
+            rowY[0]-=10;
+        }
+        if(extended && rowY[1] < slotSize*2 + 20) {
+            rowY[1]+=20;
+        } else if(!extended && rowY[1] > 0) {
+            rowY[1]-=20;
         }
     }
 
@@ -190,12 +192,23 @@ public class Inventory {
         }
     }
 
+    public void displayItemInformation(Item item) {
+        ArrayList<String> information = new ArrayList<String>();
+        if(item instanceof Melee) {
+            Melee temp = (Melee)item;
+            information.add(temp.name);
+        } else if(item instanceof Arcane) {
+            Arcane temp = (Arcane)item;
+        }
+    }
+
     public void render(SpriteBatch batch) {
         batch.begin();
-        renderHotbar(batch);
 
-        if(extended)
+        if(rowY[0] > 0)
             renderExtendedInventory(batch);
+
+        renderHotbar(batch);
 
         // only display dragged item when the cursor is out of the selected slot
         if(draggedItem != null && !(Gdx.input.getX() > dragBoundX && Gdx.input.getX() < dragBoundX + slotSize &&
@@ -253,11 +266,11 @@ public class Inventory {
     }
 
     public void renderExtendedInventory(SpriteBatch batch) {
-        for(int r = 1; r <= 2; r++) {
+        for(int r = 2; r >= 1; r--) {
             for(int i = 0; i < hotbarSize; i++) {
                 if(Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
                         Gdx.input.getY() < 20 + slotSize + (r * (slotSize+10)) && Gdx.input.getY() > 20 + (r * (slotSize+10))) {
-                    batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - (r * (slotSize+10)), slotSize, slotSize);
+                    batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - rowY[r-1], slotSize, slotSize);
 
                     // checks if an item is being dragged in the inventory
                     if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
@@ -271,7 +284,7 @@ public class Inventory {
                         checkPickItem(i + hotbarSize*r);
                     }
                 } else {
-                    batch.draw(UI.inventorySlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - (r * (slotSize+10)), slotSize, slotSize);
+                    batch.draw(UI.inventorySlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - rowY[r-1], slotSize, slotSize);
                 }
                 if(inventory[i + r*hotbarSize] != null) {
                     drawItem(batch, i, r);
@@ -281,14 +294,18 @@ public class Inventory {
     }
 
     public void drawItem(SpriteBatch batch, int i, int row) {
+        float yDiff = 0;
+        if(row > 0) {
+            yDiff = rowY[row-1];
+        }
         batch.draw(inventory[i + row*hotbarSize].texture,
                 (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize/2 - inventory[i + row*hotbarSize].itemWidth/2,
-                ControlCenter.height - slotSize - 20 - (row * (slotSize + 10)) + slotSize/2 - inventory[i + row*hotbarSize].itemHeight/2,
+                ControlCenter.height - slotSize - 20 - yDiff + slotSize/2 - inventory[i + row*hotbarSize].itemHeight/2,
                 inventory[i + row*hotbarSize].itemWidth, inventory[i + row*hotbarSize].itemHeight);
 
         if(inventory[i + row*hotbarSize].stackable) {
-            batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize+10) + slotSize - 15, ControlCenter.height - 20 - (row * (slotSize+10)) - slotSize - 5, 20, 20);
-            TextManager.draw("" + inventory[i + row*hotbarSize].count, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize+10) + slotSize - 5, ControlCenter.height - 20 - (row * (slotSize+10)) - slotSize + 10, Color.WHITE, 1, true);
+            batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize+10) + slotSize - 15, ControlCenter.height - 20 - yDiff - slotSize - 5, 20, 20);
+            TextManager.draw("" + inventory[i + row*hotbarSize].count, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize+10) + slotSize - 5, ControlCenter.height - 20 - (int)yDiff - slotSize + 10, Color.WHITE, 1, true);
         }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !itemPicking && !Player.inCombat) {

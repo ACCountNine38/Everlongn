@@ -55,10 +55,7 @@ public class Shadow extends Projectile {
         }
 
         if(lifeOut) {
-            figureAlpha -= 0.01;
-            if(figureAlpha < 0) {
-                figureAlpha = 0;
-            }
+            figureAlpha = 0;
         }
 
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
@@ -66,10 +63,15 @@ public class Shadow extends Projectile {
 
         body.setLinearVelocity(body.getLinearVelocity().x/1.03f, body.getLinearVelocity().y);
 
-        if(Math.abs(body.getLinearVelocity().x) < 0.25 && figureAlpha < 1 && !lifeOut) {
+        if(Math.abs(body.getLinearVelocity().x) < 0.1 && Math.abs(body.getLinearVelocity().y) < 0.1 && figureAlpha < 1 && !lifeOut) {
             figureAlpha += 0.01;
-            if(figureAlpha > 1) {
-                figureAlpha = 1;
+            if(figureAlpha > 0.5f) {
+                figureAlpha = 0.5f;
+            }
+        } else {
+            figureAlpha -= 0.05f;
+            if(figureAlpha < 0f) {
+                figureAlpha = 0f;
             }
         }
     }

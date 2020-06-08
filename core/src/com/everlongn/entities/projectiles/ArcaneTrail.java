@@ -22,6 +22,7 @@ public class ArcaneTrail extends Projectile {
     public static float maxLife = 8;
 
     public float life, angle;
+    public static Color color = new Color(0.02f, 0.02f, 0.02f, 1f);
 
     public ArcaneTrail(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);
@@ -53,7 +54,7 @@ public class ArcaneTrail extends Projectile {
 
         maxMovingRadius = 200;
         maxExplodingRadius = 300;
-        light = new PointLight(GameState.rayHandler, 300, new Color(Color.BLACK), 0,
+        light = new PointLight(GameState.rayHandler, 300, color, 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);

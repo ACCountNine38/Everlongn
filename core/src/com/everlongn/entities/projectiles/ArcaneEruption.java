@@ -18,6 +18,7 @@ public class ArcaneEruption extends Projectile {
     public int direction;
 
     public float angle, actionForce;
+    public static Color color = new Color(0.04f, 0.02f, 0.02f, 1f);
 
     public ArcaneEruption(ControlCenter c, float x, float y, float density, int direction, float angle, float forceX, float forceY) {
         super(c, x, y, 4, 4, density);
@@ -51,8 +52,8 @@ public class ArcaneEruption extends Projectile {
         explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
 
         maxMovingRadius = 500;
-        maxExplodingRadius = 1000;
-        light = new PointLight(GameState.rayHandler, 300, new Color(0.05f, 0.03f, 0.03f, 1f), 0,
+        maxExplodingRadius = 1500;
+        light = new PointLight(GameState.rayHandler, 300, color, 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);

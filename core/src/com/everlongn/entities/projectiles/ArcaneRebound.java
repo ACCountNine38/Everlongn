@@ -21,6 +21,7 @@ public class ArcaneRebound extends Projectile {
     public int direction, maxBounce, numBounce;
 
     public float life, angle, yForce;
+    public static Color color = new Color(0.02f, 0.04f, 0.02f, 1f);
 
     public ArcaneRebound(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);
@@ -52,8 +53,7 @@ public class ArcaneRebound extends Projectile {
 
         maxMovingRadius = 350;
         maxExplodingRadius = 450;
-        //0.05f, 0.07f, 0.05f, 1f
-        light = new PointLight(GameState.rayHandler, 300, new Color(Color.BLACK), 0,
+        light = new PointLight(GameState.rayHandler, 300, color, 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);
