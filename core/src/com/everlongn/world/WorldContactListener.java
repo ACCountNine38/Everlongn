@@ -56,25 +56,6 @@ public class WorldContactListener implements ContactListener {
                 }
             }
         }
-
-//        else if(cDef == (short)(Constants.BIT_PLAYER | Constants.BIT_TILE) || cDef == (short)(Constants.BIT_ENEMY | Constants.BIT_TILE)) {
-//            if (a.getFilterData().categoryBits == Constants.BIT_PLAYER || a.getFilterData().categoryBits == Constants.BIT_ENEMY) {
-//                Creature temp = (Creature) a.getUserData();
-//                if(!temp.airborn) {
-//                    temp.canJump = true;
-//                    temp.fall = false;
-//                    temp.jump = false;
-//                }
-//            }
-//            if (b.getFilterData().categoryBits == Constants.BIT_PLAYER || b.getFilterData().categoryBits == Constants.BIT_ENEMY) {
-//                Creature temp = (Creature) b.getUserData();
-//                if(!temp.airborn) {
-//                    temp.canJump = true;
-//                    temp.fall = false;
-//                    temp.jump = false;
-//                }
-//            }
-//        }
     }
 
     @Override

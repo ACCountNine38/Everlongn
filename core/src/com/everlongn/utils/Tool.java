@@ -46,6 +46,88 @@ public class Tool {
         return body;
     }
 
+    public static Body createTile(int x, int y,
+                                  int numAdjacent, boolean left, boolean right, boolean up, boolean down,
+                                  short cBits, short mBits, short gIndex, Object object) {
+        Body body;
+        // describes the physical properties the body have
+        BodyDef def = new BodyDef();
+
+        def.type = BodyDef.BodyType.StaticBody;
+
+        def.position.set(x/Constants.PPM, y/Constants.PPM);
+        def.fixedRotation = true;
+
+        PolygonShape shape = new PolygonShape();
+
+        Vector2[] vertices = new Vector2[]{new Vector2(0, 0),
+                new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+                new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+
+        if(numAdjacent == 2) {
+            if(right && down) {
+                vertices = new Vector2[]{new Vector2(0, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM)};
+            } else if(left && down) {
+                vertices = new Vector2[]{new Vector2(0, 0),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
+            } else if(right && up) {
+                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+            } else if(left && up) {
+                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(0, 0)};
+            } else {
+                vertices = new Vector2[]{new Vector2(0, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+            }
+        } else if(numAdjacent == 1) {
+            if(left) {
+                vertices = new Vector2[]{new Vector2(0, 0),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+            } else if(right) {
+                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / 2 / Constants.PPM),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
+            } else if(up) {
+                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                        new Vector2(Tile.TILESIZE / 2 / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
+                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+            } else if(down) {
+                vertices = new Vector2[]{new Vector2(0, 0),
+                        new Vector2(Tile.TILESIZE / 2 / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
+                        new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
+            }
+        } else if(numAdjacent == 0) {
+            vertices = new Vector2[]{new Vector2(Tile.TILESIZE / 2 / Constants.PPM, 0),
+                    new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
+                    new Vector2(Tile.TILESIZE / 2 / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                    new Vector2(0, Tile.TILESIZE / 2 / Constants.PPM)};
+        }
+
+        shape.set(vertices);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1;
+        //fixtureDef.friction = 0;
+        fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.filter.maskBits = mBits;
+        fixtureDef.filter.groupIndex = gIndex;
+        // creates the body and puts it into the world
+        body = GameState.world.createBody(def);
+        body.createFixture(fixtureDef).setUserData(object);
+        shape.dispose();
+        return body;
+    }
+
     public static Body createBox(int x, int y, int width, int height, boolean isStatic, float density,
                                  short cBits, short mBits, short gIndex, Object object) {
         Body body;

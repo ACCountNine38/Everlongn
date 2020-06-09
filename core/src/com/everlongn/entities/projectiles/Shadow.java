@@ -8,6 +8,7 @@ import com.everlongn.assets.Entities;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.Projectile;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
@@ -53,6 +54,7 @@ public class Shadow extends Projectile {
         if(finishCounter == 1) {
             movingParticle.dispose();
             light.remove();
+            GameState.world.destroyBody(body);
             active = false;
         }
 

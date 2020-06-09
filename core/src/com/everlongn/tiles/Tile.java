@@ -18,7 +18,7 @@ public abstract class Tile {
     public Body body;
 
     // adjacency test variables
-    public int numAdjacent = 0;
+    public int numAdjacent = 0, currentType;
     public boolean left, right, up, down = false;
     public TextureRegion currentTexture;
 

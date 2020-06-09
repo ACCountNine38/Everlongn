@@ -30,6 +30,12 @@ public class EarthTile extends Tile {
 
         if(numAdjacent == 4) {
             currentTexture = Tiles.earthTile;
+            if (body != null && currentType != 1) {
+                GameState.world.destroyBody(body);
+                body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 4, true, true, true, true,
+                        Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                currentType = 1;
+            }
         } else if(numAdjacent == 3) {
             if(!left) {
                 currentTexture = Tiles.earthTileExpose1[0];
@@ -38,84 +44,156 @@ public class EarthTile extends Tile {
             } else {
                 currentTexture = Tiles.earthTile;
             }
+            if (body != null && currentType != 1) {
+                GameState.world.destroyBody(body);
+                body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 4, true, true, true, true,
+                        Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                currentType = 1;
+            }
         } else if(numAdjacent == 2) {
-            if(slantType == 0) {
-                if (down && right) {
+            if (down && right) {
+                if(slantType == 0) {
                     currentTexture = Tiles.earthTileExpose2[0];
-                } else if (down && left) {
+                }  else {
+                    currentTexture = Tiles.earthTileExpose2[4];
+                }
+                if (body != null && currentType != 2) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 2, false, true, false, true,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 2;
+                }
+            } else if (down && left) {
+                if(slantType == 0) {
                     currentTexture = Tiles.earthTileExpose2[1];
-                } else if (up && right) {
-                    currentTexture = Tiles.earthTileExpose2[2];
-                } else if (up && left) {
-                    currentTexture = Tiles.earthTileExpose2[3];
-                } else if (right && left) {
-                    currentTexture = Tiles.earthTileExpose2[8];
                 } else {
-                    currentTexture = Tiles.earthTile;
+                    currentTexture = Tiles.earthTileExpose2[5];
+                }
+                if (body != null && currentType != 3) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 2, true, false, false, true,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 3;
+                }
+            } else if (up && right) {
+                if(slantType == 0) {
+                    currentTexture = Tiles.earthTileExpose2[2];
+                } else {
+                    currentTexture = Tiles.earthTileExpose2[6];
+                }
+                if (body != null && currentType != 4) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 2, false, true, true, false,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 4;
+                }
+            } else if (up && left) {
+                if(slantType == 0) {
+                    currentTexture = Tiles.earthTileExpose2[3];
+                } else {
+                    currentTexture = Tiles.earthTileExpose2[7];
+                }
+                if (body != null && currentType != 5) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 2, true, false, true, false,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 5;
+                }
+            } else if (up && down) {
+                currentTexture = Tiles.earthTileExpose2[8];
+                if (body != null && currentType != 1) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 4, true, true, true, true,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 1;
                 }
             } else {
-                if (down && right) {
-                    currentTexture = Tiles.earthTileExpose2[4];
-                } else if (down && left) {
-                    currentTexture = Tiles.earthTileExpose2[5];
-                } else if (up && right) {
-                    currentTexture = Tiles.earthTileExpose2[6];
-                } else if (up && left) {
-                    currentTexture = Tiles.earthTileExpose2[7];
-                } else if (right && left) {
-                    currentTexture = Tiles.earthTileExpose2[8];
-                } else {
-                    currentTexture = Tiles.earthTile;
+                currentTexture = Tiles.earthTile;
+                if (body != null && currentType != 1) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 4, true, true, true, true,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 1;
                 }
             }
         } else if(numAdjacent == 1) {
             if(right) {
                 currentTexture = Tiles.earthTileExpose3[0];
+                if (body != null && currentType != 6) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1, false, true, false, false,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 6;
+                }
             } else if(left) {
                 currentTexture = Tiles.earthTileExpose3[1];
+                if (body != null && currentType != 7) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1, true, false, false, false,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 7;
+                }
             } else if(down) {
                 currentTexture = Tiles.earthTileExpose3[2];
+                if (body != null && currentType != 8) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1, false, false, false, true,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 8;
+                }
             } else if(up) {
                 currentTexture = Tiles.earthTileExpose3[3];
+                if (body != null && currentType != 9) {
+                    GameState.world.destroyBody(body);
+                    body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1, false, false, true, false,
+                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                    currentType = 9;
+                }
             }
-        } else {
+        } else if(numAdjacent == 0){
             currentTexture = Tiles.earthTileExpose4;
-        }
-
-        if(x-1 >= 0 && GameState.tiles[x-1][y] != null) {
-            leftFilled = true;
-        } else {
-            leftFilled = false;
-            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
-                decayed = true;
-                //texture = Tiles.decayLeft;
-                if (body != null) {
-                    GameState.world.destroyBody(body);
-                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0,
-                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
-                }
+            if (body != null && currentType != 10) {
+                GameState.world.destroyBody(body);
+                body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0, false, false, false, false,
+                        Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                currentType = 10;
             }
         }
 
-        if(x+1 < GameState.worldWidth && GameState.tiles[x+1][y] != null) {
-            rightFilled = true;
-        } else {
-            if(x+1 == GameState.worldWidth){
-                rightFilled = true;
-                return;
-            }
-            rightFilled = false;
-
-            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
-                decayed = true;
-                //texture = Tiles.decayRight;
-                if (body != null) {
-                    GameState.world.destroyBody(body);
-                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1,
-                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
-                }
-            }
-        }
+//        if(x-1 >= 0 && GameState.tiles[x-1][y] != null) {
+//            leftFilled = true;
+//        } else {
+//            leftFilled = false;
+//            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
+//                decayed = true;
+//                //texture = Tiles.decayLeft;
+//                if (body != null) {
+//                    GameState.world.destroyBody(body);
+//                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 0,
+//                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+//                }
+//            }
+//        }
+//
+//        if(x+1 < GameState.worldWidth && GameState.tiles[x+1][y] != null) {
+//            rightFilled = true;
+//        } else {
+//            if(x+1 == GameState.worldWidth){
+//                rightFilled = true;
+//                return;
+//            }
+//            rightFilled = false;
+//
+//            if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null) {
+//                decayed = true;
+//                //texture = Tiles.decayRight;
+//                if (body != null) {
+//                    GameState.world.destroyBody(body);
+//                    body = Tool.createDecayTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 1,
+//                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -132,7 +210,7 @@ public class EarthTile extends Tile {
 //            batch.draw(Tiles.blackTile, x*Tile.TILESIZE - TILESIZE/2 + TILESIZE/5*4, y*Tile.TILESIZE - TILESIZE/2, TILESIZE/5, TILESIZE);
 //        }
 
-        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && !decayed) {
+        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && numAdjacent == 3) {
             if(rotate)
                 batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
             else

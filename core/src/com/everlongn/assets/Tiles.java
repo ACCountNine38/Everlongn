@@ -59,11 +59,12 @@ public class Tiles {
         earthWallExpose1[0] = new TextureRegion(earthWallsheet, 1000, 0, defaultImageSize, defaultImageSize);
         earthWallExpose1[1] = new TextureRegion(earthWallsheet, 1500, 0, defaultImageSize, defaultImageSize);
 
-        earthWallExpose2 = new TextureRegion[4];
+        earthWallExpose2 = new TextureRegion[5];
         earthWallExpose2[0] = new TextureRegion(earthWallsheet, 0, 1000, defaultImageSize, defaultImageSize);
         earthWallExpose2[1] = new TextureRegion(earthWallsheet, 500, 1000, defaultImageSize, defaultImageSize);
         earthWallExpose2[2] = new TextureRegion(earthWallsheet, 1000, 1000, defaultImageSize, defaultImageSize);
         earthWallExpose2[3] = new TextureRegion(earthWallsheet, 1500, 1000, defaultImageSize, defaultImageSize);
+        earthWallExpose2[4] = new TextureRegion(earthWallsheet, 2000, 1000, defaultImageSize, defaultImageSize);
 
         earthWallExpose3 = new TextureRegion[4];
         earthWallExpose3[0] = new TextureRegion(earthWallsheet, 0, 500, defaultImageSize, defaultImageSize);
