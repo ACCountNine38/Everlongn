@@ -28,8 +28,6 @@ public class EarthTile extends Tile {
 
     @Override()
     public void tick() {
-
-
         if(numAdjacent == 4) {
             currentTexture = Tiles.earthTile;
             if (currentType != 0) {
