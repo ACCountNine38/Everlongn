@@ -118,9 +118,13 @@ public class GameState extends State {
                         for(int x = i*chunkSize; x < i*chunkSize + chunkSize; x++) {
                             for(int y = j*chunkSize; y < j*chunkSize + chunkSize; y++) {
                                 if(tiles[x][y] != null) {
-                                    tiles[x][y].setBody(Tool.createBox(x * Tile.TILESIZE, y * Tile.TILESIZE, Tile.TILESIZE,
-                                            Tile.TILESIZE, true, 1f,
-                                            Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this.getClass()));
+                                    tiles[x][y].checkAdjacent();
+                                    tiles[x][y].currentType = 0;
+                                    if(tiles[x][y].body == null && tiles[x][y].numAdjacent != 4) {
+                                        tiles[x][y].body = Tool.createTile(x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, 4, true, true, true, true,
+                                                Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                                        tiles[x][y].currentType = 1;
+                                    }
                                     tiles[x][y].tick();
                                 }
                             }
@@ -133,9 +137,13 @@ public class GameState extends State {
                         for(int x = i*chunkSize; x < i*chunkSize + chunkSize; x++) {
                             for(int y = j*chunkSize; y < j*chunkSize + chunkSize; y++) {
                                 if(tiles[x][y] != null) {
-                                    world.destroyBody(tiles[x][y].getBody());
+                                    if(tiles[x][y].body != null) {
+                                        world.destroyBody(tiles[x][y].getBody());
+                                        tiles[x][y].body = null;
+                                    }
                                 } else {
                                     if(lightmap[x][y] != null) {
+                                        lightmap[x][y].remove();
                                         lightmap[x][y] = null;
                                     }
                                 }
@@ -146,6 +154,25 @@ public class GameState extends State {
             }
         }
     }
+    public void renderChunks(SpriteBatch batch) {
+        for (int i = 0; i < chunks.length; i++) {
+            for (int j = 0; j < chunks[i].length; j++) {
+                if (i >= Player.currentChunkX - 2 && i <= Player.currentChunkX + 2 &&
+                        j >= Player.currentChunkY - 2 && j <= Player.currentChunkY + 2) {
+
+                        for (int x = i * chunkSize; x < i * chunkSize + chunkSize; x++) {
+                            for (int y = j * chunkSize; y < j * chunkSize + chunkSize; y++) {
+                                if (tiles[x][y] != null) {
+                                    tiles[x][y].render(batch);
+                                }
+                            }
+                        }
+
+                }
+            }
+        }
+    }
+
 
     public void render() {
         Gdx.gl.glClearColor(.82f, .82f, .83f, 1f);

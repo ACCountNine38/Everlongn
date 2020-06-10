@@ -47,35 +47,33 @@ public class Shadow extends Projectile {
             lifeOut = true;
         }
 
-        if(lifeOut && movingParticle.isComplete()) {
-            finishCounter += Gdx.graphics.getDeltaTime();
-        }
-
-        if(finishCounter == 1) {
-            movingParticle.dispose();
-            light.remove();
-            GameState.world.destroyBody(body);
-            active = false;
-        }
-
-        if(lifeOut) {
-            figureAlpha = 0;
-        }
-
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.update(Gdx.graphics.getDeltaTime());
 
-        body.setLinearVelocity(body.getLinearVelocity().x/1.03f, body.getLinearVelocity().y);
+        if(lifeOut) {
+            figureAlpha = 0;
+            if(movingParticle.isComplete()) {
+                finishCounter += Gdx.graphics.getDeltaTime();
+            }
 
-        if(Math.abs(body.getLinearVelocity().x) < 0.1 && Math.abs(body.getLinearVelocity().y) < 0.1 && figureAlpha < 1 && !lifeOut) {
-            figureAlpha += 0.01;
-            if(figureAlpha > 0.5f) {
-                figureAlpha = 0.5f;
+            if(finishCounter >= 1) {
+                movingParticle.dispose();
+                GameState.world.destroyBody(body);
+                active = false;
             }
         } else {
-            figureAlpha -= 0.05f;
-            if(figureAlpha < 0f) {
-                figureAlpha = 0f;
+            body.setLinearVelocity(body.getLinearVelocity().x/1.03f, body.getLinearVelocity().y);
+
+            if(Math.abs(body.getLinearVelocity().x) < 0.1 && Math.abs(body.getLinearVelocity().y) < 0.1 && figureAlpha < 1 && !lifeOut) {
+                figureAlpha += 0.01;
+                if(figureAlpha > 0.5f) {
+                    figureAlpha = 0.5f;
+                }
+            } else {
+                figureAlpha -= 0.05f;
+                if(figureAlpha < 0f) {
+                    figureAlpha = 0f;
+                }
             }
         }
     }

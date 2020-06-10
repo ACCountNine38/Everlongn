@@ -184,7 +184,7 @@ public class Player extends Creature {
             body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y/1.15f);
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.L)) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             GameState.lightsOn = !GameState.lightsOn;
         }
 
@@ -603,7 +603,7 @@ public class Player extends Creature {
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Caster")) {
             arcaneLight.setColor(ArcaneTrail.color);
-            maxLightRadius = 400;
+            maxLightRadius = 450;
             if(direction == 0) {
                 float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                 float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
@@ -818,7 +818,7 @@ public class Player extends Creature {
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Escort") && ArcaneEscort.numEscort <= 15) {
             arcaneLight.setColor(ArcaneEscort.color);
-            maxLightRadius = 300;
+            maxLightRadius = 400;
             if(direction == 0) {
                 float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                 float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
