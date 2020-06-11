@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
@@ -23,7 +22,6 @@ import com.everlongn.utils.Chunk;
 import com.everlongn.walls.EarthWall;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
-import com.everlongn.world.WorldContactListener;
 
 public class WorldLoadingState extends State {
     private String currentStage = "Loading...";
@@ -83,7 +81,7 @@ public class WorldLoadingState extends State {
         Vector3 position = ControlCenter.camera.position;
         position.x = GameState.spawnX*Tile.TILESIZE;
         position.y = GameState.spawnY*Tile.TILESIZE;
-        GameState.parallexBackground.position.set(position);
+        GameState.parallaxBackground.position.set(position);
 
         for(int i = 0; i < BackgroundManager.layers.length; i++) {
             BackgroundManager.layers[i] = new Vector2();
@@ -149,8 +147,8 @@ public class WorldLoadingState extends State {
         float height = Gdx.graphics.getHeight();
         GameState.hud = new OrthographicCamera();
         GameState.hud.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
-        GameState.parallexBackground = new OrthographicCamera();
-        GameState.parallexBackground.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
+        GameState.parallaxBackground = new OrthographicCamera();
+        GameState.parallaxBackground.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
 
         // vector 2 takes a x and y gravity value
         GameState.world = new World(new Vector2(0, -20f), false);

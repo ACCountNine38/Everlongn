@@ -73,6 +73,7 @@ public class Player extends Creature {
         this.width = width;
         this.height = height;
 
+        resetHealth(100);
         type.add("player");
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
@@ -109,6 +110,7 @@ public class Player extends Creature {
         arcaneLight = new PointLight(GameState.rayHandler, 400, new Color(0.05f, 0.05f, 0.05f, 1), 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM + 80);
+
     }
 
     public void checkSpecialCase() {
@@ -934,6 +936,12 @@ public class Player extends Creature {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             System.exit(1);
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+            health -= 10;
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
+            health += 10;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.F4)) {
             ControlCenter.DEBUG = !ControlCenter.DEBUG;

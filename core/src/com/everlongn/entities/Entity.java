@@ -10,7 +10,7 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public abstract class Entity {
-    public int health, maxHealth, resistance, maxResistance;
+    public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance;
     public float x, y, density; //protected allow extended class to have access to them
     public int width, height;
     public String name;
@@ -29,17 +29,13 @@ public abstract class Entity {
         this.width = width;
         this.height = height;
         this.density = density;
-        //batch = c.getSpriteBatch();
 
         // default values
         maxHealth = 100;
         health = 100;
         maxResistance = 10;
-        resistance = 10;
+        resistance = maxResistance;
         name = "UNNAMED";
-
-//        body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, true,
-//                Constants.BIT_ENEMY, (short)(Constants.BIT_PLAYER | Constants.BIT_TILE), (short)0);
     }
 
     public abstract void tick();
@@ -65,5 +61,39 @@ public abstract class Entity {
 
     public Rectangle getBound() {
         return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, width, height);
+    }
+
+    public void resetHealth(float amount) {
+        maxHealth = amount;
+        health = maxHealth;
+    }
+
+    public float getHealthPercentage() {
+        return health/(maxHealth+bonusHealth);
+    }
+
+    // method that calculates damage to player and enemies by difficulty
+    public void hurt(float damage, int difficulty) {
+        if(name.equals("player")) {
+            if (difficulty == 2) { // insane difficulty
+                if (damage*1.5 - resistance > 0) {
+                    health -= damage*1.5 - resistance;
+                }
+            } else {
+                if (damage - resistance > 0) {
+                    health -= damage - resistance;
+                }
+            }
+        } else {
+            if (difficulty == 0) { // standard difficulty
+                if (damage - resistance * 0.5 > 0) {
+                    health -= damage - resistance * 0.5;
+                }
+            } else {
+                if (damage - resistance > 0) {
+                    health -= damage - resistance;
+                }
+            }
+        }
     }
 }

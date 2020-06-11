@@ -1,17 +1,16 @@
 package com.everlongn.states;
 
-import box2dLight.DirectionalLight;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Tiles;
+import com.everlongn.assets.UI;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
@@ -22,38 +21,38 @@ import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
 
-import java.util.ArrayList;
-
 import static com.everlongn.utils.Constants.PPM;
 
 public class GameState extends State {
+    // screen settings //
+    public static OrthographicCamera hud, parallaxBackground;
+    private float screenTransitionAlpha = 1f;
+    public static boolean frameSkip = true;
+    ///////////////////
 
-    public static Box2DDebugRenderer debug;
+    // world settings //
+    public static FileHandle file;
+    public static int chunkSize = 20;
+    public static int worldWidth, worldHeight;
+    public static Chunk[][] chunks;
     public static EntityManager entityManager;
     public static World world;
     public static RayHandler rayHandler;
     public static Tile[][] tiles;
     public static Wall[][] walls;
     public static PointLight[][] lightmap;
-
-    public static int spawnX, spawnY, xStart, xEnd, yStart, yEnd;
-    public static int worldWidth, worldHeight;
-
-    public static boolean frameSkip = true;
-    public static OrthographicCamera hud, parallexBackground;
-
-    public static Inventory inventory;
     public static BackgroundManager background;
+    ///////////////////
 
-    private float screenTransitionAlpha = 1f;
+    // Player Related Fields //
+    public static int spawnX, spawnY, xStart, xEnd, yStart, yEnd;
 
-    // world settings//
-    public static FileHandle file;
-    public static int chunkSize = 20;
-    public static Chunk[][] chunks;
+    public static float[] stainAlpha = new float[]{0f, 0f, 0f, 0f, 0f};
+    public static Inventory inventory;
     ///////////////////
 
     // debug //
+    public static Box2DDebugRenderer debug;
     public static boolean lightsOn = true;
     ///////////////////
 
@@ -80,6 +79,7 @@ public class GameState extends State {
         rayHandler.setCombinedMatrix(camera);
         rayHandler.setBlurNum(3);
         rayHandler.setShadows(true);
+        updateStainAlpha();
 
         if(Player.blink && !Player.blinkAlphaMax) {
             screenTransitionAlpha+=0.2;
@@ -154,32 +154,75 @@ public class GameState extends State {
             }
         }
     }
-    public void renderChunks(SpriteBatch batch) {
-        for (int i = 0; i < chunks.length; i++) {
-            for (int j = 0; j < chunks[i].length; j++) {
-                if (i >= Player.currentChunkX - 2 && i <= Player.currentChunkX + 2 &&
-                        j >= Player.currentChunkY - 2 && j <= Player.currentChunkY + 2) {
 
-                        for (int x = i * chunkSize; x < i * chunkSize + chunkSize; x++) {
-                            for (int y = j * chunkSize; y < j * chunkSize + chunkSize; y++) {
-                                if (tiles[x][y] != null) {
-                                    tiles[x][y].render(batch);
-                                }
-                            }
-                        }
+    public void updateStainAlpha() {
+        if(EntityManager.player.getHealthPercentage() < 0.9f) {
+            if(stainAlpha[0] > (1-(EntityManager.player.getHealthPercentage() + 0.2f))*5f) {
+                stainAlpha[0]-=0.01;
+            } else if(stainAlpha[0] < (1-(EntityManager.player.getHealthPercentage() + 0.2f))*5f) {
+                stainAlpha[0]+=0.01;
+            }
+            if(stainAlpha[0] > 1) {
+                stainAlpha[0] = 1;
+            } else if(stainAlpha[0] < 0) {
+                stainAlpha[0] = 0;
+            }
+        }
+        if(EntityManager.player.getHealthPercentage() < 0.6f) {
+            if(stainAlpha[1] > (1-(EntityManager.player.getHealthPercentage() + 0.4f))*5f) {
+                stainAlpha[1]-=0.01;
+            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.4f))*5f) {
+                stainAlpha[1]+=0.01;
+            }
+            if(stainAlpha[1] > 1) {
+                stainAlpha[1] = 1;
+            } else if(stainAlpha[0] < 0) {
+                stainAlpha[1] = 0;
+            }
 
-                }
+            if(stainAlpha[4] > (1-(EntityManager.player.getHealthPercentage() + 0.4f))*1.67f) {
+                stainAlpha[4]-=0.01;
+            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.4f))*1.67f) {
+                stainAlpha[4]+=0.01;
+            }
+            if(stainAlpha[4] > 1) {
+                stainAlpha[4] = 1;
+            } else if(stainAlpha[4] < 0) {
+                stainAlpha[4] = 0;
+            }
+        }
+        if(EntityManager.player.getHealthPercentage() < 0.4f) {
+            if(stainAlpha[2] > (1-(EntityManager.player.getHealthPercentage() + 0.6f))*5f) {
+                stainAlpha[2]-=0.01;
+            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.6f))*5f) {
+                stainAlpha[2]+=0.01;
+            }
+            if(stainAlpha[2] > 1) {
+                stainAlpha[2] = 1;
+            } else if(stainAlpha[0] < 0) {
+                stainAlpha[2] = 0;
+            }
+        }
+        if(EntityManager.player.getHealthPercentage() < 0.2f) {
+            if(stainAlpha[3] > (1-(EntityManager.player.getHealthPercentage() + 0.8f))*5f) {
+                stainAlpha[3]-=0.01;
+            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.8f))*5f) {
+                stainAlpha[3]+=0.01;
+            }
+            if(stainAlpha[3] > 1) {
+                stainAlpha[3] = 1;
+            } else if(stainAlpha[0] < 0) {
+                stainAlpha[3] = 0;
             }
         }
     }
-
 
     public void render() {
         Gdx.gl.glClearColor(.82f, .82f, .83f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        batch.setProjectionMatrix(parallexBackground.combined);
+        batch.setProjectionMatrix(parallaxBackground.combined);
         background.render(batch);
 
         batch.setProjectionMatrix(ControlCenter.camera.combined);
@@ -192,7 +235,9 @@ public class GameState extends State {
             rayHandler.render();
 
         batch.setProjectionMatrix(hud.combined);
+        renderStain(batch);
         inventory.render(batch);
+
         batch.begin();
 
         if(ControlCenter.DEBUG) {
@@ -231,6 +276,32 @@ public class GameState extends State {
         if(ControlCenter.DEBUG_RENDER) {
             debug.render(world, camera.combined.scl(PPM));
         }
+    }
+
+    public void renderStain(SpriteBatch batch) {
+        batch.begin();
+        if(stainAlpha[0] > 0) {
+            batch.setColor(1f, 1f, 1f, stainAlpha[0]);
+            batch.draw(UI.stain1, 0, 0, ControlCenter.width, ControlCenter.height);
+        }
+        if(stainAlpha[1] > 0) {
+            batch.setColor(1f, 1f, 1f, stainAlpha[1]);
+            batch.draw(UI.stain2, 0, 0, ControlCenter.width, ControlCenter.height);
+        }
+        if(stainAlpha[2] > 0) {
+            batch.setColor(1f, 1f, 1f, stainAlpha[2]);
+            batch.draw(UI.stain3, 0, 0, ControlCenter.width, ControlCenter.height);
+        }
+        if(stainAlpha[3] > 0) {
+            batch.setColor(1f, 1f, 1f, stainAlpha[3]);
+            batch.draw(UI.stain4, 0, 0, ControlCenter.width, ControlCenter.height);
+        }
+        if(stainAlpha[4] > 0) {
+            batch.setColor(1f, 1f, 1f, stainAlpha[4]);
+            batch.draw(UI.stain5, 0, 0, ControlCenter.width, ControlCenter.height);
+        }
+        batch.setColor(1, 1, 1, 1);
+        batch.end();
     }
 
     public void renderTiles(SpriteBatch batch) {

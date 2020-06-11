@@ -3,7 +3,7 @@ package com.everlongn.assets;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 public class UI {
-    public static Texture inventorySlot, hotbarSlot, selectedSlot;
+    public static Texture inventorySlot, hotbarSlot, selectedSlot, stain1, stain2, stain3, stain4, stain5;
     public static Texture worldSelect, worldSelected, worldSelectPanel, worldSelectBoarder, hardcore, normal;
 
     public static void init() {
@@ -19,6 +19,17 @@ public class UI {
         hardcore.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         normal = new Texture(Gdx.files.internal("UI/normal.png"), true);
         normal.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        stain1 = new Texture(Gdx.files.internal("UI/stain1.png"), true);
+        stain1.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        stain2 = new Texture(Gdx.files.internal("UI/stain2.png"), true);
+        stain2.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        stain3 = new Texture(Gdx.files.internal("UI/stain3.png"), true);
+        stain3.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        stain4 = new Texture(Gdx.files.internal("UI/stain4.png"), true);
+        stain4.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        stain5 = new Texture(Gdx.files.internal("UI/stain5.png"), true);
+        stain5.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
     }
 }
 
