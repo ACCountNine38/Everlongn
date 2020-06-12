@@ -14,6 +14,7 @@ import com.everlongn.entities.projectiles.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
+import com.everlongn.items.Item;
 import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
@@ -37,6 +38,7 @@ public class Player extends Creature {
 
     // global item related variables
     public static boolean inCombat, inventoryHold, blink, blinkAlphaMax;
+    public static Rectangle itemCollectBound;
 
     // special item related variables
     private boolean eruptionHold, shadowHold;
@@ -112,6 +114,7 @@ public class Player extends Creature {
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM + 80);
 
+        itemCollectBound = new Rectangle(body.getPosition().x*PPM + 10, body.getPosition().y*PPM - height/2 + height/3, 10, 10);
     }
 
     public void checkSpecialCase() {
@@ -159,6 +162,8 @@ public class Player extends Creature {
             previousVelY = body.getLinearVelocity().y;
             yChangeTimer = 0;
         }
+
+        itemCollectBound.setPosition(body.getPosition().x*PPM + 10, body.getPosition().y*PPM + 80);
     }
 
     @Override
@@ -893,6 +898,9 @@ public class Player extends Creature {
         horizontalForce = 0;
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Scavenger(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100));
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             int xForce = 200;

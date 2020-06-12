@@ -5,6 +5,7 @@ import com.everlongn.entities.*;
 import com.everlongn.entities.projectiles.ArcaneEruption;
 import com.everlongn.entities.projectiles.ArcaneRebound;
 import com.everlongn.entities.projectiles.ArcaneTrail;
+import com.everlongn.items.Item;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 
@@ -44,12 +45,16 @@ public class WorldContactListener implements ContactListener {
             }
         } else if(cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_TILE) || cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_ENEMY)) {
             if (a.getFilterData().categoryBits == Constants.BIT_PROJECTILE) {
+                if(a.getUserData() instanceof Item)
+                    return;
                 Projectile temp = (Projectile) a.getUserData();
                 if(!temp.lifeOut) {
                     temp.finish();
                 }
             }
             else {
+                if(b.getUserData() instanceof Item)
+                    return;
                 Projectile temp = (Projectile) b.getUserData();
                 if(!temp.lifeOut) {
                     temp.finish();

@@ -1,40 +1,51 @@
 package com.everlongn.items;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Items;
+import com.everlongn.entities.EntityManager;
+import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 import java.util.ArrayList;
 
+import static com.everlongn.utils.Constants.PPM;
+
 public class Item {
     public static Item[] items = new Item[1000];
+    public static boolean canPick;
+    public boolean collected;
 
     //----------miscellaneous item declarations
 
-    public static Item log = new Item(Items.log, "wood", 0, true, true,
+    public static Item log = new Item(Items.log, "Wood", 0, true, true,
             50, 50, 50, 50, 99,"doesn't look very healthy...", 0, 0, null);
-    public static Item stone = new Item(Items.stone, "stone", 1, true, true,
-            50, 50, 44, 44, 99, "looks very durable", 0, 0, null);
+    public static Item stone = new Item(Items.stone, "Stone", 1, true, true,
+            35, 35, 44, 44, 99, "looks very durable", 0, 0, null);
 
 //new String[]{"miscellaneous"},
     //----------
 
-    public int width, height, id, x, y, count, capacity, itemWidth, itemHeight;
+    public float x, y;
+    public int width, height, id, count, capacity, itemWidth, itemHeight;
     public long timeDropped;
-    public boolean stackable, degeneratable, pickedUp;
+    public boolean stackable, degeneratable, pickedUp, discovered;
     public String name, description;
     public Sprite texture;
-    protected String type;
+    public String type;
     public Body body;
     public float holdX, holdY;
     public TextureRegion[] display;
+    public Rectangle bounds;
 
     // weapon abstract properties
     public String[] elemental;
@@ -56,7 +67,6 @@ public class Item {
         this.id = id;
         this.stackable = stackable;
         this.degeneratable = degeneratable;
-        this.type = type;
         this.description = description;
         this.width = width;
         this.height = height;
@@ -71,23 +81,50 @@ public class Item {
         timeDropped = 0;
 
         items[id] = this;
+        bounds = new Rectangle(0, 0, width, height);
     }
 
     public void tick() {
         if(!pickedUp) {
             timeDropped += Gdx.graphics.getDeltaTime();
+            if(timeDropped >= 180 && degeneratable) {
+                GameState.world.destroyBody(body);
+                pickedUp = true;
+            }
+        }
+
+        bounds.setPosition(body.getPosition().x*PPM - width/2, body.getPosition().y*PPM - height/2);
+
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+            collected = true;
+        }
+        if(collected) {
+            float sx = Player.itemCollectBound.x/Constants.PPM;
+            float sy = Player.itemCollectBound.y/Constants.PPM;
+
+            double angle = Math.atan2(sx - body.getPosition().x,
+                    sy - body.getPosition().y);
+
+            body.setLinearVelocity((float)Math.sin(angle) * (10f), (float) Math.cos(angle) * (10f));
+
+            if(bounds.overlaps(Player.itemCollectBound)) {
+                GameState.inventory.addItem(this);
+                GameState.world.destroyBody(body);
+                pickedUp = true;
+            }
         }
     }
 
-    public void setPosition(int x, int y) {
+    public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public Item createNew(int x, int y) {
+    public Item createNew(float x, float y, int amount) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
-        body = Tool.createBox(x, y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, this);
+        i.count = amount;
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
         return i;
     }
 
@@ -107,7 +144,8 @@ public class Item {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-        batch.draw(texture, x, y, width, height);
+        if(body != null)
+            batch.draw(texture, body.getPosition().x*Constants.PPM - width/2, body.getPosition().y*Constants.PPM - height/2 - height/5, width, height);
         batch.end();
     }
 

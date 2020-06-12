@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.UI;
 import com.everlongn.entities.EntityManager;
@@ -22,12 +23,14 @@ public class Inventory {
 
     private ControlCenter c;
 
-    public static Item draggedItem, pickedItem;
+    public static Item draggedItem, pickedItem, hoveringItem;
 
-    private int dragBoundX, dragBoundY, draggedIndex;
+    private int dragBoundX, dragBoundY, draggedIndex, hoveringIndex;
     private float dragTimer, rowY[] = new float[2];
 
-    private String itemDescription;
+    private String itemDescription = "";
+
+    public GlyphLayout layout = new GlyphLayout();
 
     public Inventory(ControlCenter c) {
         this.c = c;
@@ -77,6 +80,52 @@ public class Inventory {
         } else if(!extended && rowY[1] > 0) {
             rowY[1]-=20;
         }
+
+        generateDescription();
+    }
+
+    public void generateDescription() {
+        if(extended && !itemPicking && draggedItem == null && hoveringItem != null) {
+            itemDescription = hoveringItem.name;
+            if(hoveringItem instanceof Melee) {
+                Melee item = (Melee)hoveringItem;
+                itemDescription += "\nMelee Damage: " + item.damage;
+                itemDescription += "\nCritical Chance: " + Math.round(item.critChance*100);
+                //itemDescription += "\n" + optimizeText(hoveringItem.description);
+            } else if(hoveringItem instanceof Melee) {
+                itemDescription = "melee weapon \n very op";
+            } else {
+
+            }
+        } else {
+            itemDescription = "";
+        }
+    }
+
+    public String optimizeText(String text) {
+        String newText = "";
+
+        String currentText = "";
+        while(text.length() > 0) {
+            if(text.indexOf(" ") == -1) {
+                currentText += text;
+                text = "";
+            } else {
+                currentText += text.substring(0, text.indexOf(" "));
+                text = text.substring(text.indexOf(" "));
+            }
+            layout.setText(TextManager.bfont, currentText);
+            if(layout.width > 300) {
+                newText += currentText + "\n";
+                currentText = "";
+            }
+        }
+
+        if(currentText.length() > 0) {
+            newText += currentText;
+        }
+
+        return newText;
     }
 
     public void addItem(Item item) {
@@ -194,16 +243,6 @@ public class Inventory {
         }
     }
 
-    public void displayItemInformation(Item item) {
-        ArrayList<String> information = new ArrayList<String>();
-        if(item instanceof Melee) {
-            Melee temp = (Melee)item;
-            information.add(temp.name);
-        } else if(item instanceof Arcane) {
-            Arcane temp = (Arcane)item;
-        }
-    }
-
     public void render(SpriteBatch batch) {
         batch.begin();
 
@@ -229,6 +268,10 @@ public class Inventory {
                 TextManager.draw("" + pickedItem.count, Gdx.input.getX() - slotSize/2 + slotSize - 5, ControlCenter.height - Gdx.input.getY() + slotSize/2 - slotSize + 10, Color.WHITE, 1, true);
             }
         }
+
+        if(!itemDescription.equals("")) {
+            TextManager.draw(itemDescription, Gdx.input.getX() + 25, ControlCenter.height - Gdx.input.getY(), Color.WHITE, 1f, false);
+        }
         batch.end();
     }
 
@@ -253,7 +296,15 @@ public class Inventory {
                     Player.inventoryHold = true;
                     Player.inCombat = false;
                 }
+
+                if(inventory[i] != null) {
+                    hoveringItem = inventory[i];
+                    hoveringIndex = i;
+                }
             } else {
+                if(i == hoveringIndex) {
+                    hoveringItem = null;
+                }
                 batch.draw(UI.hotbarSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20, slotSize, slotSize);
             }
 
@@ -285,7 +336,15 @@ public class Inventory {
                         Player.inventoryHold = true;
                         checkPickItem(i + hotbarSize*r);
                     }
+
+                    if(inventory[i + r*hotbarSize] != null) {
+                        hoveringItem = inventory[i + r*hotbarSize];
+                        hoveringIndex = i + r*hotbarSize;
+                    }
                 } else {
+                    if(i + r*hotbarSize == hoveringIndex) {
+                        hoveringItem = null;
+                    }
                     batch.draw(UI.inventorySlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - rowY[r-1], slotSize, slotSize);
                 }
                 if(inventory[i + r*hotbarSize] != null) {
