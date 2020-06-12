@@ -74,6 +74,7 @@ public class Player extends Creature {
         this.height = height;
 
         resetHealth(100);
+        baseRegenAmount = 0.1f;
         type.add("player");
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
@@ -139,6 +140,11 @@ public class Player extends Creature {
             }
         }
 
+        // check fall damage
+        if(Math.abs(previousVelY - body.getLinearVelocity().y) > 15) {
+            health -= (Math.abs(previousVelY - body.getLinearVelocity().y)-15) * 5;
+        }
+
         // check jump timer
         if(body.getLinearVelocity().y > previousVelY - 0.01 && body.getLinearVelocity().y < previousVelY + 0.01) {
             yChangeTimer += Gdx.graphics.getDeltaTime();
@@ -169,17 +175,15 @@ public class Player extends Creature {
         inputUpdate();
         animationUpdate();
 
+        regenerate();
+
         if(body.getLinearVelocity().y <= 0 && jump && !airborn) {
             fall = true;
             jump = false;
         }
 
-        if(body.getLinearVelocity().y > 30) {
-            body.setLinearVelocity(body.getLinearVelocity().x, 0);
-        }
-
-        if(body.getLinearVelocity().y < -30) {
-            body.setLinearVelocity(body.getLinearVelocity().x, -30);
+        if(body.getLinearVelocity().y < -50) {
+            body.setLinearVelocity(body.getLinearVelocity().x, -50);
         }
 
         if(jump && !Gdx.input.isKeyPressed(Input.Keys.W) && body.getLinearVelocity().y > 0) {

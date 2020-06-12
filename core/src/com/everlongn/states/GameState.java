@@ -48,6 +48,7 @@ public class GameState extends State {
     public static int spawnX, spawnY, xStart, xEnd, yStart, yEnd;
 
     public static float[] stainAlpha = new float[]{0f, 0f, 0f, 0f, 0f};
+    boolean layerFlash;
     public static Inventory inventory;
     ///////////////////
 
@@ -156,64 +157,96 @@ public class GameState extends State {
     }
 
     public void updateStainAlpha() {
-        if(EntityManager.player.getHealthPercentage() < 0.9f) {
-            if(stainAlpha[0] > (1-(EntityManager.player.getHealthPercentage() + 0.2f))*5f) {
+        if(EntityManager.player.getHealthPercentage() <= 0.7f) {
+            if(stainAlpha[0] > 0.95) {
+                layerFlash = false;
+            } else if(stainAlpha[0] < 0.55) {
+                layerFlash = true;
+            }
+            if(!layerFlash) {
                 stainAlpha[0]-=0.01;
-            } else if(stainAlpha[0] < (1-(EntityManager.player.getHealthPercentage() + 0.2f))*5f) {
+            } else {
                 stainAlpha[0]+=0.01;
             }
-            if(stainAlpha[0] > 1) {
-                stainAlpha[0] = 1;
+        } else if(EntityManager.player.getHealthPercentage() <= 0.85f) {
+            if(stainAlpha[0] > (1-(EntityManager.player.getHealthPercentage() + 0.15f))*5f) {
+                layerFlash = false;
             } else if(stainAlpha[0] < 0) {
+                layerFlash = true;
+            }
+            if(!layerFlash) {
+                stainAlpha[0]-=0.005;
+            } else {
+                stainAlpha[0]+=0.005;
+            }
+        } else {
+            stainAlpha[0]-=0.005;
+            if(stainAlpha[0] < 0)
                 stainAlpha[0] = 0;
-            }
         }
-        if(EntityManager.player.getHealthPercentage() < 0.6f) {
-            if(stainAlpha[1] > (1-(EntityManager.player.getHealthPercentage() + 0.4f))*5f) {
-                stainAlpha[1]-=0.01;
-            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.4f))*5f) {
-                stainAlpha[1]+=0.01;
-            }
-            if(stainAlpha[1] > 1) {
-                stainAlpha[1] = 1;
-            } else if(stainAlpha[0] < 0) {
-                stainAlpha[1] = 0;
-            }
 
-            if(stainAlpha[4] > (1-(EntityManager.player.getHealthPercentage() + 0.4f))*1.67f) {
+        if(EntityManager.player.getHealthPercentage() <= 0.65f) {
+            if(stainAlpha[1] > (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2.5f) {
+                stainAlpha[1]-=0.015;
+            } else if(stainAlpha[1] < (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2.5f) {
+                stainAlpha[1]+=0.015;
+            }
+            if(stainAlpha[4] > (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2f) {
                 stainAlpha[4]-=0.01;
-            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.4f))*1.67f) {
+            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2f) {
                 stainAlpha[4]+=0.01;
             }
-            if(stainAlpha[4] > 1) {
-                stainAlpha[4] = 1;
-            } else if(stainAlpha[4] < 0) {
-                stainAlpha[4] = 0;
+        } else {
+            if(stainAlpha[1] > (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2.5f) {
+                stainAlpha[1]-=0.015;
+            }
+            if(stainAlpha[4] > (1-(EntityManager.player.getHealthPercentage() + 0.35f))*2f) {
+                stainAlpha[4]-=0.01;
             }
         }
-        if(EntityManager.player.getHealthPercentage() < 0.4f) {
-            if(stainAlpha[2] > (1-(EntityManager.player.getHealthPercentage() + 0.6f))*5f) {
-                stainAlpha[2]-=0.01;
-            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.6f))*5f) {
-                stainAlpha[2]+=0.01;
+        if(stainAlpha[1] > 1) {
+            stainAlpha[1] = 1;
+        } else if(stainAlpha[1] < 0) {
+            stainAlpha[1] = 0;
+        }
+        if(stainAlpha[4] > 1) {
+            stainAlpha[4] = 1;
+        } else if(stainAlpha[4] < 0) {
+            stainAlpha[4] = 0;
+        }
+
+        if(EntityManager.player.getHealthPercentage() <= 0.5f) {
+            if(stainAlpha[2] > (1-(EntityManager.player.getHealthPercentage() + 0.5f))*5f) {
+                stainAlpha[2]-=0.0125;
+            } else if(stainAlpha[2] < (1-(EntityManager.player.getHealthPercentage() + 0.5f))*5f) {
+                stainAlpha[2]+=0.0125;
             }
-            if(stainAlpha[2] > 1) {
-                stainAlpha[2] = 1;
-            } else if(stainAlpha[0] < 0) {
-                stainAlpha[2] = 0;
+        } else {
+            if(stainAlpha[2] > (1-(EntityManager.player.getHealthPercentage() + 0.5f))*5f) {
+                stainAlpha[2]-=0.0125;
             }
         }
-        if(EntityManager.player.getHealthPercentage() < 0.2f) {
-            if(stainAlpha[3] > (1-(EntityManager.player.getHealthPercentage() + 0.8f))*5f) {
-                stainAlpha[3]-=0.01;
-            } else if(stainAlpha[4] < (1-(EntityManager.player.getHealthPercentage() + 0.8f))*5f) {
-                stainAlpha[3]+=0.01;
+        if(stainAlpha[2] > 1) {
+            stainAlpha[2] = 1;
+        } else if(stainAlpha[0] < 0) {
+            stainAlpha[2] = 0;
+        }
+
+        if(EntityManager.player.getHealthPercentage() <= 0.35f) {
+            if(stainAlpha[3] > (1-(EntityManager.player.getHealthPercentage() + 0.65f))*5f) {
+                stainAlpha[3]-=0.0125;
+            } else if(stainAlpha[3] < (1-(EntityManager.player.getHealthPercentage() + 0.65f))*5f) {
+                stainAlpha[3]+=0.0125;
             }
-            if(stainAlpha[3] > 1) {
-                stainAlpha[3] = 1;
-            } else if(stainAlpha[0] < 0) {
-                stainAlpha[3] = 0;
+        } else {
+            if(stainAlpha[3] > (1-(EntityManager.player.getHealthPercentage() + 0.65f))*5f) {
+                stainAlpha[3]-=0.0125;
             }
+        }
+        if(stainAlpha[3] > 1) {
+            stainAlpha[3] = 1;
+        } else if(stainAlpha[0] < 0) {
+            stainAlpha[3] = 0;
         }
     }
 
@@ -243,23 +276,25 @@ public class GameState extends State {
         if(ControlCenter.DEBUG) {
             TextManager.draw("FPS: " + Gdx.graphics.getFramesPerSecond(),
                     20, 40, Color.WHITE, 1, false);
-            TextManager.draw("Inventory Open: " + Inventory.extended,
-                    20, 60, Color.WHITE, 1, false);
             TextManager.draw("Velocity X: " + EntityManager.player.getBody().getLinearVelocity().x + "   " +
                             "Velocity Y: " + EntityManager.player.getBody().getLinearVelocity().y,
-                    20, 80, Color.WHITE, 1, false);
+                    20, 60, Color.WHITE, 1, false);
             TextManager.draw("Mouse Location: " + Gdx.input.getX() + ", " + Gdx.input.getY(),
-                    20, 100, Color.WHITE, 1, false);
+                    20, 80, Color.WHITE, 1, false);
             TextManager.draw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
-                    20, 120, Color.WHITE, 1, false);
+                    20, 100, Color.WHITE, 1, false);
             TextManager.draw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall + "   Can Jump: " + EntityManager.player.canJump,
-                    20, 140, Color.WHITE, 1, false);
+                    20, 120, Color.WHITE, 1, false);
             TextManager.draw("Aim: " + Player.aimAngle + "   Melee Attack: " + Player.meleeAttack,
-                    20, 160, Color.WHITE, 1, false);
+                    20, 140, Color.WHITE, 1, false);
             TextManager.draw("Halt: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
-                    20, 180, Color.WHITE, 1, false);
+                    20, 160, Color.WHITE, 1, false);
             TextManager.draw("Inventory Hold: " + Player.inventoryHold + "   In Combat: " + Player.inCombat,
+                    20, 180, Color.WHITE, 1, false);
+            TextManager.draw("Player Health: " + EntityManager.player.health + "   Percentage: " + EntityManager.player.getHealthPercentage(),
                     20, 200, Color.WHITE, 1, false);
+            TextManager.draw("Stain Alpha: " + stainAlpha[0] + " " + stainAlpha[1] + " " + stainAlpha[2] + " " + stainAlpha[3] + " " + stainAlpha[4],
+                    20, 220, Color.WHITE, 1, false);
         }
 
         if(Player.forceCharge > 0) {

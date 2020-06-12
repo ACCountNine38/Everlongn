@@ -1,5 +1,6 @@
 package com.everlongn.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -10,12 +11,15 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public abstract class Entity {
-    public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance;
+    public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount;
     public float x, y, density; //protected allow extended class to have access to them
     public int width, height;
     public String name;
     public ArrayList<String> type = new ArrayList<String>();
-    public boolean active = true, stunned, knockbackResistant, vulnerableToArcane;
+    public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane;
+
+    // timers
+    public float regenTimer;
 
     public ControlCenter c;
     //protected SpriteBatch batch;
@@ -66,6 +70,18 @@ public abstract class Entity {
     public void resetHealth(float amount) {
         maxHealth = amount;
         health = maxHealth;
+    }
+
+    public void regenerate() {
+        if(canRegen && health != maxHealth && active) {
+            regenTimer += Gdx.graphics.getDeltaTime();
+            if(regenTimer > 0.1) {
+                regenTimer = 0;
+                health += baseRegenAmount + bonusRegenAmount;
+                if(health > maxHealth)
+                    health = maxHealth;
+            }
+        }
     }
 
     public float getHealthPercentage() {

@@ -27,6 +27,8 @@ public class Inventory {
     private int dragBoundX, dragBoundY, draggedIndex;
     private float dragTimer, rowY[] = new float[2];
 
+    private String itemDescription;
+
     public Inventory(ControlCenter c) {
         this.c = c;
         addItem(Arcane.arcaneCaster);
