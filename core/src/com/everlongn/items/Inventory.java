@@ -11,15 +11,18 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.TextManager;
+import net.java.games.input.Component;
 
 import java.util.ArrayList;
+
+import static com.everlongn.utils.Constants.PPM;
 
 public class Inventory {
     public static Item[] inventory = new Item[18];
 
     public static int maxInventorySize = 18, hotbarSize = 6, slotSize = 64, selectedIndex = 0;
 
-    public static boolean extended, itemPicking, canAct;
+    public static boolean extended, itemPicking, canAct, itemPickDrop;
 
     private ControlCenter c;
 
@@ -42,9 +45,7 @@ public class Inventory {
         addItem(Arcane.shadowStaff.createNew(1));
         addItem(Melee.dragondance);
         addItem(Item.stone.createNew(1));
-        addItem(Item.log.createNew(88));
-        addItem(Item.log.createNew(9));
-        addItem(Item.log.createNew(9));
+        addItem(Item.log.createNew(12));
     }
 
     public void tick() {
@@ -190,7 +191,6 @@ public class Inventory {
             }
             draggedItem = null;
         } else {
-
             inventory[draggedIndex] = inventory[i];
             inventory[i] = draggedItem;
             if(i < hotbarSize)
@@ -245,11 +245,29 @@ public class Inventory {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-
+        itemPickDrop = false;
         if(rowY[0] > 0)
             renderExtendedInventory(batch);
 
         renderHotbar(batch);
+
+        if(!itemPickDrop && draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (EntityManager.player.direction == 1) {
+                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, (float) Math.random() * 50 + 150, (float) Math.random() * 50 + 100));
+            } else {
+                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, -(float) Math.random() * 50 - 150, (float) Math.random() * 50 + 100));
+            }
+            inventory[draggedIndex] = null;
+            draggedItem = null;
+        } else if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !itemPickDrop && itemPicking && draggedItem == null) {
+            if(EntityManager.player.direction == 1) {
+                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, (float)Math.random()*50 + 150, (float)Math.random()*50 + 100));
+            } else {
+                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, -(float)Math.random()*50 - 150, (float)Math.random()*50 + 100));
+            }
+            pickedItem = null;
+            itemPicking = false;
+        }
 
         // only display dragged item when the cursor is out of the selected slot
         if(draggedItem != null && !(Gdx.input.getX() > dragBoundX && Gdx.input.getX() < dragBoundX + slotSize &&
@@ -280,6 +298,8 @@ public class Inventory {
             if(Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
                     Gdx.input.getY() < 20 + slotSize && Gdx.input.getY() > 20) {
                 batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20, slotSize, slotSize);
+
+                itemPickDrop = true;
 
                 // checks if an item is being dragged in the inventory
                 if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
@@ -324,6 +344,8 @@ public class Inventory {
                 if(Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
                         Gdx.input.getY() < 20 + slotSize + (r * (slotSize+10)) && Gdx.input.getY() > 20 + (r * (slotSize+10))) {
                     batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - rowY[r-1], slotSize, slotSize);
+
+                    itemPickDrop = true;
 
                     // checks if an item is being dragged in the inventory
                     if(draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {

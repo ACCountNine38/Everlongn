@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Items;
 import com.everlongn.entities.EntityManager;
@@ -22,21 +23,21 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Item {
     public static Item[] items = new Item[1000];
-    public static boolean canPick;
+    public static boolean canPick = true;
     public boolean collected;
 
     //----------miscellaneous item declarations
 
     public static Item log = new Item(Items.log, "Wood", 0, true, true,
-            50, 50, 50, 50, 99,"doesn't look very healthy...", 0, 0, null);
+            50, 50, 50, 50, 8,"doesn't look very healthy...", 0, 0, null);
     public static Item stone = new Item(Items.stone, "Stone", 1, true, true,
-            35, 35, 44, 44, 99, "looks very durable", 0, 0, null);
+            35, 35, 44, 44, 16, "looks very durable", 0, 0, null);
 
 //new String[]{"miscellaneous"},
     //----------
 
     public float x, y;
-    public int width, height, id, count, capacity, itemWidth, itemHeight;
+    public int width, height, id, count, capacity, itemWidth, itemHeight, direction;
     public long timeDropped;
     public boolean stackable, degeneratable, pickedUp, discovered;
     public String name, description;
@@ -60,6 +61,9 @@ public class Item {
     public int healthConsumption, burst;
     public float refreshSpeed;
 
+    // vertices templates
+    public Vector2[] diagonalStick;
+
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
         this.texture = new Sprite(texture);
@@ -82,6 +86,8 @@ public class Item {
 
         items[id] = this;
         bounds = new Rectangle(0, 0, width, height);
+
+        diagonalStick = new Vector2[]{};
     }
 
     public void tick() {
@@ -95,12 +101,26 @@ public class Item {
 
         bounds.setPosition(body.getPosition().x*PPM - width/2, body.getPosition().y*PPM - height/2);
 
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y) && bounds.overlaps(Player.itemPickBound) && canPick) {
+            collected = true;
+            canPick = false;
+        }
+
+        if(!Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            canPick = true;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && bounds.overlaps(Player.itemPickBound)) {
             collected = true;
         }
         if(collected) {
             float sx = Player.itemCollectBound.x/Constants.PPM;
             float sy = Player.itemCollectBound.y/Constants.PPM;
+
+            if(Math.abs(sx - body.getPosition().x) > 75/Constants.PPM) {
+                collected = false;
+                return;
+            }
 
             double angle = Math.atan2(sx - body.getPosition().x,
                     sy - body.getPosition().y);
@@ -120,11 +140,17 @@ public class Item {
         this.y = y;
     }
 
-    public Item createNew(float x, float y, int amount) {
+    public Item createNew(float x, float y, int amount, float forceX, float forceY) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
         i.count = amount;
-        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1.75f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        if(forceX > 0) {
+            i.direction = 1;
+        } else {
+            i.direction = 0;
+        }
+        i.body.applyForceToCenter(forceX, forceY, false);
         return i;
     }
 

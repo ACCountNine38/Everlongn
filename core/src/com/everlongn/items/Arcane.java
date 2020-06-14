@@ -2,6 +2,8 @@ package com.everlongn.items;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.everlongn.assets.Items;
+import com.everlongn.utils.Constants;
+import com.everlongn.utils.Tool;
 
 public class Arcane extends Weapon {
     public static Arcane shadowStaff = new Arcane(Items.shadowStaffR, "Shadow Manipulator", 200, false, false, 110, 110, 76, 76, 1, "Your shadow seem a bit abnormal...",
@@ -35,12 +37,17 @@ public class Arcane extends Weapon {
         return i;
     }
 
-    @Override
-    public void tick() {
-
-    }
-
-    public void onClick() {
-
+    public Arcane createNew(float x, float y, int amount, float forceX, float forceY) {
+        Arcane i = new Arcane(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display, elemental, healthConsumption, refreshSpeed, burst);
+        i.setPosition(x, y);
+        i.count = amount;
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, 0.25f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        if(forceX > 0) {
+            i.direction = 1;
+        } else {
+            i.direction = 0;
+        }
+        i.body.applyForceToCenter(forceX, forceY, false);
+        return i;
     }
 }

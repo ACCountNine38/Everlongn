@@ -32,13 +32,11 @@ public class Player extends Creature {
     public static boolean movingHorizontal, onhold,
             weaponActive = true, meleeAttack, meleeRecharge, halt;
 
-    private int direction = 1; // 0 - left, 1- right
-
     private boolean cameraXStopped, armSwingUp = true;
 
     // global item related variables
     public static boolean inCombat, inventoryHold, blink, blinkAlphaMax;
-    public static Rectangle itemCollectBound;
+    public static Rectangle itemCollectBound, itemPickBound;
 
     // special item related variables
     private boolean eruptionHold, shadowHold;
@@ -115,6 +113,8 @@ public class Player extends Creature {
                 body.getPosition().y * Constants.PPM + 80);
 
         itemCollectBound = new Rectangle(body.getPosition().x*PPM + 10, body.getPosition().y*PPM - height/2 + height/3, 10, 10);
+        itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50, 150, 100);
+
     }
 
     public void checkSpecialCase() {
@@ -164,6 +164,7 @@ public class Player extends Creature {
         }
 
         itemCollectBound.setPosition(body.getPosition().x*PPM + 10, body.getPosition().y*PPM + 80);
+        itemPickBound.setPosition(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50);
     }
 
     @Override
@@ -900,7 +901,7 @@ public class Player extends Creature {
             EntityManager.entities.add(new Scavenger(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
-            EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1));
+            EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1, 0f, 0f));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             int xForce = 200;

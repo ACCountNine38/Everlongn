@@ -1,7 +1,10 @@
 package com.everlongn.items;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.everlongn.assets.Items;
+import com.everlongn.utils.Constants;
+import com.everlongn.utils.Tool;
 
 public class Melee extends Weapon {
     public static Melee barkBane = new Melee(Items.darkBaneR, "Dark Bane", 200, false, false, 100, 100, 60, 60,
@@ -29,6 +32,20 @@ public class Melee extends Weapon {
         Melee i = new Melee(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display, elemental, damage, drawSpeed, swingSpeed, critChance, force, heavy);
         i.pickedUp = true;
         i.count = count;
+        return i;
+    }
+
+    public Melee createNew(float x, float y, int amount, float forceX, float forceY) {
+        Melee i = new Melee(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display, elemental, damage, drawSpeed, swingSpeed, critChance, force, heavy);
+        i.setPosition(x, y);
+        i.count = amount;
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, 0.25f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        if(forceX > 0) {
+            i.direction = 1;
+        } else {
+            i.direction = 0;
+        }
+        i.body.applyForceToCenter(forceX, forceY, false);
         return i;
     }
 }

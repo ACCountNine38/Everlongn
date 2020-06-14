@@ -293,7 +293,9 @@ public class GameState extends State {
                     20, 180, Color.WHITE, 1, false);
             TextManager.draw("Player Health: " + EntityManager.player.health + "   Percentage: " + EntityManager.player.getHealthPercentage(),
                     20, 200, Color.WHITE, 1, false);
-            TextManager.draw("Stain Alpha: " + stainAlpha[0] + " " + stainAlpha[1] + " " + stainAlpha[2] + " " + stainAlpha[3] + " " + stainAlpha[4],
+//            TextManager.draw("Stain Alpha: " + stainAlpha[0] + " " + stainAlpha[1] + " " + stainAlpha[2] + " " + stainAlpha[3] + " " + stainAlpha[4],
+//                    20, 220, Color.WHITE, 1, false);
+            TextManager.draw("itemPickDrop: " + Inventory.itemPickDrop,
                     20, 220, Color.WHITE, 1, false);
         }
 
