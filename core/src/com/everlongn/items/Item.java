@@ -36,7 +36,7 @@ public class Item {
     //----------
 
     public float x, y;
-    public int width, height, id, count, capacity, itemWidth, itemHeight;
+    public int width, height, id, count, capacity, itemWidth, itemHeight, direction;
     public long timeDropped;
     public boolean stackable, degeneratable, pickedUp, discovered;
     public String name, description;
@@ -95,12 +95,26 @@ public class Item {
 
         bounds.setPosition(body.getPosition().x*PPM - width/2, body.getPosition().y*PPM - height/2);
 
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y) && bounds.overlaps(Player.itemPickBound) && canPick) {
+            collected = true;
+            canPick = false;
+        }
+
+        if(!Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            canPick = true;
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && bounds.overlaps(Player.itemPickBound)) {
             collected = true;
         }
         if(collected) {
             float sx = Player.itemCollectBound.x/Constants.PPM;
             float sy = Player.itemCollectBound.y/Constants.PPM;
+
+            if(Math.abs(sx - body.getPosition().x) > 75/Constants.PPM) {
+                collected = false;
+                return;
+            }
 
             double angle = Math.atan2(sx - body.getPosition().x,
                     sy - body.getPosition().y);
@@ -115,16 +129,23 @@ public class Item {
         }
     }
 
+
     public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public Item createNew(float x, float y, int amount) {
+    public Item createNew(float x, float y, int amount, float forceX, float forceY) {
         Item i = new Item(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
         i.setPosition(x, y);
         i.count = amount;
-        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1.75f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        if(forceX > 0) {
+            i.direction = 1;
+        } else {
+            i.direction = 0;
+        }
+        i.body.applyForceToCenter(forceX, forceY, false);
         return i;
     }
 
