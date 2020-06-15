@@ -117,7 +117,7 @@ public class Tool {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 1;
-        //fixtureDef.friction = 0;
+        fixtureDef.friction = 0;
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;
         fixtureDef.filter.groupIndex = gIndex;
@@ -154,45 +154,6 @@ public class Tool {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = density;
-        //fixtureDef.friction = 0;
-        fixtureDef.filter.categoryBits = cBits;
-        fixtureDef.filter.maskBits = mBits;
-        fixtureDef.filter.groupIndex = gIndex;
-        // creates the body and puts it into the world
-        body = GameState.world.createBody(def);
-        body.createFixture(fixtureDef).setUserData(object);
-        shape.dispose();
-        return body;
-    }
-
-    public static Body createDecayTile(int x, int y, int direction,
-                                       short cBits, short mBits, short gIndex, Object object) {
-        Body body;
-        // describes the physical properties the body have
-        BodyDef def = new BodyDef();
-
-        def.type = BodyDef.BodyType.StaticBody;
-
-        def.position.set(x/Constants.PPM, y/Constants.PPM);
-        def.fixedRotation = true;
-
-        PolygonShape shape = new PolygonShape();
-
-        Vector2[] verticies;
-
-        if(direction == 1) {
-            verticies = new Vector2[]{new Vector2(0, 0),
-                    new Vector2(0, Tile.TILESIZE / Constants.PPM),
-                    new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
-        } else {
-            verticies = new Vector2[]{new Vector2(0, 0),
-                    new Vector2(Tile.TILESIZE / Constants.PPM, 0),
-                    new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM)};
-        }
-        shape.set(verticies);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1;
         //fixtureDef.friction = 0;
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;

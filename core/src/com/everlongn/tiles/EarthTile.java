@@ -13,10 +13,10 @@ import com.everlongn.utils.Tool;
 public class EarthTile extends Tile {
     private Sprite grass = new Sprite(Herbs.grass1);
     private boolean rotate = false;
-    private boolean leftFilled, rightFilled;
-    private boolean decayed;
 
     private int slantType = 0;
+
+    public int treePlanted = -1;
 
     public EarthTile(int x, int y) {
         super(Tiles.earthTile, x, y, 1, true, true);

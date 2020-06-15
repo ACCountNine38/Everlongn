@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Entities;
-import com.everlongn.entities.dream.Scavenger;
+import com.everlongn.entities.creatures.Scavenger;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
@@ -151,7 +151,7 @@ public class Player extends Creature {
         // check jump timer
         if(body.getLinearVelocity().y > previousVelY - 0.01 && body.getLinearVelocity().y < previousVelY + 0.01) {
             yChangeTimer += Gdx.graphics.getDeltaTime();
-            if (yChangeTimer > 0.1) {
+            if (yChangeTimer > 0.01) {
                 fall = false;
                 canJump = true;
                 haltReset = true;

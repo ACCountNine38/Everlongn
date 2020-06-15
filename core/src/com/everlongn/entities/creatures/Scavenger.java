@@ -1,7 +1,6 @@
-package com.everlongn.entities.dream;
+package com.everlongn.entities.creatures;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Creature;
 import com.everlongn.game.ControlCenter;

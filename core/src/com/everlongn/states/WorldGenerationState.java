@@ -26,6 +26,9 @@ public class WorldGenerationState extends State {
     private Pixmap caveMap, tileMap, wallMap;
     private ArrayList<Integer> elevation;
     private ArrayList<String> biomes;
+    private ArrayList<Integer> vegetation;
+
+    private ArrayList<StaticObject> herbs;
 
     private int currentElevation, caveInstance;
     private float count;
@@ -62,8 +65,10 @@ public class WorldGenerationState extends State {
             currentStage = "Setting Up...";
             r.setSeed(seed);
 
-            elevation = new ArrayList<Integer>();
-            biomes = new ArrayList<String>();
+            elevation = new ArrayList<>();
+            biomes = new ArrayList<>();
+            vegetation = new ArrayList<>();
+            herbs = new ArrayList<>();
 
             chunkSize = 50;
             if(size.equals("Small")) {
@@ -85,9 +90,13 @@ public class WorldGenerationState extends State {
                 if(r.nextInt(10) < 2 && i != 0 && i != elevation.size()-1) {
                     elevation.add(-(r.nextInt(25) + 15));
                     biomes.add("mountain");
+
+                    vegetation.add(r.nextInt(3));
                 } else {
                     elevation.add(4 - r.nextInt(9));
                     biomes.add("plain");
+
+                    vegetation.add(r.nextInt(5));
                 }
             }
 
@@ -222,7 +231,13 @@ public class WorldGenerationState extends State {
             data.writeString(formatter.format(date), true);
             data.writeString("\n", true);
 
+            FileHandle herb = Gdx.files.external("everlongn/herbs/" + name + ".txt");
+            for(int i = 0; i < herbs.size(); i++) {
+                herb.writeString(herbs.get(i).name + " " + herbs.get(i).x + " " + herbs.get(i).y, true);
+            }
+
             tileMap.dispose();
+            wallMap.dispose();
         }
         currentStep++;
 
@@ -386,6 +401,29 @@ public class WorldGenerationState extends State {
 //                int blue = (color & 0xFF00) >>> 8;
 //                int alpha = color & 0xFF;
         }
+
+        if(vegetation.get(i) == 0) {
+            if(r.nextInt(8) == 0 && currentElevation-1 > 0) {
+                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            }
+        } else if(vegetation.get(i) == 1) {
+            if(r.nextInt(8) <= 1&& currentElevation-1 > 0) {
+                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            }
+        } else if(vegetation.get(i) == 2) {
+            if(r.nextInt(8) <= 3 && currentElevation-1 > 0) {
+                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            }
+        } else if(vegetation.get(i) == 3) {
+            if(r.nextInt(8) <= 5 && currentElevation-1 > 0) {
+                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            }
+        } else if(vegetation.get(i) == 4) {
+            if(r.nextInt(8) <= 7 && currentElevation-1 > 0) {
+                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            }
+        }
+
         for(int h = currentElevation + 2; h < worldHeight; h++) {
             wallMap.drawPixel(i * chunkSize + j, h);
         }
@@ -409,5 +447,16 @@ public class WorldGenerationState extends State {
     @Override
     public void dispose() {
 
+    }
+}
+
+class StaticObject {
+    String name;
+    int x, y;
+
+    public StaticObject(String name, int x, int y) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
     }
 }
