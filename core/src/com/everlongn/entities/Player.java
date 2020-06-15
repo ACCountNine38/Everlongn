@@ -35,7 +35,7 @@ public class Player extends Creature {
     private boolean cameraXStopped, armSwingUp = true;
 
     // global item related variables
-    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax;
+    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset;
     public static Rectangle itemCollectBound, itemPickBound;
 
     // special item related variables
@@ -154,6 +154,7 @@ public class Player extends Creature {
             if (yChangeTimer > 0.1) {
                 fall = false;
                 canJump = true;
+                haltReset = true;
                 yChangeTimer = 0;
             }
         } else {
@@ -273,6 +274,9 @@ public class Player extends Creature {
         }
 
         if(Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
+            if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                haltReset = false;
+            }
             if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack) {
                 meleeAttack = true;
                 inCombat = true;
@@ -335,12 +339,12 @@ public class Player extends Creature {
                         }
                     } else {
                         if(Inventory.inventory[Inventory.selectedIndex].heavy) {
-                            if (!fall && !jump) {
+                            if ((!fall && !jump) || haltReset) {
                                 aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                             } else {
                                 aimAngle += 1;
                                 if(haltForce < 45) {
-                                    haltForce += 1;
+                                    haltForce += 0.75f;
                                 }
                                 halt = true;
                             }
@@ -348,6 +352,7 @@ public class Player extends Creature {
                             aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                         }
                         if (aimAngle > -targetAngle) {
+                            haltReset = false;
                             aimAngle = -targetAngle;
                             meleeRecharge = true;
                             Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width, body.getPosition().y*PPM,
@@ -430,12 +435,12 @@ public class Player extends Creature {
                         }
                     } else {
                         if(Inventory.inventory[Inventory.selectedIndex].heavy) {
-                            if (!fall && !jump) {
+                            if ((!fall && !jump) || haltReset) {
                                 aimAngle -= Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                             } else {
                                 aimAngle -= 1;
                                 if(haltForce < 45) {
-                                    haltForce += 1;
+                                    haltForce += 0.75f;
                                 }
                                 halt = true;
                             }
@@ -446,6 +451,7 @@ public class Player extends Creature {
                         if (aimAngle < targetAngle) {
                             aimAngle = targetAngle;
                             meleeRecharge = true;
+                            haltReset = false;
 
                             Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM,
                                     Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
