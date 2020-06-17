@@ -11,6 +11,6 @@ public class Herbs {
         grass0 = new Texture(Gdx.files.internal("herbs/Grass0.png"));
         grass1 = new Texture(Gdx.files.internal("herbs/Grass1.png"));
         grass2 = new Texture(Gdx.files.internal("herbs/Grass2.png"));
-        tree1 = new Texture(Gdx.files.internal("herbs/tree1.png"));
+        tree1 = new Texture(Gdx.files.internal("herbs/dreadTree.png"));
     }
 }

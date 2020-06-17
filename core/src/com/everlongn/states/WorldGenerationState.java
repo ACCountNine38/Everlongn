@@ -2,6 +2,7 @@ package com.everlongn.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
@@ -23,14 +24,14 @@ public class WorldGenerationState extends State {
     private int horizon, underground, chunkSize, worldWidth, worldHeight, spawnX, spawnY, seed, numSteps, currentStep;
     private String name, size, difficulty, mode, currentStage = "Setting Up...";
 
-    private Pixmap caveMap, tileMap, wallMap;
+    private Pixmap caveMap, tileMap, wallMap, herbsMap;
     private ArrayList<Integer> elevation;
     private ArrayList<String> biomes;
     private ArrayList<Integer> vegetation;
 
     private ArrayList<StaticObject> herbs;
 
-    private int currentElevation, caveInstance;
+    private int currentElevation, caveInstance, previousTreeX;
     private float count;
     private boolean generated;
 
@@ -70,16 +71,18 @@ public class WorldGenerationState extends State {
             vegetation = new ArrayList<>();
             herbs = new ArrayList<>();
 
-            chunkSize = 50;
             if(size.equals("Small")) {
                 worldWidth = 1500;
                 worldHeight = 400;
+                chunkSize = 50;
             } else if(size.equals("Medium")) {
-                worldWidth = 2000;
-                worldHeight = 500;
+                worldWidth = 2100;
+                worldHeight = 600;
+                chunkSize = 75;
             } else if(size.equals("Large")) {
                 worldWidth = 3000;
                 worldHeight = 600;
+                chunkSize = 100;
             }
 
             horizon = worldHeight/4;
@@ -87,17 +90,20 @@ public class WorldGenerationState extends State {
             currentElevation = horizon;
 
             for(int i = 0; i < worldWidth/chunkSize; i++) {
-                if(r.nextInt(10) < 2 && i != 0 && i != elevation.size()-1) {
-                    elevation.add(-(r.nextInt(25) + 15));
-                    biomes.add("mountain");
+                biomes.add("plain");
+                elevation.add(4 - r.nextInt(9));
+                vegetation.add(r.nextInt(10));
+            }
 
-                    vegetation.add(r.nextInt(3));
-                } else {
-                    elevation.add(4 - r.nextInt(9));
-                    biomes.add("plain");
-
-                    vegetation.add(r.nextInt(5));
+            int numMountains = r.nextInt(5) + 3;
+            for(int i = 0; i < numMountains; i++) {
+                int index = r.nextInt(biomes.size());
+                while(biomes.get(index).equals("mountain") || index == 0 || index == biomes.size()-1) {
+                    index = r.nextInt(biomes.size());
                 }
+                biomes.set(index, "mountain");
+                elevation.set(index, -(r.nextInt(25) + 15));
+                vegetation.set(index, r.nextInt(6));
             }
 
             tileMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
@@ -105,6 +111,8 @@ public class WorldGenerationState extends State {
 
             wallMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
             wallMap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
+
+            herbsMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
             // perlin noise generation
             caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 200, 5);
@@ -140,7 +148,8 @@ public class WorldGenerationState extends State {
                             } else {
                                 if (!reachedTop) {
                                     int increment = r.nextInt(3) + 1;
-                                    currentElevation -= increment;
+                                    if(r.nextInt(3) >= 0)
+                                        currentElevation -= increment;
                                 }
                             }
                         }
@@ -152,8 +161,8 @@ public class WorldGenerationState extends State {
                             }
                         }
 
-                        if(!reachedTop && !isAdjusting && elevation.get(i) + horizon + 5 >= currentElevation) {
-                            adjusting = 4;
+                        if(!reachedTop && !isAdjusting && elevation.get(i) + horizon + 6 >= currentElevation) {
+                            adjusting = 100;
                             isAdjusting = true;
                         }
 
@@ -219,6 +228,9 @@ public class WorldGenerationState extends State {
             FileHandle wallFile = Gdx.files.external("everlongn/realms/" + name + "/wall.png");
             PixmapIO.writePNG(wallFile, wallMap);
 
+            FileHandle herbsFile = Gdx.files.external("everlongn/realms/" + name + "/herbs.png");
+            PixmapIO.writePNG(herbsFile, herbsMap);
+
             FileHandle data = Gdx.files.external("everlongn/data/" + name + ".txt");
             data.writeString(name + "\n", false);
             data.writeString(difficulty + "\n", true);
@@ -231,13 +243,14 @@ public class WorldGenerationState extends State {
             data.writeString(formatter.format(date), true);
             data.writeString("\n", true);
 
-            FileHandle herb = Gdx.files.external("everlongn/herbs/" + name + ".txt");
-            for(int i = 0; i < herbs.size(); i++) {
-                herb.writeString(herbs.get(i).name + " " + herbs.get(i).x + " " + herbs.get(i).y, true);
-            }
+//            FileHandle herb = Gdx.files.external("everlongn/herbs/" + name + ".txt");
+//            for(int i = 0; i < herbs.size(); i++) {
+//                herb.writeString(herbs.get(i).name + " " + herbs.get(i).x + " " + herbs.get(i).y, true);
+//            }
 
             tileMap.dispose();
             wallMap.dispose();
+            herbsMap.dispose();
         }
         currentStep++;
 
@@ -402,25 +415,41 @@ public class WorldGenerationState extends State {
 //                int alpha = color & 0xFF;
         }
 
+        // generating trees
+        herbsMap.setColor(new Color(1, 0, 0, 1));
         if(vegetation.get(i) == 0) {
-            if(r.nextInt(8) == 0 && currentElevation-1 > 0) {
-                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+            // nothing happens
+        } else if(vegetation.get(i) < 4) {
+            int treeSize = r.nextInt(3) + 9;
+            if(r.nextInt(15) < 1 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
+                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
+                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
+                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
+                previousTreeX = i * chunkSize + j;
             }
-        } else if(vegetation.get(i) == 1) {
-            if(r.nextInt(8) <= 1&& currentElevation-1 > 0) {
-                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+        } else if(vegetation.get(i) <= 7) {
+            int treeSize = r.nextInt(3) + 9;
+            if(r.nextInt(10) < 2 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
+                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
+                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
+                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
+                previousTreeX = i * chunkSize + j;
             }
-        } else if(vegetation.get(i) == 2) {
-            if(r.nextInt(8) <= 3 && currentElevation-1 > 0) {
-                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+        } else if(vegetation.get(i) == 8) {
+            int treeSize = r.nextInt(3) + 9;
+            if(r.nextInt(10) < 4 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
+                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
+                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
+                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
+                previousTreeX = i * chunkSize + j;
             }
-        } else if(vegetation.get(i) == 3) {
-            if(r.nextInt(8) <= 5 && currentElevation-1 > 0) {
-                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
-            }
-        } else if(vegetation.get(i) == 4) {
-            if(r.nextInt(8) <= 7 && currentElevation-1 > 0) {
-                herbs.add(new StaticObject("Tree", i * chunkSize + j, currentElevation-1));
+        } else if(vegetation.get(i) == 9) {
+            int treeSize = r.nextInt(3) + 9;
+            if(r.nextInt(10) < 6 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
+                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
+                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
+                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
+                previousTreeX = i * chunkSize + j;
             }
         }
 

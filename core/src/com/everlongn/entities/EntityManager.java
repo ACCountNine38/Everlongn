@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class EntityManager {
     private ControlCenter c;
 
-    public static ArrayList<Entity> entities, staticEntities;
+    public static ArrayList<Entity> entities;
     public static ArrayList<Item> items;
     public static Player player;
 
@@ -17,7 +17,6 @@ public class EntityManager {
         this.c = c;
 
         entities = new ArrayList<Entity>();
-        staticEntities = new ArrayList<Entity>();
         items = new ArrayList<Item>();
 
         this.player = player;
@@ -29,13 +28,6 @@ public class EntityManager {
             entities.get(i).tick();
             if(!entities.get(i).active) {
                 entities.remove(entities.get(i));
-                i--;
-            }
-        }
-        for(int i = 0; i < staticEntities.size(); i++) {
-            staticEntities.get(i).tick();
-            if(!staticEntities.get(i).active) {
-                staticEntities.remove(staticEntities.get(i));
                 i--;
             }
         }
@@ -51,9 +43,6 @@ public class EntityManager {
     public void render(SpriteBatch batch) {
         for(int i = 0; i < entities.size(); i++) {
             entities.get(i).render(batch);
-        }
-        for(int i = 0; i < staticEntities.size(); i++) {
-            staticEntities.get(i).render(batch);
         }
         for(int i = 0; i < items.size(); i++) {
             items.get(i).render(batch);

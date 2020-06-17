@@ -15,11 +15,11 @@ public class WorldSelectButton extends UIComponent {
     public int seed;
     public boolean hardcore, selected;
     public float startY, endY;
-    public FileHandle tilemap, wallmap;
+    public FileHandle tilemap, wallmap, herbsMap;
 
     public WorldSelectButton(float x, float y, String text, boolean clickable, BitmapFont font,
                              String worldName, String difficulty, String worldSize, int seed, boolean hardcore, String date,
-                             FileHandle tilemap, FileHandle wallmap) {
+                             FileHandle tilemap, FileHandle wallmap, FileHandle herbsMap) {
         super(x, y, text, clickable, font);
 
         this.worldName = worldName;
@@ -30,6 +30,7 @@ public class WorldSelectButton extends UIComponent {
         this.date = date;
         this.tilemap = tilemap;
         this.wallmap = wallmap;
+        this.herbsMap = herbsMap;
         startY = y;
         endY = startY - 100;
 

@@ -86,7 +86,8 @@ public class WorldSelectionState extends State  implements InputProcessor {
                     worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
                             data[0], data[1], data[2], Integer.parseInt(data[3]), hardcore, data[5],
                             Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png"),
-                            Gdx.files.external("everlongn/realms/" + data[0] + "/wall.png")));
+                            Gdx.files.external("everlongn/realms/" + data[0] + "/wall.png"),
+                            Gdx.files.external("everlongn/realms/" + data[0] + "/herbs.png")));
 
                     numWorlds++;
                 }
@@ -104,7 +105,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 if(StateManager.states.size() >= 1) {
                     StateManager.states.pop().dispose();
                 }
-                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap));
+                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap));
             }
             return;
         }
@@ -165,7 +166,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
             Gdx.files.external("everlongn/data/" + worlds.get(selectedIndex).worldName + ".txt").delete();
-            Gdx.files.external("everlongn/worlds/" + worlds.get(selectedIndex).worldName + ".png").delete();
+            Gdx.files.external("everlongn/realms/" + worlds.get(selectedIndex).worldName).delete();
 
             worlds.clear();
             loadWorlds();

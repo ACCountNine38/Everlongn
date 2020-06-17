@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
+import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
@@ -40,6 +41,7 @@ public class GameState extends State {
     public static RayHandler rayHandler;
     public static Tile[][] tiles;
     public static Wall[][] walls;
+    public static Entity[][] herbs;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
     ///////////////////
@@ -74,6 +76,7 @@ public class GameState extends State {
         }
         updateTiles();
         rayHandler.update();
+        updateStaticEntity();
         entityManager.tick();
         inventory.tick();
         batch.setProjectionMatrix(camera.combined);
@@ -107,6 +110,16 @@ public class GameState extends State {
         xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 2);
         yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE));
         yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 2);
+    }
+
+    public void updateStaticEntity() {
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                if(herbs[x][y] != null) {
+                    herbs[x][y].tick();
+                }
+            }
+        }
     }
 
     public void updateChunks() {
@@ -261,6 +274,7 @@ public class GameState extends State {
         batch.setProjectionMatrix(ControlCenter.camera.combined);
 
         renderWalls(batch);
+        renderStaticEntity(batch);
         entityManager.render(batch);
         renderTiles(batch);
 
@@ -344,8 +358,9 @@ public class GameState extends State {
     public void renderTiles(SpriteBatch batch) {
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
-                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null)
+                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null) {
                     tiles[x][y].render(batch);
+                }
 
                 if (lightmap[x][y] == null && tiles[x][y] == null) {
                     if (walls[x][y] == null) {
@@ -358,11 +373,31 @@ public class GameState extends State {
         }
     }
 
+    public void renderStaticEntity(SpriteBatch batch) {
+        for(int i = 0; i < chunks.length; i++) {
+            for (int j = 0; j < chunks[i].length; j++) {
+                if (i >= Player.currentChunkX - 2 && i <= Player.currentChunkX + 2 &&
+                        j >= Player.currentChunkY - 2 && j <= Player.currentChunkY + 2) {
+                    if (chunks[i][j].active) {
+                        for (int x = i * chunkSize; x < i * chunkSize + chunkSize; x++) {
+                            for (int y = j * chunkSize; y < j * chunkSize + chunkSize; y++) {
+                                if(herbs[x][y] != null) {
+                                    herbs[x][y].render(batch);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void renderWalls(SpriteBatch batch) {
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
-                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && walls[x][y] != null)
+                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && walls[x][y] != null) {
                     walls[x][y].render(batch);
+                }
             }
         }
     }
