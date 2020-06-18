@@ -29,8 +29,6 @@ public class WorldGenerationState extends State {
     private ArrayList<String> biomes;
     private ArrayList<Integer> vegetation;
 
-    private ArrayList<StaticObject> herbs;
-
     private int currentElevation, caveInstance, previousTreeX;
     private float count;
     private boolean generated;
@@ -69,7 +67,6 @@ public class WorldGenerationState extends State {
             elevation = new ArrayList<>();
             biomes = new ArrayList<>();
             vegetation = new ArrayList<>();
-            herbs = new ArrayList<>();
 
             if(size.equals("Small")) {
                 worldWidth = 1500;
@@ -476,16 +473,5 @@ public class WorldGenerationState extends State {
     @Override
     public void dispose() {
 
-    }
-}
-
-class StaticObject {
-    String name;
-    int x, y;
-
-    public StaticObject(String name, int x, int y) {
-        this.name = name;
-        this.x = x;
-        this.y = y;
     }
 }

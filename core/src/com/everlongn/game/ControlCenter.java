@@ -20,6 +20,8 @@ public class ControlCenter extends ApplicationAdapter {
 	public static boolean DEBUG = true, DEBUG_RENDER = false;
 	public static float SCALE = 1f;
 	public static int width, height;
+
+	public static Pixmap cursor1, emptyCursor;
 	/*
 	  Box2D world, where you put the physial body into
 	  handles physics and calculations
@@ -47,9 +49,9 @@ public class ControlCenter extends ApplicationAdapter {
 		camera.setToOrtho(false, width/SCALE, height/SCALE);
 		stateManager = new StateManager(this);
 
-		Pixmap pixmap = new Pixmap(Gdx.files.internal("UI/Cursor.png"));
-		Gdx.graphics.setCursor(Gdx.graphics.newCursor(pixmap, 0, 0));
-		pixmap.dispose();
+		cursor1 = new Pixmap(Gdx.files.internal("UI/Cursor.png"));
+		emptyCursor = new Pixmap(Gdx.files.internal("UI/emptyCursor.png"));
+		Gdx.graphics.setCursor(Gdx.graphics.newCursor(cursor1, 0, 0));
 	}
 
 	// note (0, 0) is now at bottom left not top left

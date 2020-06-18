@@ -19,7 +19,7 @@ public class Wall {
     public Rectangle bounds;
 
     // adjacency test variables
-    public int numAdjacent = 0;
+    public int numAdjacent = 0, currentType = 0;
     public boolean left, right, up, down = false;
     public TextureRegion currentTexture;
 

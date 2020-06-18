@@ -27,6 +27,7 @@ import static com.everlongn.utils.Constants.PPM;
 public class GameState extends State {
     // screen settings //
     public static OrthographicCamera hud, parallaxBackground;
+    public static int cursorType = 0;
     private float screenTransitionAlpha = 1f;
     public static boolean frameSkip = true;
     ///////////////////
@@ -74,6 +75,7 @@ public class GameState extends State {
         if(screenTransitionAlpha > 0) {
             screenTransitionAlpha -= 0.008;
         }
+        updateWalls();
         updateTiles();
         rayHandler.update();
         updateStaticEntity();
@@ -110,6 +112,16 @@ public class GameState extends State {
         xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 2);
         yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE));
         yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 2);
+    }
+
+    public void updateWalls() {
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && walls[x][y] != null) {
+                    walls[x][y].tick();
+                }
+            }
+        }
     }
 
     public void updateStaticEntity() {
@@ -314,7 +326,17 @@ public class GameState extends State {
         }
 
         if(Player.forceCharge > 0) {
-            batch.draw(Tiles.blackTile, Gdx.input.getX() - 50 + 8, ControlCenter.height-Gdx.input.getY() - 30, Player.forceCharge/Player.forceMax * 100, 10);
+            batch.draw(UI.chargeCursor,Gdx.input.getX() - 38,  ControlCenter.height-Gdx.input.getY() - 38, 76, 76);
+            batch.draw(UI.chargeOrb,Gdx.input.getX() - Player.forceCharge/Player.forceMax*32/2,  ControlCenter.height-Gdx.input.getY() - Player.forceCharge/Player.forceMax*32/2 + 1, Player.forceCharge/Player.forceMax*32, Player.forceCharge/Player.forceMax*32);
+            if(cursorType != -1) {
+                cursorType = -1;
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.emptyCursor, 0, 0));
+            }
+        } else {
+            if(cursorType != 0) {
+                cursorType = 0;
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.cursor1, 0, 0));
+            }
         }
 
         if(screenTransitionAlpha > 0) {

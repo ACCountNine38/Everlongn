@@ -37,6 +37,7 @@ public class Player extends Creature {
     // global item related variables
     public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset;
     public static Rectangle itemCollectBound, itemPickBound;
+    public static String previousItem = "";
 
     // special item related variables
     private boolean eruptionHold, shadowHold;
@@ -528,6 +529,10 @@ public class Player extends Creature {
             maxLightRadius = 0;
             forceMax = 1000;
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                if(!previousItem.equals("Shadow Manipulator")) {
+                    previousItem = "Shadow Manipulator";
+                    forceCharge = 0;
+                }
                 if(forceCharge < forceMax) {
                     forceCharge += 7.5;
                 }
@@ -621,6 +626,7 @@ public class Player extends Creature {
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Caster")) {
             arcaneLight.setColor(ArcaneTrail.color);
+            forceCharge = 0;
             maxLightRadius = 450;
             if(direction == 0) {
                 float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
@@ -681,7 +687,6 @@ public class Player extends Creature {
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Eruption")) {
-
             arcaneLight.setColor(ArcaneEruption.color);
             maxLightRadius = 800;
             forceMax = 100;
@@ -697,6 +702,10 @@ public class Player extends Creature {
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                if(!previousItem.equals("Eruption")) {
+                    previousItem = "Eruption";
+                    forceCharge = 0;
+                }
                 if(forceCharge < forceMax) {
                     forceCharge += 0.5;
                 }
@@ -778,6 +787,7 @@ public class Player extends Creature {
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rebound")) {
             arcaneLight.setColor(ArcaneRebound.color);
             maxLightRadius = 600;
+            forceCharge = 0;
             if(direction == 0) {
                 float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                 float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
@@ -837,6 +847,7 @@ public class Player extends Creature {
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Escort") && ArcaneEscort.numEscort <= 15) {
             arcaneLight.setColor(ArcaneEscort.color);
             maxLightRadius = 400;
+            forceCharge = 0;
             if(direction == 0) {
                 float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                 float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
