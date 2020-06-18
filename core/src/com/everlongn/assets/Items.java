@@ -8,11 +8,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Items {
     public static Texture logSprite, stoneSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
-        arcaneRicochetSprite, arcaneEscortSprite;
+        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite;
 
     public static TextureRegion log, stone;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
-            arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR;
+            arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR;
     public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
 
     public static void init() {
@@ -51,6 +51,13 @@ public class Items {
         temp = new TextureRegion(arcaneEscortSprite, 0, 0, arcaneEscortSprite.getWidth(), arcaneEscortSprite.getHeight());
         temp.flip(true, false);
         arcaneEscortL = temp;
+
+        arcaneReflectionSprite = new Texture(Gdx.files.internal("arcane/arcaneReflection.png"), true);
+        arcaneReflectionSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        arcaneReflectionR = new TextureRegion(arcaneReflectionSprite, 0, 0, arcaneReflectionSprite.getWidth(), arcaneReflectionSprite.getHeight());
+        temp = new TextureRegion(arcaneReflectionSprite, 0, 0, arcaneReflectionSprite.getWidth(), arcaneReflectionSprite.getHeight());
+        temp.flip(true, false);
+        arcaneReflectionL = temp;
 
         shadowStaffSprite = new Texture(Gdx.files.internal("arcane/shadowStaff.png"), true);
         shadowStaffSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

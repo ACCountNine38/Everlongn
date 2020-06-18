@@ -1,4 +1,4 @@
-package com.everlongn.utils;
+package com.everlongn.utils.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -9,6 +9,8 @@ import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.WorldSelectionState;
+import com.everlongn.utils.TextManager;
+import com.everlongn.utils.components.UIComponent;
 
 public class WorldSelectButton extends UIComponent {
     public String worldName, difficulty, worldSize, date;

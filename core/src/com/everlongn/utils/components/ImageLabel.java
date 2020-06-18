@@ -1,9 +1,9 @@
-package com.everlongn.utils;
+package com.everlongn.utils.components;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.states.MenuState;
+import com.everlongn.utils.components.UIComponent;
 
 public class ImageLabel extends UIComponent {
     private Texture texture;

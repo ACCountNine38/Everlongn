@@ -1,11 +1,15 @@
 package com.everlongn.utils;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 
 public class Tool {
+    public static int cursorID;
+
     public static Body createEntity(int x, int y, int width, int height, boolean isStatic, float density, boolean friction,
                                     short cBits, short mBits, short gIndex, Object object) {
         Body body;
@@ -198,4 +202,16 @@ public class Tool {
         return body;
     }
 
+    public static void changeCursor(int id) {
+        if(cursorID != id) {
+            cursorID = id;
+            if(id == 0) {
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.cursor1, 0, 0));
+            } else if(id == 1) {
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.emptyCursor, 0, 0));
+            } else if(id == 2) {
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.aimCursor, 0, 0));
+            }
+        }
+    }
 }

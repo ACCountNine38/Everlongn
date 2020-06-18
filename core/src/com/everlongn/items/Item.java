@@ -57,7 +57,7 @@ public class Item {
     public float drawSpeed, swingSpeed;
 
     // magic weapon properties
-    public int healthConsumption, burst;
+    public float healthConsumption, burst;
     public float refreshSpeed;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
@@ -126,6 +126,8 @@ public class Item {
                 GameState.world.destroyBody(body);
                 pickedUp = true;
             }
+        } else {
+            body.setLinearVelocity(body.getLinearVelocity().x/1.04f, body.getLinearVelocity().y);
         }
     }
 

@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.utils.ImageLabel;
-import com.everlongn.utils.TextButton;
-import com.everlongn.utils.TextArea;
-import com.everlongn.utils.TextImageButton;
+import com.everlongn.utils.components.ImageLabel;
+import com.everlongn.utils.components.TextButton;
+import com.everlongn.utils.components.TextArea;
+import com.everlongn.utils.components.TextImageButton;
 
 public class WorldCreationState extends State {
     private TextArea seed, realmName;

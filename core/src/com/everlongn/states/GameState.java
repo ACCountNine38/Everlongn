@@ -27,7 +27,6 @@ import static com.everlongn.utils.Constants.PPM;
 public class GameState extends State {
     // screen settings //
     public static OrthographicCamera hud, parallaxBackground;
-    public static int cursorType = 0;
     private float screenTransitionAlpha = 1f;
     public static boolean frameSkip = true;
     ///////////////////
@@ -326,17 +325,9 @@ public class GameState extends State {
         }
 
         if(Player.forceCharge > 0) {
-            batch.draw(UI.chargeCursor,Gdx.input.getX() - 38,  ControlCenter.height-Gdx.input.getY() - 38, 76, 76);
-            batch.draw(UI.chargeOrb,Gdx.input.getX() - Player.forceCharge/Player.forceMax*32/2,  ControlCenter.height-Gdx.input.getY() - Player.forceCharge/Player.forceMax*32/2 + 1, Player.forceCharge/Player.forceMax*32, Player.forceCharge/Player.forceMax*32);
-            if(cursorType != -1) {
-                cursorType = -1;
-                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.emptyCursor, 0, 0));
-            }
-        } else {
-            if(cursorType != 0) {
-                cursorType = 0;
-                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.cursor1, 0, 0));
-            }
+            batch.draw(UI.chargeCursor,Gdx.input.getX() - 38 + 16,  ControlCenter.height-Gdx.input.getY() - 38 - 16, 76, 76);
+            batch.draw(UI.chargeOrb,Gdx.input.getX() - Player.forceCharge/Player.forceMax*32/2 + 16,  ControlCenter.height-Gdx.input.getY() - Player.forceCharge/Player.forceMax*32/2 + 1 - 16, Player.forceCharge/Player.forceMax*32, Player.forceCharge/Player.forceMax*32);
+            Tool.changeCursor(1);
         }
 
         if(screenTransitionAlpha > 0) {

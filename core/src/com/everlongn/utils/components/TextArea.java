@@ -1,4 +1,4 @@
-package com.everlongn.utils;
+package com.everlongn.utils.components;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;

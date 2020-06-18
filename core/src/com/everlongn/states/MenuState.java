@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Tiles;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.utils.TextButton;
+import com.everlongn.utils.components.TextButton;
 
 public class MenuState extends State {
 

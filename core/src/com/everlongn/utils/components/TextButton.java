@@ -1,8 +1,9 @@
-package com.everlongn.utils;
+package com.everlongn.utils.components;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.states.MenuState;
+import com.everlongn.utils.components.UIComponent;
 
 public class TextButton extends UIComponent {
 

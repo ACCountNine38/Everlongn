@@ -13,12 +13,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.utils.ImageLabel;
-import com.everlongn.utils.TextButton;
-import com.everlongn.utils.WorldSelectButton;
+import com.everlongn.utils.components.ImageLabel;
+import com.everlongn.utils.components.TextButton;
+import com.everlongn.utils.components.WorldSelectButton;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class WorldSelectionState extends State  implements InputProcessor {
