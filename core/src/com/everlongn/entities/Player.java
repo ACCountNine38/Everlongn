@@ -584,7 +584,7 @@ public class Player extends Creature {
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     body.getPosition().y * PPM + 69 + yAim, width, height,
-                                    this, direction, (float)Math.sin(shootAngle + Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/30)*forceCharge, false);
+                                    this, direction, (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge, false);
 
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
@@ -603,7 +603,7 @@ public class Player extends Creature {
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     69 + body.getPosition().y * PPM + yAim, width, height,
-                                    this, direction, (float)Math.sin(shootAngle - Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/30)*forceCharge, false);
+                                    this, direction, (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge, false);
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
                         }
@@ -810,8 +810,8 @@ public class Player extends Creature {
                         cdr = 0;
 
                         if (direction == 0) {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180 - 30)) * (76);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180 - 30)) * (-76);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (76);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() <= ControlCenter.width / 2) {
@@ -825,11 +825,11 @@ public class Player extends Creature {
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     body.getPosition().y * PPM + 69 + yAim,
                                     10, direction, shootAngle,
-                                    (float)Math.sin(shootAngle + Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/30)*forceCharge);
+                                    (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge);
                             EntityManager.entities.add(arcaneTrail);
                         } else {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 30)) * (76);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 30)) * (-76);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (76);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-76);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() >= ControlCenter.width / 2) {
@@ -843,7 +843,7 @@ public class Player extends Creature {
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     69 + body.getPosition().y * PPM + yAim,
                                     10, direction, shootAngle,
-                                    (float)Math.sin(shootAngle - Math.PI/30)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/30)*forceCharge);
+                                    (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge);
                             EntityManager.entities.add(arcaneTrail);
                         }
                     }
