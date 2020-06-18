@@ -21,7 +21,7 @@ public class ArcaneRebound extends Projectile {
     public int direction, maxBounce, numBounce;
 
     public float life, angle, yForce;
-    public static Color color = new Color(0.00f, 0.02f, 0.00f, 1f);
+    public static Color color = new Color(0.00f, 0.01f, 0.00f, 1f);
 
     public ArcaneRebound(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);

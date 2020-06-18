@@ -22,7 +22,7 @@ public class ArcaneReflection extends Projectile {
     public static float maxLife = 5;
 
     public float life, angle;
-    public static Color color = new Color(0.02f, 0f, 0.02f, 1f);
+    public static Color color = new Color(0.01f, 0f, 0.01f, 1f);
 
     public ArcaneReflection(ControlCenter c, float x, float y, float density, int direction, float angle) {
         super(c, x, y, 5, 5, density);
@@ -35,7 +35,7 @@ public class ArcaneReflection extends Projectile {
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
         float newAngle = (float)(angle - Math.PI/14 + Math.random()*(Math.PI/7));
-        float xMove = Math.abs((float)Math.sin(newAngle)*(18f));
+        float xMove = Math.abs((float)Math.sin(newAngle)*(20f));
         if(direction == 0) {
             speedX = -xMove;
         } else {

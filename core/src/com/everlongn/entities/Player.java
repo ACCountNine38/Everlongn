@@ -530,14 +530,14 @@ public class Player extends Creature {
 
         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shadow Manipulator")) {
             maxLightRadius = 0;
-            forceMax = 1000;
+            forceMax = 8;
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 if(!previousItem.equals("Shadow Manipulator")) {
                     previousItem = "Shadow Manipulator";
                     forceCharge = 0;
                 }
                 if(forceCharge < forceMax) {
-                    forceCharge += 7.5;
+                    forceCharge += 0.08;
                 }
                 cdr += Gdx.graphics.getDeltaTime();
 
@@ -583,7 +583,7 @@ public class Player extends Creature {
                             }
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim,
-                                    body.getPosition().y * PPM + 69 + yAim, width, height,
+                                    body.getPosition().y * PPM + 69 + yAim,
                                     this, direction, (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge, false);
 
                             EntityManager.entities.add(shadow);
@@ -602,7 +602,7 @@ public class Player extends Creature {
                             }
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim,
-                                    69 + body.getPosition().y * PPM + yAim, width, height,
+                                    69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge, false);
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
@@ -694,7 +694,7 @@ public class Player extends Creature {
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Reflection")) {
             Tool.changeCursor(2);
-            arcaneLight.setColor(ArcaneTrail.color);
+            arcaneLight.setColor(ArcaneReflection.color);
             forceCharge = 0;
             maxLightRadius = 450;
             if(direction == 0) {
@@ -999,7 +999,7 @@ public class Player extends Creature {
             if(direction == 0)
                 xForce = -200;
             int yForce = 100;
-            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, width, height, this, direction, xForce, yForce, false));
+            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
         }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;

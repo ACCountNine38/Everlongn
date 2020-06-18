@@ -13,10 +13,10 @@ public class Arcane extends Weapon {
             52, 58, new TextureRegion[]{Items.arcaneCasterL, Items.arcaneCasterR}, new String[]{"Arcane"}, 1, 0.6f, 0);
 
     public static Arcane arcaneEruption = new Arcane(Items.arcaneEruptionR, "Eruption", 202, false, true, 108, 108, 76, 76, 1, "Power beyond your understanding...",
-            56, 58, new TextureRegion[]{Items.arcaneEruptionL, Items.arcaneEruptionR}, new String[]{"Arcane"}, 3f, 0.8f, 0);
+            57, 58, new TextureRegion[]{Items.arcaneEruptionL, Items.arcaneEruptionR}, new String[]{"Arcane"}, 3f, 0.8f, 0);
 
     public static Arcane arcaneRebound = new Arcane(Items.arcaneRicochetR, "Rebound", 203, false, true, 108, 108, 68, 68, 1, "Power beyond your understanding...",
-            54, 58, new TextureRegion[]{Items.arcaneRicochetL, Items.arcaneRicochetR}, new String[]{"Arcane"}, 2, 0.6f, 0);
+            52, 58, new TextureRegion[]{Items.arcaneRicochetL, Items.arcaneRicochetR}, new String[]{"Arcane"}, 2, 0.6f, 0);
 
     public static Arcane arcaneEscort = new Arcane(Items.arcaneEscortR, "Escort", 204, false, true, 108, 108, 58, 58 , 1, "Power beyond your understanding...",
             54, 58, new TextureRegion[]{Items.arcaneEscortL, Items.arcaneEscortR}, new String[]{"Arcane"}, 1.25f, 0.6f, 0);

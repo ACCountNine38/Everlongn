@@ -21,12 +21,12 @@ public class Shadow extends Projectile {
     public float life, finishCounter, figureAlpha;
     public boolean lifeOut, casted;
 
-    public Shadow(ControlCenter c, float x, float y, int width, int height, Player player, int direction, float forceX, float forceY, boolean casted) {
-        super(c, x, y, width, height, 1);
+    public Shadow(ControlCenter c, float x, float y, Player player, int direction, float forceX, float forceY, boolean casted) {
+        super(c, x, y, 5, 5, 10);
         this.player = player;
         this.direction = direction;
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
-                Constants.BIT_PARTICLE, (short)(Constants.BIT_TILE), (short)0, this);
+                (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
         movingParticle = new ParticleEffect();
         movingParticle.load(Gdx.files.internal("particles/shadowTrail"), Gdx.files.internal(""));
