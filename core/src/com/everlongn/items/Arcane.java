@@ -25,7 +25,7 @@ public class Arcane extends Weapon {
             54, 58, new TextureRegion[]{Items.arcaneReflectionL, Items.arcaneReflectionR}, new String[]{"Arcane", "River"}, 1.5f, 0.75f, 0);
 
     public static Arcane arcaneDevastation = new Arcane(Items.arcaneOblivionR, "Devastation", 206, false, true, 126, 126, 80, 80, 1, "Power beyond your understanding...",
-            52, 58, new TextureRegion[]{Items.arcaneOblivionL, Items.arcaneOblivionR}, new String[]{"Arcane", "Doom"}, 1.5f, 0.2f, 0);
+            52, 58, new TextureRegion[]{Items.arcaneOblivionL, Items.arcaneOblivionR}, new String[]{"Arcane", "Doom"}, 0.68f, 0.1f, 0);
 
     public Arcane(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,
                   float healthConsumption, float refreshSpeed, float burst) {

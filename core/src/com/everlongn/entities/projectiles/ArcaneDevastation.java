@@ -18,7 +18,7 @@ import com.everlongn.utils.Tool;
 public class ArcaneDevastation extends Projectile {
     public ParticleEffect movingParticle;
     public int direction;
-    public static float maxLife = 0.75f;
+    public static float maxLife = 0.35f;
 
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.00f, 1f);
@@ -31,29 +31,25 @@ public class ArcaneDevastation extends Projectile {
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
-        float xMove = Math.abs((float)Math.sin(angle)*(40f));
+        float additionalSpeed = (float)(Math.random()*20);
+        float xMove = Math.abs((float)Math.sin(angle)*(45f + additionalSpeed));
         if(direction == 0) {
             speedX = -xMove;
         } else {
             speedX = xMove;
         }
-        speedY = -(float)Math.cos(angle)*(40f);
+        speedY = -(float)Math.cos(angle)*(45f + additionalSpeed);
 
         movingParticle = new ParticleEffect();
         movingParticle.load(Gdx.files.internal("particles/oblivionTrail"), Gdx.files.internal(""));
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.getEmitters().add(new ParticleEmitterBox2D(GameState.world,movingParticle.getEmitters().first()));
         movingParticle.getEmitters().removeIndex(0);
-        //movingParticle.getEmitters().first().scaleSize(0.5f);
+        movingParticle.getEmitters().first().scaleSize(xSize);
         movingParticle.start();
 
-//        explosion = new ParticleEffect();
-//        explosion.load(Gdx.files.internal("particles/trailExplosion"), Gdx.files.internal(""));
-//        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-
-        maxMovingRadius = 200;
-        maxExplodingRadius = 300;
-        light = new PointLight(GameState.rayHandler, 300, color, 0,
+        maxMovingRadius = 350;
+        light = new PointLight(GameState.rayHandler, 150, color, 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
         light.setSoft(true);
@@ -99,14 +95,6 @@ public class ArcaneDevastation extends Projectile {
         if(life > maxLife && !lifeOut) {
             finish();
         }
-
-//        if(lifeOut && explosion.isComplete() && movingParticle.isComplete() && currentRadius <= 0) {
-//            GameState.world.destroyBody(body);
-//            explosion.dispose();
-//            movingParticle.dispose();
-//            light.remove();
-//            active = false;
-//        }
         if(lifeOut && movingParticle.isComplete() && currentRadius <= 0) {
             GameState.world.destroyBody(body);
             movingParticle.dispose();
@@ -115,11 +103,6 @@ public class ArcaneDevastation extends Projectile {
         }
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.update(Gdx.graphics.getDeltaTime());
-
-//        if(lifeOut) {
-//            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-//            explosion.update(Gdx.graphics.getDeltaTime());
-//        }
     }
 
     public void explode() {
@@ -138,9 +121,6 @@ public class ArcaneDevastation extends Projectile {
     public void render(SpriteBatch batch) {
         batch.begin();
         movingParticle.draw(batch);
-//        if(lifeOut) {
-//            explosion.draw(batch);
-//        }
         batch.end();
     }
 
@@ -148,6 +128,5 @@ public class ArcaneDevastation extends Projectile {
     public void finish() {
         lifeOut = true;
         movingParticle.getEmitters().get(0).setContinuous(false);
-        //explosion.start();
     }
 }
