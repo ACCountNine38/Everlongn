@@ -42,6 +42,7 @@ public class Inventory {
         addItem(Arcane.arcaneRebound);
         addItem(Arcane.arcaneEscort);
         addItem(Arcane.arcaneReflection);
+        addItem(Arcane.arcaneDevastation);
         addItem(Melee.broadSword.createNew(1));
         addItem(Arcane.shadowStaff.createNew(1));
         addItem(Melee.dragondance);

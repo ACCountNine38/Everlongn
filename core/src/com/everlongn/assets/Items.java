@@ -8,11 +8,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Items {
     public static Texture logSprite, stoneSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
-        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite;
+        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite;
 
     public static TextureRegion log, stone;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
-            arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR;
+            arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
+            arcaneOblivionL, arcaneOblivionR;
     public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
 
     public static void init() {
@@ -58,6 +59,13 @@ public class Items {
         temp = new TextureRegion(arcaneReflectionSprite, 0, 0, arcaneReflectionSprite.getWidth(), arcaneReflectionSprite.getHeight());
         temp.flip(true, false);
         arcaneReflectionL = temp;
+
+        arcaneOblivionSprite = new Texture(Gdx.files.internal("arcane/arcaneOblivion.png"), true);
+        arcaneOblivionSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        arcaneOblivionR = new TextureRegion(arcaneOblivionSprite, 0, 0, arcaneOblivionSprite.getWidth(), arcaneOblivionSprite.getHeight());
+        temp = new TextureRegion(arcaneOblivionSprite, 0, 0, arcaneOblivionSprite.getWidth(), arcaneOblivionSprite.getHeight());
+        temp.flip(true, false);
+        arcaneOblivionL = temp;
 
         shadowStaffSprite = new Texture(Gdx.files.internal("arcane/shadowStaff.png"), true);
         shadowStaffSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

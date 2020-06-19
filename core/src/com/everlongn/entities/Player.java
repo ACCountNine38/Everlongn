@@ -691,7 +691,77 @@ public class Player extends Creature {
                 }
             }
         }
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Devastation")) {
+            Tool.changeCursor(2);
+            arcaneLight.setColor(ArcaneDevastation.color);
+            forceCharge = 0;
+            maxLightRadius = 450;
+            forceMax = 100;
+            if(direction == 0) {
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+                arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
+                        body.getPosition().y * PPM + 46 + 23 + yAim);
+            } else {
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+                arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
+                        (body.getPosition().y * PPM + 46 + 23) + yAim);
+            }
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                cdr += Gdx.graphics.getDeltaTime();
 
+                if(!previousItem.equals("Devastation")) {
+                    previousItem = "Devastation";
+                    forceCharge = 0;
+                }
+                if(forceCharge < forceMax) {
+                    forceCharge += 0.5;
+                }
+
+                if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    cdr = 0;
+                    casted = true;
+                    health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
+                    if (direction == 0) {
+                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
+                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
+                                body.getPosition().x * PPM + width / 2 + xAim,
+                                body.getPosition().y * PPM + 46 + 23 + yAim,
+                                1, direction, shootAngle + (float)Math.PI/15, 0);
+
+                        EntityManager.entities.add(arcaneTrail);
+                    } else {
+                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
+                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
+
+                        // shoot angle is in radians
+                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        } else {
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        }
+                        ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
+                                (body.getPosition().x * PPM + width / 2) + xAim,
+                                (body.getPosition().y * PPM + 46 + 23) + yAim,
+                                1, direction, shootAngle - (float)Math.PI/15, 0);
+                        EntityManager.entities.add(arcaneTrail);
+                    }
+                }
+            }
+        }
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Reflection")) {
             Tool.changeCursor(2);
             arcaneLight.setColor(ArcaneReflection.color);
