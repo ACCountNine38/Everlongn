@@ -51,7 +51,11 @@ public class WorldContactListener implements ContactListener {
                 }
                 Projectile temp = (Projectile) a.getUserData();
                 if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection && b.getUserData() instanceof Tile) {
+                    if(temp instanceof ArcaneReflection && b.getUserData() instanceof Entity) {
+                        ArcaneReflection ar = (ArcaneReflection)a.getUserData();
+                        ar.numReflection = ar.maxReflection;
+                        ar.finish();
+                    } else if(temp instanceof ArcaneReflection && b.getUserData() instanceof Tile) {
                         Tile tile = (Tile)b.getUserData();
                         ArcaneReflection ar = (ArcaneReflection)a.getUserData();
                         if(tile.numAdjacent == 2) {
@@ -68,7 +72,11 @@ public class WorldContactListener implements ContactListener {
                 }
                 Projectile temp = (Projectile) b.getUserData();
                 if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection && a.getUserData() instanceof Tile) { // special contact case for arcane reflection
+                    if(temp instanceof ArcaneReflection && a.getUserData() instanceof Entity) {
+                        ArcaneReflection ar = (ArcaneReflection)b.getUserData();
+                        ar.numReflection = ar.maxReflection;
+                        ar.finish();
+                    } else if(temp instanceof ArcaneReflection && a.getUserData() instanceof Tile) { // special contact case for arcane reflection
                         Tile tile = (Tile)a.getUserData();
                         ArcaneReflection ar = (ArcaneReflection)b.getUserData();
                         if(tile.numAdjacent == 2) {

@@ -116,6 +116,7 @@ public class Player extends Creature {
         itemCollectBound = new Rectangle(body.getPosition().x*PPM + 10, body.getPosition().y*PPM - height/2 + height/3, 10, 10);
         itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50, 150, 100);
 
+        team = 1;
     }
 
     public void checkSpecialCase() {

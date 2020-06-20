@@ -29,7 +29,7 @@ public class ArcaneReflection extends Projectile {
         this.direction = direction;
         this.angle = angle;
 
-        maxReflection = (int)(Math.random()*4) + 4;
+        maxReflection = (int)(Math.random()*7) + 6;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -65,6 +65,11 @@ public class ArcaneReflection extends Projectile {
     @Override
     public void tick() {
         if(!lifeOut) {
+            if(body.getLinearVelocity().x > 0) {
+                direction = 1;
+            } else if(body.getLinearVelocity().x < 0) {
+                direction = 0;
+            }
             moveByVelocityX();
             moveByVelocityY();
             currentRadius+=15;
@@ -128,7 +133,7 @@ public class ArcaneReflection extends Projectile {
 
                     c.stunned = true;
 
-                    float force = 500 + (float)Math.random()*100;
+                    float force = 350 + (float)Math.random()*50;
                     float angle = (float)(Math.random()*(Math.PI/4));
                     if(direction == 0) {
                         c.body.applyForceToCenter(

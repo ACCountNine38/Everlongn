@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public abstract class Entity {
     public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount;
     public float x, y, density; //protected allow extended class to have access to them
-    public int width, height;
+    public int width, height, team;
     public String name;
     public ArrayList<String> type = new ArrayList<String>();
     public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane;
@@ -40,6 +40,7 @@ public abstract class Entity {
         maxResistance = 10;
         resistance = maxResistance;
         name = "UNNAMED";
+        team = -1;
     }
 
     public abstract void tick();
