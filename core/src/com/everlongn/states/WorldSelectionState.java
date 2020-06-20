@@ -30,26 +30,37 @@ public class WorldSelectionState extends State  implements InputProcessor {
     public static float scrollY, maxScroll, minScroll;
 
     private int selectedIndex = -1, switchCondition;
-    private float transitionAlpha = 0f;
+    public static float transitionAlpha = 0f;
     private boolean transitioning, canSwitch, buttonPressed;
+    public static boolean reversing;
 
     public WorldSelectionState(StateManager stateManager) {
         super(stateManager);
 
         Gdx.input.setInputProcessor(this);
-        boarder = new ImageLabel(ControlCenter.width/2 - 300, -600, 600, 600, UI.worldSelectBoarder);
-        panel = new ImageLabel(ControlCenter.width/2 - 275, boarder.y + 75, 550, 475, UI.worldSelectPanel);
-        back = new TextButton(30, -50, "Back", true);
-        newRealm = new TextButton(ControlCenter.width/2 + 300 - 175, boarder.y + 65, "New", true);
-        deleteRealm = new TextButton(ControlCenter.width/2 - 55, boarder.y + 65, "Delete", false);
-        enterRealm = new TextButton(ControlCenter.width/2 - 300 + 80, boarder.y + 65, "Enter", false);
+        if(!reversing) {
+            boarder = new ImageLabel(ControlCenter.width / 2 - 300, -600, 600, 600, UI.worldSelectBoarder);
+            panel = new ImageLabel(ControlCenter.width / 2 - 275, boarder.y + 75, 550, 475, UI.worldSelectPanel);
+            back = new TextButton(30, -50, "Back", true);
+            newRealm = new TextButton(ControlCenter.width / 2 + 300 - 175, boarder.y + 65, "New", true);
+            deleteRealm = new TextButton(ControlCenter.width / 2 - 55, boarder.y + 65, "Delete", false);
+            enterRealm = new TextButton(ControlCenter.width / 2 - 300 + 80, boarder.y + 65, "Enter", false);
 
-        boarder.activate(ControlCenter.height/2 - 300, 25, 10);
-        panel.activate(ControlCenter.height/2 - 225, 25, 10);
-        back.activate(60, 10, 2);
-        newRealm.activate(ControlCenter.height/2 - 235, 25, 10);
-        deleteRealm.activate(ControlCenter.height/2 - 235, 25, 10);
-        enterRealm.activate(ControlCenter.height/2 - 235, 25, 10);
+            boarder.activate(ControlCenter.height / 2 - 300, 25, 10);
+            panel.activate(ControlCenter.height / 2 - 225, 25, 10);
+            back.activate(60, 10, 2);
+            newRealm.activate(ControlCenter.height / 2 - 235, 25, 10);
+            deleteRealm.activate(ControlCenter.height / 2 - 235, 25, 10);
+            enterRealm.activate(ControlCenter.height / 2 - 235, 25, 10);
+            reversing = false;
+        } else {
+            boarder = new ImageLabel(ControlCenter.width / 2 - 300, ControlCenter.height / 2 - 300, 600, 600, UI.worldSelectBoarder);
+            panel = new ImageLabel(ControlCenter.width / 2 - 275, ControlCenter.height / 2 - 225, 550, 475, UI.worldSelectPanel);
+            back = new TextButton(30, 60, "Back", true);
+            newRealm = new TextButton(ControlCenter.width / 2 + 300 - 175, ControlCenter.height / 2 - 235, "New", true);
+            deleteRealm = new TextButton(ControlCenter.width / 2 - 55, ControlCenter.height / 2 - 235, "Delete", false);
+            enterRealm = new TextButton(ControlCenter.width / 2 - 300 + 80, ControlCenter.height / 2 - 235, "Enter", false);
+        }
 
         layout.setText(MenuState.menuFont, "Confirm");
         confirm = new TextButton(ControlCenter.width/2 - (int)(layout.width) - 40, -50,  "Confirm", true);
@@ -77,15 +88,15 @@ public class WorldSelectionState extends State  implements InputProcessor {
                     hardcore = true;
                 }
 
-                FileHandle tilemap = Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png");
-                FileHandle wallMap = Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png");
+                FileHandle tilemap = Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png");
+                FileHandle wallMap = Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png");
 
                 if(tilemap.exists() && wallMap.exists()) {
                     worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
                             data[0], data[1], data[2], Integer.parseInt(data[3]), hardcore, data[5],
-                            Gdx.files.external("everlongn/realms/" + data[0] + "/tile.png"),
-                            Gdx.files.external("everlongn/realms/" + data[0] + "/wall.png"),
-                            Gdx.files.external("everlongn/realms/" + data[0] + "/herbs.png")));
+                            Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png"),
+                            Gdx.files.external("everlongn/realms/wall/" + data[0] + ".png"),
+                            Gdx.files.external("everlongn/realms/herb/" + data[0] + ".png")));
 
                     numWorlds++;
                 }
@@ -106,6 +117,14 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap));
             }
             return;
+        }
+
+        if(reversing) {
+            transitionAlpha -= 0.03;
+            if(transitionAlpha < 0) {
+                transitionAlpha = 0;
+                reversing = false;
+            }
         }
 
         for(int i = 0; i < worlds.size(); i++) {
@@ -164,7 +183,9 @@ public class WorldSelectionState extends State  implements InputProcessor {
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
             Gdx.files.external("everlongn/data/" + worlds.get(selectedIndex).worldName + ".txt").delete();
-            Gdx.files.external("everlongn/realms/" + worlds.get(selectedIndex).worldName).delete();
+            Gdx.files.external("everlongn/realms/tile/" + worlds.get(selectedIndex).worldName + ".png").delete();
+            Gdx.files.external("everlongn/realms/wall/" + worlds.get(selectedIndex).worldName + ".png").delete();
+            Gdx.files.external("everlongn/realms/herb/" + worlds.get(selectedIndex).worldName + ".png").delete();
 
             worlds.clear();
             loadWorlds();
@@ -238,7 +259,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
         confirm.render(batch);
         cancel.render(batch);
 
-        if(transitioning) {
+        if(transitioning || reversing) {
             batch.setColor(0f, 0f, 0f, transitionAlpha);
             batch.draw(Tiles.blackTile, 0, 0, ControlCenter.width, ControlCenter.height);
             batch.setColor(1, 1, 1, 1);

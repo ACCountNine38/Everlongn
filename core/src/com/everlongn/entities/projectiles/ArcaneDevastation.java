@@ -31,14 +31,14 @@ public class ArcaneDevastation extends Projectile {
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
-        float additionalSpeed = (float)(Math.random()*20);
-        float xMove = Math.abs((float)Math.sin(angle)*(45f + additionalSpeed));
+        float additionalSpeed = (float)(Math.random()*25);
+        float xMove = Math.abs((float)Math.sin(angle)*(40f + additionalSpeed));
         if(direction == 0) {
             speedX = -xMove;
         } else {
             speedX = xMove;
         }
-        speedY = -(float)Math.cos(angle)*(45f + additionalSpeed);
+        speedY = -(float)Math.cos(angle)*(40f + additionalSpeed);
 
         movingParticle = new ParticleEffect();
         movingParticle.load(Gdx.files.internal("particles/oblivionTrail"), Gdx.files.internal(""));

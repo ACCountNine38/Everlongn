@@ -28,6 +28,7 @@ public class WorldGenerationState extends State {
     private ArrayList<Integer> elevation;
     private ArrayList<String> biomes;
     private ArrayList<Integer> vegetation;
+    private boolean[][] mainBranchCave;
 
     private int currentElevation, caveInstance, previousTreeX;
     private float count;
@@ -54,6 +55,8 @@ public class WorldGenerationState extends State {
             currentStage = "Complete...";
             count += delta;
             if(count >= 0.5) {
+                WorldSelectionState.reversing = true;
+                WorldSelectionState.transitionAlpha = 1f;
                 stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
             }
         }
@@ -111,12 +114,40 @@ public class WorldGenerationState extends State {
 
             herbsMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
-            // perlin noise generation
-            caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 200, 5);
-            caveInstance = 150;
-        }
+            mainBranchCave = new boolean[worldWidth][worldHeight];
 
+            // perlin noise generation
+            caveInstance = 28;
+            caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 500, 6);
+        }
         else if(step == 2) {
+            currentStage = "Generating Caves...";
+
+            ArrayList<Integer> caveIndex = new ArrayList<Integer>();
+            while(caveIndex.size() < 3) {
+                for(int i = 2; i < biomes.size() - 2; i++) {
+                    if(biomes.get(i).equals("mountain") && !caveIndex.contains(i)) {
+                        if(r.nextInt(4) == 0) {
+                            caveIndex.add(i);
+                        }
+                    }
+                }
+            }
+
+            for(int i = 0; i < caveIndex.size(); i++) {
+                int direction = r.nextInt(2);
+                digMainCave(caveIndex.get(i), direction);
+            }
+
+            for(int i = 2; i < biomes.size() - 2; i++) {
+                if(biomes.get(i).equals("mountain")) {
+                    if(r.nextInt(4) == 0) {
+                        caveIndex.add(i);
+                    }
+                }
+            }
+        }
+        else if(step == 3) {
             currentStage = "Generating Terrain...";
             for(int i = 0; i < worldWidth/chunkSize; i++) {
                 if(biomes.get(i).equals("mountain")) {
@@ -188,44 +219,18 @@ public class WorldGenerationState extends State {
                 }
             }
         }
-        else if(step == 3) {
-            currentStage = "Generating Caves...";
-            ArrayList<Integer> caveIndex = new ArrayList<Integer>();
-            for(int i = 2; i < biomes.size() - 2; i++) {
-                if(biomes.get(i).equals("mountain")) {
-                    if(r.nextInt(4) == 0) {
-                        caveIndex.add(i);
-                    }
-                }
-            }
-
-            while(caveIndex.size() < 3) {
-                for(int i = 2; i < biomes.size() - 2; i++) {
-                    if(biomes.get(i).equals("mountain") && !caveIndex.contains(i)) {
-                        if(r.nextInt(4) == 0) {
-                            caveIndex.add(i);
-                        }
-                    }
-                }
-            }
-
-            for(int i = 0; i < caveIndex.size(); i++) {
-                int direction = r.nextInt(2);
-                digMainCave(caveIndex.get(i), direction);
-            }
-        }
         else if(step == 4) {
             currentStage = "Finalizing...";
             tileMap.setColor(1f, 1f, 1f, 1f);
             tileMap.drawPixel(spawnX, spawnY);
 
-            FileHandle file = Gdx.files.external("everlongn/realms/" + name + "/tile.png");
+            FileHandle file = Gdx.files.external("everlongn/realms/tile/" + name + ".png");
             PixmapIO.writePNG(file, tileMap);
 
-            FileHandle wallFile = Gdx.files.external("everlongn/realms/" + name + "/wall.png");
+            FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
             PixmapIO.writePNG(wallFile, wallMap);
 
-            FileHandle herbsFile = Gdx.files.external("everlongn/realms/" + name + "/herbs.png");
+            FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".png");
             PixmapIO.writePNG(herbsFile, herbsMap);
 
             FileHandle data = Gdx.files.external("everlongn/data/" + name + ".txt");
@@ -240,11 +245,6 @@ public class WorldGenerationState extends State {
             data.writeString(formatter.format(date), true);
             data.writeString("\n", true);
 
-//            FileHandle herb = Gdx.files.external("everlongn/herbs/" + name + ".txt");
-//            for(int i = 0; i < herbs.size(); i++) {
-//                herb.writeString(herbs.get(i).name + " " + herbs.get(i).x + " " + herbs.get(i).y, true);
-//            }
-
             tileMap.dispose();
             wallMap.dispose();
             herbsMap.dispose();
@@ -258,7 +258,7 @@ public class WorldGenerationState extends State {
     }
 
     public void digMainCave(int startChunk, int direction) {
-        tileMap.setColor(1f, 0, 0, 1f);
+        //tileMap.setColor(1f, 0, 0, 1f);
         int xStart = 0;
         if(direction == 0) {
             xStart = startChunk*chunkSize;
@@ -274,10 +274,11 @@ public class WorldGenerationState extends State {
 
         while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1) {
             if(yStart < horizon + 30) {
-                int limit = 6;
+                int limit = 7;
                 int low = 3;
                 for(int i = 0; i < yStart - yEnd; i++) {
-                    tileMap.drawPixel(xStart, yStart-i);
+                    mainBranchCave[xStart][yStart-i] = true;
+                    //tileMap.drawPixel(xStart, yStart-i);
                 }
                 if(r.nextInt(2) == 0) {
                     int random = r.nextInt(4);
@@ -296,21 +297,22 @@ public class WorldGenerationState extends State {
                 }
             }
             else {
-                int limit = 20;
+                int limit = 18;
                 if(yStart > level3) {
-                    limit = 25;
+                    limit = 23;
                 } else if(yStart > level2) {
                     limit = 20;
                 }
                 int low = 8;
                 for(int i = 0; i < yStart - yEnd; i++) {
-                    tileMap.drawPixel(xStart, yStart-i);
+                    mainBranchCave[xStart][yStart-i] = true;
+                    //tileMap.drawPixel(xStart, yStart-i);
                 }
-                if(yStart < level1) {
-                    if(r.nextInt(250) == 0) {
-                        digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(600) + 50);
-                    }
-                }
+//                if(yStart < level1) {
+//                    if(r.nextInt(250) == 0) {
+//                        digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(600) + 50);
+//                    }
+//                }
                 if(yStart < level2) {
                     yStart += r.nextInt(4);
                     yEnd += r.nextInt(4);
@@ -319,9 +321,9 @@ public class WorldGenerationState extends State {
                     } else if (yStart - yEnd < low) {
                         yEnd = yStart - low;
                     }
-                    if(r.nextInt(300) == 0) {
-                        digSubCave(xStart, yStart, direction, r.nextInt(500) + 50);
-                    }
+//                    if(r.nextInt(300) == 0) {
+//                        digSubCave(xStart, yStart, direction, r.nextInt(500) + 50);
+//                    }
                 } else if(yStart < level3) {
                     if (r.nextInt(5) == 0) {
                         yStart += r.nextInt(4);
@@ -332,9 +334,9 @@ public class WorldGenerationState extends State {
                             yEnd = yStart - low;
                         }
                     }
-                    if(r.nextInt(450) == 0) {
-                        digSubCave(xStart, yStart, direction, r.nextInt(400) + 50);
-                    }
+//                    if(r.nextInt(450) == 0) {
+//                        digSubCave(xStart, yStart, direction, r.nextInt(400) + 50);
+//                    }
                 } else {
                     if (r.nextInt(8) == 0) {
                         yStart += r.nextInt(4);
@@ -362,54 +364,60 @@ public class WorldGenerationState extends State {
         }
     }
 
-    public void digSubCave(int xStart, int yStart, int direction, int numBlocks) {
-        int limit = 10;
-        int low = 4;
-
-        int yEnd = yStart - (r.nextInt(3) + 4);
-        while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1 && numBlocks > 0) {
-            numBlocks--;
-
-            if (r.nextInt(6) == 0) {
-                yStart += r.nextInt(3);
-                yEnd += r.nextInt(4);
-                if (yStart - yEnd > limit) {
-                    yEnd = yStart - limit;
-                } else if (yStart - yEnd < low) {
-                    yEnd = yStart - low;
-                }
-            }
-
-            for (int i = 0; i < yStart - yEnd; i++) {
-                tileMap.drawPixel(xStart, yStart - i);
-            }
-
-            if (direction == 0) {
-                xStart++;
-            } else {
-                xStart--;
-            }
-
-            if (r.nextInt(200) == 0) {
-                if (direction == 0) {
-                    direction = 1;
-                } else {
-                    direction = 0;
-                }
-            }
-            if (r.nextInt(600) == 0) {
-                digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(400) + 50);
-            }
-        }
-    }
+//    public void digSubCave(int xStart, int yStart, int direction, int numBlocks) {
+//        int limit = 10;
+//        int low = 4;
+//
+//        int yEnd = yStart - (r.nextInt(3) + 4);
+//        while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1 && numBlocks > 0) {
+//            numBlocks--;
+//
+//            if (r.nextInt(6) == 0) {
+//                yStart += r.nextInt(3);
+//                yEnd += r.nextInt(4);
+//                if (yStart - yEnd > limit) {
+//                    yEnd = yStart - limit;
+//                } else if (yStart - yEnd < low) {
+//                    yEnd = yStart - low;
+//                }
+//            }
+//
+//            for (int i = 0; i < yStart - yEnd; i++) {
+//                tileMap.drawPixel(xStart, yStart - i);
+//            }
+//
+//            if (direction == 0) {
+//                xStart++;
+//            } else {
+//                xStart--;
+//            }
+//
+//            if (r.nextInt(200) == 0) {
+//                if (direction == 0) {
+//                    direction = 1;
+//                } else {
+//                    direction = 0;
+//                }
+//            }
+//            if (r.nextInt(600) == 0) {
+//                digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(400) + 50);
+//            }
+//        }
+//    }
 
     public void finishTerrainShape(int i, int j) {
         for(int h = currentElevation; h < worldHeight; h++) {
-            tileMap.drawPixel(i * chunkSize + j, h);
-//                int red = color >>> 24;
-//                int green = (color & 0xFF0000) >>> 16;
-//                int blue = (color & 0xFF00) >>> 8;
-//                int alpha = color & 0xFF;
+            int color = caveMap.getPixel(i * chunkSize + j, h);
+            int red = color >>> 24;
+            int green = (color & 0xFF0000) >>> 16;
+            int blue = (color & 0xFF00) >>> 8;
+            int alpha = color & 0xFF;
+
+            if(h < horizon + 35 && !mainBranchCave[i * chunkSize + j][h]) {
+                tileMap.drawPixel(i * chunkSize + j, h);
+            } else if(red > caveInstance && green > caveInstance && blue > caveInstance && !mainBranchCave[i * chunkSize + j][h]) {
+                tileMap.drawPixel(i * chunkSize + j, h);
+            }
         }
 
         // generating trees

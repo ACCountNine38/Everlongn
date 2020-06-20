@@ -552,14 +552,14 @@ public class Player extends Creature {
                 float xAim, yAim;
 
                 if(direction == 0) {
-                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (80);
-                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-80);
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (85);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-85);
                     shadowCharge.getEmitters().first().setPosition(
                             body.getPosition().x * PPM + width / 2 + xAim,
                             body.getPosition().y * PPM + 69 + yAim);
                 } else {
-                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (80);
-                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-80);
+                    xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (85);
+                    yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-85);
                     shadowCharge.getEmitters().first().setPosition(
                             body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim);
                 }
@@ -570,8 +570,8 @@ public class Player extends Creature {
                         cdr = 0;
 
                         if (direction == 0) {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180 - 30)) * (80);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180 - 30)) * (-80);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (85);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-85);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() <= ControlCenter.width / 2) {
@@ -582,15 +582,14 @@ public class Player extends Creature {
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Shadow shadow = new Shadow(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim,
-                                    body.getPosition().y * PPM + 69 + yAim,
+                                    body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge, false);
 
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
                         } else {
-                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 30)) * (80);
-                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 30)) * (-80);
+                            float xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (85);
+                            float yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-85);
 
                             // shoot angle is in radians
                             if (Gdx.input.getX() >= ControlCenter.width / 2) {
@@ -601,8 +600,7 @@ public class Player extends Creature {
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Shadow shadow = new Shadow(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim,
-                                    69 + body.getPosition().y * PPM + yAim,
+                                    body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge, false);
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
@@ -691,19 +689,19 @@ public class Player extends Creature {
                 }
             }
         }
-        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Devastation")) {
 
+        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Devastation")) {
             arcaneLight.setColor(ArcaneDevastation.color);
             maxLightRadius = 650;
             forceMax = 1f;
             if(direction == 0) {
-                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-110);
-                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (110);
+                float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-100);
+                float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (100);
                 arcaneLight.setPosition(body.getPosition().x * PPM + width / 2 + xAim,
                         body.getPosition().y * PPM + 46 + 23 + yAim);
             } else {
-                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (110);
-                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (110);
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (100);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (100);
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
@@ -723,8 +721,8 @@ public class Player extends Creature {
                     casted = true;
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     if (direction == 0) {
-                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-110);
-                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (110);
+                        float xAim = (float) Math.sin(Math.toRadians(aimAngle + 35 + 90)) * (-100);
+                        float yAim = (float) Math.cos(Math.toRadians(aimAngle + 35 + 90)) * (100);
 
                         // shoot angle is in radians
                         if (Gdx.input.getX() <= ControlCenter.width / 2) {
@@ -737,12 +735,12 @@ public class Player extends Creature {
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float)Math.PI/13f, forceCharge);
+                                1, direction, shootAngle + (float)Math.PI/10f, forceCharge);
 
                         EntityManager.entities.add(arcaneTrail);
                     } else {
-                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 35)) * (110);
-                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 35)) * (110);
+                        float xAim = (float) Math.cos(Math.toRadians(aimAngle - 35)) * (100);
+                        float yAim = (float) Math.sin(Math.toRadians(aimAngle - 35)) * (100);
 
                         // shoot angle is in radians
                         if (Gdx.input.getX() >= ControlCenter.width / 2) {
@@ -755,7 +753,7 @@ public class Player extends Creature {
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float)Math.PI/13f, forceCharge);
+                                1, direction, shootAngle - (float)Math.PI/10f, forceCharge);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.components.ImageLabel;
@@ -22,6 +23,10 @@ public class WorldCreationState extends State {
     public TextImageButton standard, intense, insane;
     public TextImageButton normal, hardcore;
     public ImageLabel panel, boarder;
+
+    public boolean transitioning;
+    public float transitionAlpha;
+    public String worldSize, worldDifficulty, worldMode;
 
     public static BitmapFont worldCreationFont = new BitmapFont(Gdx.files.internal("fonts/chalk22.fnt"));
     public static BitmapFont worldCreationFont2 = new BitmapFont(Gdx.files.internal("fonts/chalk32.fnt"));
@@ -47,7 +52,7 @@ public class WorldCreationState extends State {
         seed = new TextArea(realmName.x + layout.width + 25, realmName.y - layout.height - 45,
                 500 - layout.width - 25, "", true, worldCreationFont, true, 9, true);
 
-        back = new TextButton(30, 0, "Back", true);
+        back = new TextButton(30, 60, "Back", true);
         back.activate(60, 10, 2);
 
         layout.setText(MenuState.menuFont, "Confirm");
@@ -86,9 +91,24 @@ public class WorldCreationState extends State {
     public void tick(float delta) {
         updateLayers(delta);
 
+        if(transitioning) {
+            transitionAlpha += 0.03;
+            if (transitionAlpha >= 1f) {
+                if(StateManager.states.size() >= 1) {
+                    StateManager.states.pop().dispose();
+                }
+                WorldSelectionState.transitionAlpha = 1f;
+                StateManager.states.push(new WorldGenerationState(stateManager, realmName.currentText,
+                        Integer.parseInt(seed.currentText), worldSize, worldDifficulty, worldMode));
+            }
+            return;
+        }
+
         tickButtons();
 
+
         if(back.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            WorldSelectionState.reversing = true;
             stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
         }
 
@@ -104,11 +124,7 @@ public class WorldCreationState extends State {
         }
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            if(StateManager.states.size() >= 1) {
-                StateManager.states.pop().dispose();
-            }
-
-            String worldSize = "";
+            worldSize = "";
             if(large.selected) {
                 worldSize = "Large";
             } else if(medium.selected) {
@@ -117,7 +133,7 @@ public class WorldCreationState extends State {
                 worldSize = "Small";
             }
 
-            String worldDifficulty = "";
+            worldDifficulty = "";
             if(standard.selected) {
                 worldDifficulty = "Standard";
             } else if(intense.selected) {
@@ -126,15 +142,14 @@ public class WorldCreationState extends State {
                 worldDifficulty = "Insane";
             }
 
-            String worldMode = "";
+            worldMode = "";
             if(normal.selected) {
                 worldMode = "Normal";
             } else if(hardcore.selected) {
                 worldMode = "Hardcore";
             }
 
-            StateManager.states.push(new WorldGenerationState(stateManager, realmName.currentText,
-                    Integer.parseInt(seed.currentText), worldSize, worldDifficulty, worldMode));
+            transitioning = true;
         }
 
         checkInput();
@@ -230,6 +245,12 @@ public class WorldCreationState extends State {
         worldCreationFont.draw(batch, "Mode:", ControlCenter.width/2 - layout.width/2, realmName.y - 280 + seed.height/2);
 
         renderButtons();
+
+        if(transitioning) {
+            batch.setColor(0f, 0f, 0f, transitionAlpha);
+            batch.draw(Tiles.blackTile, 0, 0, ControlCenter.width, ControlCenter.height);
+            batch.setColor(1, 1, 1, 1);
+        }
 
         batch.end();
     }
