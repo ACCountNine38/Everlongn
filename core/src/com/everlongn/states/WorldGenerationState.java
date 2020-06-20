@@ -117,7 +117,7 @@ public class WorldGenerationState extends State {
             mainBranchCave = new boolean[worldWidth][worldHeight];
 
             // perlin noise generation
-            caveInstance = 28;
+            caveInstance = 30;
             caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 500, 6);
         }
         else if(step == 2) {
