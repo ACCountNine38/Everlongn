@@ -39,9 +39,11 @@ public class WorldLoadingState extends State {
 
     private boolean[][] occupied;
 
-    public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbsMap) {
+    public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbsMap, int difficulty, boolean mode) {
         super(stateManager);
 
+        GameState.difficulty = difficulty;
+        GameState.mode = mode;
         this.tilemap = tilemap;
         this.wallmap = wallmap;
         this.herbsMap = herbsMap;

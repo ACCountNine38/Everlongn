@@ -1,9 +1,12 @@
 package com.everlongn.entities.creatures;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Creature;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
@@ -18,26 +21,62 @@ public class Scavenger extends Creature {
 
         enemyList.add("player");
 
-        setMaxHealth(150);
-        setMaxResistance(20);
+        setMaxHealth(50);
+        setMaxResistance(5);
         knockbackResistance = 1.04f;
 
         vulnerableToArcane = true;
+
+        destroyed.getEmitters().first().scaleSize(1.5f);
     }
 
     @Override
     public void tick() {
-        if(target == null) {
-            findTarget();
+        if(alive) {
+            if (target == null) {
+                findTarget();
+            } else {
+                chase();
+            }
+
+            if (health <= 0) {
+                health = 0;
+                alive = false;
+                body.setActive(false);
+                die();
+            }
         } else {
-            chase();
+            destroyed.update(Gdx.graphics.getDeltaTime());
+            destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 10);
+            fadeAlpha-=0.15;
+            if(fadeAlpha < 0) {
+                fadeAlpha = 0;
+            }
+            if(destroyed.isComplete()) {
+                destroyed.dispose();
+                GameState.world.destroyBody(body);
+                active = false;
+            }
         }
     }
 
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        batch.draw(Tiles.earthTile, body.getPosition().x * PPM, body.getPosition().y * PPM, width, height);
+        if(alive) {
+            batch.draw(Tiles.earthTile, body.getPosition().x * PPM, body.getPosition().y * PPM, width, height);
+        } else {
+            batch.setColor(0f, 0f, 0f, fadeAlpha);
+            batch.draw(Tiles.earthTile, body.getPosition().x * PPM, body.getPosition().y * PPM, width, height);
+            batch.setColor(1f, 1f, 1f, 1f);
+            destroyed.draw(batch);
+        }
         batch.end();
+    }
+
+    @Override
+    public void die() {
+        destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 10);
+        destroyed.start();
     }
 }

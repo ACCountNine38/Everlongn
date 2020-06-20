@@ -95,20 +95,53 @@ public abstract class Entity {
             if (difficulty == 2) { // insane difficulty
                 if (damage*1.5 - resistance > 0) {
                     health -= damage*1.5 - resistance;
+                } else {
+                    health -= 1;
                 }
             } else {
                 if (damage - resistance > 0) {
                     health -= damage - resistance;
+                } else {
+                    health -= 1;
                 }
             }
         } else {
             if (difficulty == 0) { // standard difficulty
                 if (damage - resistance * 0.5 > 0) {
                     health -= damage - resistance * 0.5;
+                } else {
+                    health -= 1;
                 }
             } else {
                 if (damage - resistance > 0) {
                     health -= damage - resistance;
+                } else {
+                    health -= 1;
+                }
+            }
+        }
+    }
+
+    // method that calculates damage to player and enemies by difficulty
+    public void trueDamage(float damage, int difficulty) {
+        if(name.equals("player")) {
+            if (difficulty == 2) { // insane difficulty
+                if (damage*1.5 > 0) {
+                    health -= damage*1.5;
+                }
+            } else {
+                if (damage > 0) {
+                    health -= damage;
+                }
+            }
+        } else {
+            if (difficulty == 0) { // standard difficulty
+                if (damage * 0.5 > 0) {
+                    health -= damage * 0.5;
+                }
+            } else {
+                if (damage > 0) {
+                    health -= damage;
                 }
             }
         }

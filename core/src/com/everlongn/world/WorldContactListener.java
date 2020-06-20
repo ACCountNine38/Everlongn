@@ -51,15 +51,14 @@ public class WorldContactListener implements ContactListener {
                 }
                 Projectile temp = (Projectile) a.getUserData();
                 if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection && b.getUserData() instanceof Entity) {
-                        ArcaneReflection ar = (ArcaneReflection)a.getUserData();
-                        ar.numReflection = ar.maxReflection;
-                        ar.finish();
-                    } else if(temp instanceof ArcaneReflection && b.getUserData() instanceof Tile) {
-                        Tile tile = (Tile)b.getUserData();
-                        ArcaneReflection ar = (ArcaneReflection)a.getUserData();
-                        if(tile.numAdjacent == 2) {
-                            ar.finish2(tile);
+                    if(temp instanceof ArcaneReflection) {
+                        ArcaneReflection ar = (ArcaneReflection) a.getUserData();
+                        if(b.getUserData() instanceof Entity) {
+                            ar.numReflection = ar.maxReflection;
+                            ar.finish2(null, true);
+                        } else  {
+                            Tile tile = (Tile)b.getUserData();
+                            ar.finish2(tile, false);
                         }
                     } else {
                         temp.finish();
@@ -72,15 +71,14 @@ public class WorldContactListener implements ContactListener {
                 }
                 Projectile temp = (Projectile) b.getUserData();
                 if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection && a.getUserData() instanceof Entity) {
-                        ArcaneReflection ar = (ArcaneReflection)b.getUserData();
-                        ar.numReflection = ar.maxReflection;
-                        ar.finish();
-                    } else if(temp instanceof ArcaneReflection && a.getUserData() instanceof Tile) { // special contact case for arcane reflection
-                        Tile tile = (Tile)a.getUserData();
-                        ArcaneReflection ar = (ArcaneReflection)b.getUserData();
-                        if(tile.numAdjacent == 2) {
-                            ar.finish2(tile);
+                    if(temp instanceof ArcaneReflection) {
+                        ArcaneReflection ar = (ArcaneReflection) b.getUserData();
+                        if(a.getUserData() instanceof Entity) {
+                            ar.numReflection = ar.maxReflection;
+                            ar.finish2(null, false);
+                        } else  {
+                            Tile tile = (Tile)a.getUserData();
+                            ar.finish2(tile, false);
                         }
                     } else {
                         temp.finish();

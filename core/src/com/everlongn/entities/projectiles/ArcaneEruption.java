@@ -20,10 +20,11 @@ public class ArcaneEruption extends Projectile {
     public float angle, actionForce;
     public static Color color = new Color(0.04f, 0.02f, 0.02f, 1f);
 
-    public ArcaneEruption(ControlCenter c, float x, float y, float density, int direction, float angle, float forceX, float forceY) {
+    public ArcaneEruption(ControlCenter c, float x, float y, float density, int direction, float angle, float forceX, float forceY, float damage) {
         super(c, x, y, 4, 4, density);
         this.direction = direction;
         this.angle = angle;
+        this.damage = damage;
 
         body = Tool.createEntity((int) (x), (int) (y), width, height, false, density, false,
                 (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0, this);
@@ -145,6 +146,8 @@ public class ArcaneEruption extends Projectile {
                         c.body.applyForceToCenter(
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*(800+actionForce), false);
                     }
+
+                    c.hurt(damage, GameState.difficulty);
                 }
             }
         }

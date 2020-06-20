@@ -33,8 +33,6 @@ public class GameState extends State {
 
     // world settings //
     public static FileHandle file;
-    public static int chunkSize = 20;
-    public static int worldWidth, worldHeight;
     public static Chunk[][] chunks;
     public static EntityManager entityManager;
     public static World world;
@@ -44,6 +42,8 @@ public class GameState extends State {
     public static Entity[][] herbs;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
+    public static boolean mode;
+    public static int chunkSize = 20, worldWidth, worldHeight, difficulty;
     ///////////////////
 
     // Player Related Fields //
@@ -147,7 +147,7 @@ public class GameState extends State {
                                     tiles[x][y].currentType = 0;
                                     if(tiles[x][y].body == null && tiles[x][y].numAdjacent != 4) {
                                         tiles[x][y].body = Tool.createTile(x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, 4, true, true, true, true,
-                                                Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
+                                                Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, tiles[x][y]);
                                         tiles[x][y].currentType = 1;
                                     }
                                     tiles[x][y].tick();

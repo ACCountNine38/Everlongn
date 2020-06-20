@@ -24,10 +24,11 @@ public class ArcaneTrail extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.02f, 1f);
 
-    public ArcaneTrail(ControlCenter c, float x, float y, float density, int direction, float angle) {
+    public ArcaneTrail(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
         super(c, x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
+        this.damage = damage;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short)Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -136,6 +137,7 @@ public class ArcaneTrail extends Projectile {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
+                    c.hurt(damage, GameState.difficulty);
                     break;
                 }
             }

@@ -114,7 +114,14 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 if(StateManager.states.size() >= 1) {
                     StateManager.states.pop().dispose();
                 }
-                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap));
+                int diff = 0;
+                if(worlds.get(selectedIndex).difficulty.equals("Intense")) {
+                    diff = 1;
+                } else if(worlds.get(selectedIndex).difficulty.equals("insane")) {
+                    diff = 2;
+                }
+                System.out.println(diff);
+                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, diff, worlds.get(selectedIndex).hardcore));
             }
             return;
         }

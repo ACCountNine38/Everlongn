@@ -18,15 +18,16 @@ import com.everlongn.utils.Tool;
 public class ArcaneDevastation extends Projectile {
     public ParticleEffect movingParticle;
     public int direction;
-    public static float maxLife = 0.35f;
+    public static float maxLife = 0.5f;
 
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.00f, 1f);
 
-    public ArcaneDevastation(ControlCenter c, float x, float y, float density, int direction, float angle, float xSize) {
+    public ArcaneDevastation(ControlCenter c, float x, float y, float density, int direction, float angle, float xSize, float damage) {
         super(c, x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
+        this.damage = damage;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -110,8 +111,7 @@ public class ArcaneDevastation extends Projectile {
             if(EntityManager.entities.get(i).getBound().overlaps(this.getBound()) && EntityManager.entities.get(i) != this) {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
-
-                    break;
+                    c.trueDamage(damage, GameState.difficulty);
                 }
             }
         }

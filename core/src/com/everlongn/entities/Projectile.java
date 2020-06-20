@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.everlongn.game.ControlCenter;
 
 public abstract class Projectile extends Entity {
-    public float speedX, speedY, explosionTimer;
+    public float speedX, speedY, explosionTimer, damage;
     public boolean deactivate, lifeOut, exploded;
 
     // light effects

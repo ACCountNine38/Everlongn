@@ -38,6 +38,7 @@ public class Player extends Creature {
     public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset;
     public static Rectangle itemCollectBound, itemPickBound;
     public static String previousItem = "";
+    public static float bonusArcanePercentage = 1, bonusMeleePercentage = 1;
 
     // special item related variables
     private boolean eruptionHold, shadowHold;
@@ -666,7 +667,7 @@ public class Player extends Creature {
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float)Math.PI/15);
+                                1, direction, shootAngle + (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
 
                         EntityManager.entities.add(arcaneTrail);
                     } else {
@@ -684,7 +685,7 @@ public class Player extends Creature {
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float)Math.PI/15);
+                                1, direction, shootAngle - (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
@@ -736,7 +737,7 @@ public class Player extends Creature {
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float)Math.PI/10f, forceCharge);
+                                1, direction, shootAngle + (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
 
                         EntityManager.entities.add(arcaneTrail);
                     } else {
@@ -754,7 +755,7 @@ public class Player extends Creature {
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float)Math.PI/10f, forceCharge);
+                                1, direction, shootAngle - (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
@@ -762,6 +763,7 @@ public class Player extends Creature {
                 Tool.changeCursor(2);
             }
         }
+
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Reflection")) {
             Tool.changeCursor(2);
             arcaneLight.setColor(ArcaneReflection.color);
@@ -801,7 +803,7 @@ public class Player extends Creature {
                         ArcaneReflection arcaneReflection = new ArcaneReflection(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float) Math.PI / 15);
+                                1, direction, shootAngle + (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneReflection);
 
                     } else {
@@ -819,7 +821,7 @@ public class Player extends Creature {
                         ArcaneReflection arcaneReflection = new ArcaneReflection(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float) Math.PI / 15);
+                                1, direction, shootAngle - (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneReflection);
                     }
                 }
@@ -895,7 +897,8 @@ public class Player extends Creature {
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     body.getPosition().y * PPM + 69 + yAim,
                                     10, direction, shootAngle,
-                                    (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge);
+                                    (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge,
+                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage);
                             EntityManager.entities.add(arcaneTrail);
                         } else {
                             float xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (76);
@@ -913,7 +916,8 @@ public class Player extends Creature {
                                     body.getPosition().x * PPM + width / 2 + xAim,
                                     69 + body.getPosition().y * PPM + yAim,
                                     10, direction, shootAngle,
-                                    (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge);
+                                    (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge,
+                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage);
                             EntityManager.entities.add(arcaneTrail);
                         }
                     }
@@ -962,7 +966,7 @@ public class Player extends Creature {
                         ArcaneRebound arcaneRebound = new ArcaneRebound(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneRebound);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -979,7 +983,7 @@ public class Player extends Creature {
                         ArcaneRebound arcaneRebound = new ArcaneRebound(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneRebound);
                     }
                 }
@@ -1023,7 +1027,7 @@ public class Player extends Creature {
                         ArcaneEscort arcaneEscort = new ArcaneEscort(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneEscort);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -1040,7 +1044,7 @@ public class Player extends Creature {
                         ArcaneEscort arcaneEscort = new ArcaneEscort(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneEscort);
                     }
                 }
@@ -1381,5 +1385,10 @@ public class Player extends Creature {
             }
         }
         batch.end();
+    }
+
+    @Override
+    public void die() {
+
     }
 }

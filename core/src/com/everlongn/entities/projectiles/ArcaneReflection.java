@@ -18,23 +18,23 @@ import com.everlongn.utils.Tool;
 
 public class ArcaneReflection extends Projectile {
     public ParticleEffect movingParticle, explosion;
-    public int direction, maxReflection = 0, numReflection = 0;
-    public static float maxLife = 5;
+    public int direction, maxReflection, numReflection = 0, yDirection;
 
     public float life, angle;
     public static Color color = new Color(0.01f, 0f, 0.01f, 1f);
 
-    public ArcaneReflection(ControlCenter c, float x, float y, float density, int direction, float angle) {
+    public ArcaneReflection(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
         super(c, x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
+        this.damage = damage;
 
         maxReflection = (int)(Math.random()*7) + 6;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
-        float newAngle = (float)(angle - Math.PI/14 + Math.random()*(Math.PI/7));
+        float newAngle = (float)(angle - Math.PI/20 + Math.random()*(Math.PI/10));
         float xMove = Math.abs((float)Math.sin(newAngle)*(20f));
         if(direction == 0) {
             speedX = -xMove;
@@ -70,6 +70,11 @@ public class ArcaneReflection extends Projectile {
             } else if(body.getLinearVelocity().x < 0) {
                 direction = 0;
             }
+            if(body.getLinearVelocity().y > 0) {
+                yDirection = 1;
+            } else if(body.getLinearVelocity().y < 0) {
+                yDirection = 0;
+            }
             moveByVelocityX();
             moveByVelocityY();
             currentRadius+=15;
@@ -78,8 +83,15 @@ public class ArcaneReflection extends Projectile {
             light.setDistance(currentRadius);
             light.setPosition(body.getPosition().x * Constants.PPM,
                     body.getPosition().y * Constants.PPM);
+
+            life += Gdx.graphics.getDeltaTime();
+            if(life > 4) {
+                finish();
+            }
         } else {
             body.setLinearVelocity(0, 0);
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
             if(maxReached) {
                 currentRadius -= 25;
                 if (currentRadius <= 0)
@@ -94,6 +106,15 @@ public class ArcaneReflection extends Projectile {
             light.setDistance(currentRadius);
             light.setPosition(body.getPosition().x * Constants.PPM,
                     body.getPosition().y * Constants.PPM);
+
+            if(explosion.isComplete() && movingParticle.isComplete() && currentRadius <= 0) {
+                GameState.world.destroyBody(body);
+                explosion.dispose();
+                movingParticle.dispose();
+                light.remove();
+                active = false;
+            }
+
             if(!exploded) {
                 explosionTimer += Gdx.graphics.getDeltaTime();
                 if(explosionTimer > 0.01) {
@@ -103,26 +124,8 @@ public class ArcaneReflection extends Projectile {
             }
         }
 
-        life += Gdx.graphics.getDeltaTime();
-        if(life > maxLife && !lifeOut) {
-            finish();
-        }
-
-        if(lifeOut && explosion.isComplete() && movingParticle.isComplete() && currentRadius <= 0) {
-            GameState.world.destroyBody(body);
-            explosion.dispose();
-            movingParticle.dispose();
-            light.remove();
-            active = false;
-        }
-
         movingParticle.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
         movingParticle.update(Gdx.graphics.getDeltaTime());
-
-        if(lifeOut) {
-            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-            explosion.update(Gdx.graphics.getDeltaTime());
-        }
     }
 
     public void explode() {
@@ -133,7 +136,7 @@ public class ArcaneReflection extends Projectile {
 
                     c.stunned = true;
 
-                    float force = 350 + (float)Math.random()*50;
+                    float force = 375 + (float)Math.random()*50;
                     float angle = (float)(Math.random()*(Math.PI/4));
                     if(direction == 0) {
                         c.body.applyForceToCenter(
@@ -142,6 +145,8 @@ public class ArcaneReflection extends Projectile {
                         c.body.applyForceToCenter(
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
+
+                    c.hurt(damage, GameState.difficulty);
 
                     break;
                 }
@@ -161,36 +166,42 @@ public class ArcaneReflection extends Projectile {
 
     @Override
     public void finish() {
-        if(numReflection >= maxReflection) {
-            lifeOut = true;
-            movingParticle.getEmitters().get(0).setContinuous(false);
-            explosion.start();
-        } else {
-            numReflection++;
-            if(body.getLinearVelocity().x == 0) {
-                speedX *= -1;
-            } else {
-                speedY *= -1;
-            }
-        }
+        lifeOut = true;
+        movingParticle.getEmitters().get(0).setContinuous(false);
+        explosion.start();
     }
-    public void finish2(Tile tile) {
-        if(numReflection >= maxReflection) {
+    public void finish2(Tile tile, boolean hitEntity) {
+        if(hitEntity || numReflection >= maxReflection) {
             lifeOut = true;
             movingParticle.getEmitters().get(0).setContinuous(false);
             explosion.start();
         } else {
-            if(tile.left && tile.right) {
-                finish();
-            } else {
-                if(tile.down) {
-                    speedY = Math.abs(speedY);
-                    speedX *= -1;
-                } else {
-                    speedY = -Math.abs(speedY);
-                    speedX *= -1;
+            if(tile.numAdjacent == 2) {
+                if (tile.left && tile.right && !tile.up && !tile.down) {
+                    speedY *= -1;
+                    numReflection++;
                 }
-                numReflection++;
+                if (!tile.left && !tile.right && tile.up && tile.down) {
+                    speedX *= -1;
+                    numReflection++;
+                } else {
+                    if (tile.down) {
+                        speedY = Math.abs(speedY);
+                        speedX *= -1;
+                    } else {
+                        speedY = -Math.abs(speedY);
+                        speedX *= -1;
+                    }
+                    numReflection++;
+                }
+            } else {
+                if(tile.left && tile.right) {
+                    speedY *= -1;
+                    numReflection++;
+                } else if(tile.up && tile.down) {
+                    speedX *= -1;
+                    numReflection++;
+                }
             }
         }
     }
