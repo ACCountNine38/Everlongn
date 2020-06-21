@@ -22,7 +22,7 @@ public class Arcane extends Weapon {
             54, 58, new TextureRegion[]{Items.arcaneEscortL, Items.arcaneEscortR}, new String[]{"Arcane", "Air"}, 1.25f, 0.6f, 20);
 
     public static Arcane arcaneReflection = new Arcane(Items.arcaneReflectionR, "Reflection", 205, false, true, 108, 108, 66, 66, 1, "Power beyond your understanding...",
-            54, 58, new TextureRegion[]{Items.arcaneReflectionL, Items.arcaneReflectionR}, new String[]{"Arcane", "River"}, 0.75f, 0.3f, 22.5f);
+            54, 58, new TextureRegion[]{Items.arcaneReflectionL, Items.arcaneReflectionR}, new String[]{"Arcane", "River"}, 0.75f, 0.3f, 25f);
 
     public static Arcane arcaneDevastation = new Arcane(Items.arcaneOblivionR, "Devastation", 206, false, true, 132, 132, 84, 84, 1, "Power beyond your understanding...",
             52, 58, new TextureRegion[]{Items.arcaneOblivionL, Items.arcaneOblivionR}, new String[]{"Arcane", "Doom"}, 0.5f, 0.1f, 3);
