@@ -5,7 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Creature;
+import com.everlongn.entities.EntityManager;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Inventory;
+import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
@@ -20,7 +23,6 @@ public class Scavenger extends Creature {
                 Constants.BIT_ENEMY, (short)(Constants.BIT_PLAYER | Constants.BIT_TILE | Constants.BIT_PROJECTILE), (short)0, this);
 
         enemyList.add("player");
-
         setMaxHealth(50);
         setMaxResistance(5);
         knockbackResistance = 1.04f;
@@ -28,11 +30,17 @@ public class Scavenger extends Creature {
         vulnerableToArcane = true;
 
         destroyed.getEmitters().first().scaleSize(1.5f);
+        jumpForce = 750;
     }
 
     @Override
     public void tick() {
         if(alive) {
+            if(getBound().contains(EntityManager.player.mouseWorldPos().x, EntityManager.player.mouseWorldPos().y) &&
+                    Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
+                Tool.changeCursor(3);
+            }
+
             if (target == null) {
                 findTarget();
             } else {

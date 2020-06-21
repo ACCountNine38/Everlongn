@@ -12,9 +12,9 @@ import com.everlongn.utils.Constants;
 import java.util.ArrayList;
 
 public abstract class Creature extends Entity {
-    public float speed, currentSpeed, sightRadius, knockbackResistance, yChangeTimer, previousVelY, fadeAlpha = 1f;
+    public float speed, currentSpeed, sightRadius, knockbackResistance, yChangeTimer, previousVelY, fadeAlpha = 1f, jumpForce;
     public int direction, damage;
-    public boolean canJump, jump, fall, airborn, alive = true;
+    public boolean canJump = true, jump, fall, airborn, alive = true;
 
     public Entity target;
     public ArrayList<String> enemyList = new ArrayList<String>();
@@ -43,12 +43,24 @@ public abstract class Creature extends Entity {
             else {
                 body.setLinearVelocity(speed, body.getLinearVelocity().y);
             }
+            testBasicJump();
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/knockbackResistance, body.getLinearVelocity().y);
             if(body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
                 stunned = false;
             }
         }
+    }
+
+    public void testBasicJump() {
+        if(previousVelY == body.getLinearVelocity().y) {
+            canJump = true;
+        }
+        if(body.getLinearVelocity().x < 0.1 && canJump) {
+            body.applyForceToCenter(0, jumpForce,false);
+            canJump = false;
+        }
+        previousVelY = body.getLinearVelocity().y;
     }
 
     public void findTarget() {

@@ -211,6 +211,8 @@ public class Tool {
                 Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.emptyCursor, 0, 0));
             } else if(id == 2) {
                 Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.aimCursor, 0, 0));
+            } else if(id == 3) {
+                Gdx.graphics.setCursor(Gdx.graphics.newCursor(ControlCenter.attackCursor, 0, 0));
             }
         }
     }

@@ -22,7 +22,6 @@ public abstract class Entity {
     public float regenTimer;
 
     public ControlCenter c;
-    //protected SpriteBatch batch;
 
     public Body body;
 
