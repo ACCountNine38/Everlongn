@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.everlongn.assets.Images;
+import com.everlongn.assets.Sounds;
 import com.everlongn.states.StateManager;
 import com.everlongn.utils.TextManager;
 
@@ -17,6 +19,7 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class ControlCenter extends ApplicationAdapter {
 
+	public static Vector3 camStartingPosition;
 	public static boolean DEBUG = true, DEBUG_RENDER = false;
 	public static float SCALE = 1f;
 	public static int width, height;
@@ -42,12 +45,14 @@ public class ControlCenter extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		TextManager.batch = batch;
 		Images.init();
+		Sounds.init();
 
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, width/SCALE, height/SCALE);
+		camStartingPosition = camera.position;
 		stateManager = new StateManager(this);
 
 		cursor1 = new Pixmap(Gdx.files.internal("UI/Cursor.png"));

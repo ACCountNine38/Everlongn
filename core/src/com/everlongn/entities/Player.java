@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.creatures.Scavenger;
 import com.everlongn.entities.projectiles.*;
@@ -63,7 +64,8 @@ public class Player extends Creature {
     public static int currentChunkX, currentChunkY, horizontalForce;
 
     private ParticleEffect smoke, eruptionCharge, shadowCharge, shadowExplosion;
-    public static float forceCharge, forceMax, airbornTimer, particleTimer;
+    public static float forceCharge, forceMax, airbornTimer, particleTimer, landSoundTimer;
+    public boolean landSound;
 
     // Testing variables
     public PointLight testLight;
@@ -156,6 +158,10 @@ public class Player extends Creature {
             yChangeTimer += Gdx.graphics.getDeltaTime();
             if (yChangeTimer > 0.01) {
                 fall = false;
+                if(!canJump) {
+                    Sounds.playSound(Sounds.land);
+                    landSound = false;
+                }
                 canJump = true;
                 haltReset = true;
                 yChangeTimer = 0;
@@ -211,6 +217,17 @@ public class Player extends Creature {
         if(legAnimation) {
             legsRun[0].tick(Gdx.graphics.getDeltaTime());
             legsRun[1].tick(Gdx.graphics.getDeltaTime());
+            if(legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58 && !jump && !fall && canJump) {
+                int stepID = (int)(Math.random()*4);
+                Sounds.playSound(Sounds.steps[stepID]);
+            }
+            if(!landSound) {
+                landSoundTimer += Gdx.graphics.getDeltaTime();
+                if (landSoundTimer >= 0.5f) {
+                    landSoundTimer = 0;
+                    landSound = true;
+                }
+            }
         }
 
         if(jumpAnimation) {
@@ -259,6 +276,8 @@ public class Player extends Creature {
     }
 
     public void checkItemOnHold() {
+        GameState.aiming = false;
+        GameState.charging = false;
         if(Inventory.inventory[Inventory.selectedIndex] == null) {
             return;
         }
@@ -275,13 +294,11 @@ public class Player extends Creature {
         if(inventoryHold) {
             return;
         }
-
         if(Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
-            Tool.changeCursor(0);
             if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 haltReset = false;
             }
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack) {
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !meleeAttack && !GameState.options.active) {
                 meleeAttack = true;
                 inCombat = true;
                 targetAngle = 155;
@@ -291,18 +308,32 @@ public class Player extends Creature {
                     targetAngle = 0;
                 }
             }
+            boolean found = false;
+            for(int i = 0; i < EntityManager.entities.size(); i++) {
+                if(EntityManager.entities.get(i) instanceof Creature &&
+                        EntityManager.entities.get(i).getBound().contains(
+                                EntityManager.player.mouseWorldPos().x, EntityManager.player.mouseWorldPos().y)) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found) {
+                GameState.attackHover = true;
+            } else {
+                GameState.attackHover = false;
+            }
             checkMeleeCombat();
         } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
+            GameState.aiming = true;
             meleeAttack = false;
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 inCombat = true;
             }
             checkArcaneCombat();
         } else {
-            Tool.changeCursor(0);
+            GameState.defaultCursor = true;
         }
-
-        if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+        if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT) || GameState.options.active) {
             if(eruptionHold)
                 eruptionHold = false;
             if(shadowHold)
@@ -533,7 +564,8 @@ public class Player extends Creature {
         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shadow Manipulator")) {
             maxLightRadius = 0;
             forceMax = 8;
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
+                GameState.charging = true;
                 if(!previousItem.equals("Shadow Manipulator")) {
                     previousItem = "Shadow Manipulator";
                     forceCharge = 0;
@@ -566,7 +598,7 @@ public class Player extends Creature {
                             body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim);
                 }
             } else {
-                Tool.changeCursor(2);
+                GameState.charging = false;
                 if(shadowHold) {
                     if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                         cdr = 0;
@@ -630,7 +662,7 @@ public class Player extends Creature {
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Caster")) {
-            Tool.changeCursor(2);
+            GameState.charging = false;
             arcaneLight.setColor(ArcaneTrail.color);
             forceCharge = 0;
             maxLightRadius = 450;
@@ -645,7 +677,7 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
@@ -707,7 +739,8 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
+                GameState.charging = true;
                 cdr += Gdx.graphics.getDeltaTime();
 
                 if(!previousItem.equals("Devastation")) {
@@ -759,13 +792,15 @@ public class Player extends Creature {
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
-            } else {
-                Tool.changeCursor(2);
+            }
+
+            else {
+                GameState.charging = false;
             }
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Reflection")) {
-            Tool.changeCursor(2);
+            GameState.charging = false;
             arcaneLight.setColor(ArcaneReflection.color);
             forceCharge = 0;
             maxLightRadius = 450;
@@ -780,14 +815,14 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     cdr = 0;
                     casted = true;
-
+                    Sounds.arcaneReflection.play();
                     if (direction == 0) {
                         float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
@@ -843,7 +878,8 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
+                GameState.charging = true;
                 if(!previousItem.equals("Eruption")) {
                     previousItem = "Eruption";
                     forceCharge = 0;
@@ -875,12 +911,14 @@ public class Player extends Creature {
                             body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim);
                 }
 
-            } else {
-                Tool.changeCursor(2);
+            }
+
+            else {
+                GameState.charging = false;
                 if(eruptionHold) {
                     if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                         cdr = 0;
-
+                        Sounds.playSound(Sounds.eruptionCast);
                         if (direction == 0) {
                             float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (76);
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
@@ -930,7 +968,7 @@ public class Player extends Creature {
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rebound")) {
-            Tool.changeCursor(2);
+            GameState.charging = false;
             arcaneLight.setColor(ArcaneRebound.color);
             maxLightRadius = 600;
             forceCharge = 0;
@@ -945,7 +983,7 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
@@ -991,7 +1029,7 @@ public class Player extends Creature {
         }
 
         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Escort") && ArcaneEscort.numEscort <= 15) {
-            Tool.changeCursor(2);
+            GameState.charging = false;
             arcaneLight.setColor(ArcaneEscort.color);
             maxLightRadius = 400;
             forceCharge = 0;
@@ -1006,7 +1044,7 @@ public class Player extends Creature {
                 arcaneLight.setPosition((body.getPosition().x * PPM + width / 2) + xAim,
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
-            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
@@ -1052,7 +1090,7 @@ public class Player extends Creature {
         }
 
         else {
-            Tool.changeCursor(0);
+            GameState.charging = false;
             eruptionHold = false;
             shadowHold = false;
             forceCharge = 0;
@@ -1098,13 +1136,14 @@ public class Player extends Creature {
                 currentSpeed = 0;
         }
 
-        // jump
+        // jump test
         if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
             body.applyForceToCenter(0, 800/(body.getLinearVelocity().y/10 + 1), false);
             jump = true;
             fall = false;
             canJump = false;
             airborn = true;
+            Sounds.playSound(Sounds.jump);
 
             legsJump[0].currentIndex = 0;
             legsJump[1].currentIndex = 0;

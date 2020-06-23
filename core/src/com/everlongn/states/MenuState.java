@@ -14,7 +14,6 @@ import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.components.TextButton;
 
 public class MenuState extends State {
-
     public static BitmapFont menuFont = new BitmapFont(Gdx.files.internal("fonts/menuOn.fnt"));
 
     private TextButton[] buttons = {new TextButton(30, -50, "Single Player", true),
@@ -23,7 +22,7 @@ public class MenuState extends State {
             new TextButton(30, -50,  "Credits", false),
             new TextButton(30, -50,  "Exit", true)};
 
-    private float screenTransitionAlpha = 1f;
+    public static float screenTransitionAlpha = 1f;
     public static boolean firstEnter;
     public boolean canSwitch, buttonPressed;
 
@@ -61,7 +60,7 @@ public class MenuState extends State {
     public void tick(float delta) {
         if(!firstEnter) {
             if (screenTransitionAlpha > 0) {
-                screenTransitionAlpha -= 0.02;
+                screenTransitionAlpha -= 0.05;
             } else {
                 firstEnter = true;
             }
@@ -94,7 +93,6 @@ public class MenuState extends State {
     public void render() {
         Gdx.gl.glClearColor(90f/255f, 90f/255f, 90f/255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         setupBackground();
 
         batch.begin();

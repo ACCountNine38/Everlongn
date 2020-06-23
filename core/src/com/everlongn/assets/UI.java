@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class UI {
     public static Texture inventorySlot, hotbarSlot, selectedSlot, stain1, stain2, stain3, stain4, stain5;
     public static Texture worldSelect, worldSelected, worldSelectPanel, worldSelectBoarder, hardcore, normal,
-        chargeCursor, chargeOrb;
+        chargeCursor, chargeOrb, percentageBar;
 
     public static void init() {
         inventorySlot = new Texture(Gdx.files.internal("UI/inventorySlot.png"));
@@ -25,6 +25,9 @@ public class UI {
         hardcore.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         normal = new Texture(Gdx.files.internal("UI/normal.png"), true);
         normal.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        percentageBar = new Texture(Gdx.files.internal("UI/percentageBar.png"), true);
+        percentageBar.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
         stain1 = new Texture(Gdx.files.internal("UI/stain1.png"), true);
         stain1.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

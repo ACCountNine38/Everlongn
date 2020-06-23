@@ -1,7 +1,9 @@
 package com.everlongn.states;
 
+import com.badlogic.gdx.Gdx;
 import com.everlongn.game.ControlCenter;
 
+import java.awt.event.KeyEvent;
 import java.util.Stack;
 
 public class StateManager {
@@ -13,7 +15,6 @@ public class StateManager {
         MENU_STATE,
         WORLD_SELECTION_STATE,
         WORLD_CREATION_STATE,
-        WORLD_LOADING_STATE,
         GAME_STATE
     }
 

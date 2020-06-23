@@ -16,6 +16,7 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
+import com.everlongn.popups.IngameOptions;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
 import com.everlongn.walls.Wall;
@@ -27,7 +28,7 @@ import static com.everlongn.utils.Constants.PPM;
 public class GameState extends State {
     // screen settings //
     public static OrthographicCamera hud, parallaxBackground;
-    private float screenTransitionAlpha = 1f;
+    public static  float screenTransitionAlpha = 1f;
     public static boolean frameSkip = true;
     ///////////////////
 
@@ -42,8 +43,12 @@ public class GameState extends State {
     public static Entity[][] herbs;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
-    public static boolean mode;
+    public static boolean mode, exiting;
     public static int chunkSize = 20, worldWidth, worldHeight, difficulty;
+    ///////////////////
+
+    // UI //
+    public static IngameOptions options;
     ///////////////////
 
     // Player Related Fields //
@@ -52,6 +57,10 @@ public class GameState extends State {
     public static float[] stainAlpha = new float[]{0f, 0f, 0f, 0f, 0f};
     boolean layerFlash;
     public static Inventory inventory;
+    ///////////////////
+
+    // Cursor Selections //
+    public static boolean attackHover, defaultCursor, aiming, charging;
     ///////////////////
 
     // debug //
@@ -66,26 +75,34 @@ public class GameState extends State {
 
         inventory = new Inventory(c);
         background = new BackgroundManager();
+        options = new IngameOptions();
         world.setContactListener(new WorldContactListener());
+        exiting = false;
     }
 
     public void tick(float delta) {
+        // updating world and transition
         world.step(1/60f, 6, 2);
         if(screenTransitionAlpha > 0) {
             screenTransitionAlpha -= 0.008;
         }
+
+        // updating world related fields
         updateWalls();
         updateTiles();
         rayHandler.update();
         updateStaticEntity();
         entityManager.tick();
         inventory.tick();
+        options.tick();
+        updateCursor();
         batch.setProjectionMatrix(camera.combined);
         rayHandler.setCombinedMatrix(camera);
         rayHandler.setBlurNum(3);
         rayHandler.setShadows(true);
         updateStainAlpha();
 
+        // special effects
         if(Player.blink && !Player.blinkAlphaMax) {
             screenTransitionAlpha+=0.2;
             if(screenTransitionAlpha > 1) {
@@ -99,6 +116,43 @@ public class GameState extends State {
                 Player.blink = false;
                 Player.blinkAlphaMax = false;
             }
+        }
+
+        // processing world exit
+
+        if(exiting) {
+            screenTransitionAlpha += 0.05f;
+            if(screenTransitionAlpha >= 1f) {
+                screenTransitionAlpha = 1f;
+                camera.position.set(ControlCenter.width/2, ControlCenter.height/2, 0);
+                camera.update();
+                WorldSelectionState.transitioning = false;
+                WorldSelectionState.transitionAlpha = 0f;
+                WorldSelectionState.reversing = false;
+                WorldSelectionState.canSwitch = false;
+                WorldSelectionState.fadeAlpha = 1f;
+                WorldSelectionState.exitFromGame = true;
+                stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
+                exiting = false;
+            }
+        }
+    }
+
+    public void save() {
+
+    }
+
+    public void updateCursor() {
+        if(options.active) {
+            Tool.changeCursor(0);
+        } else if(charging) {
+            Tool.changeCursor(1);
+        } else if(attackHover) {
+            Tool.changeCursor(3);
+        } else if(aiming) {
+            Tool.changeCursor(2);
+        } else  {
+            Tool.changeCursor(0);
         }
     }
 
@@ -277,7 +331,6 @@ public class GameState extends State {
     public void render() {
         Gdx.gl.glClearColor(.75f, .75f, .76f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         batch.setProjectionMatrix(parallaxBackground.combined);
         background.render(batch);
@@ -295,6 +348,8 @@ public class GameState extends State {
         batch.setProjectionMatrix(hud.combined);
         renderStain(batch);
         inventory.render(batch);
+
+        options.render(batch);
 
         batch.begin();
 
@@ -417,7 +472,8 @@ public class GameState extends State {
 
     public void dispose() {
         rayHandler.dispose();
+        debug.dispose();
         world.dispose();
-        batch.dispose();
+        //batch.dispose();
     }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
@@ -157,6 +158,7 @@ public class ArcaneEruption extends Projectile {
     public void finish() {
         lifeOut = true;
         movingParticle.getEmitters().get(0).setContinuous(false);
+        Sounds.playSound(Sounds.eruptionLand);
         explosion.start();
     }
 }

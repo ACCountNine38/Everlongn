@@ -36,11 +36,6 @@ public class Scavenger extends Creature {
     @Override
     public void tick() {
         if(alive) {
-            if(getBound().contains(EntityManager.player.mouseWorldPos().x, EntityManager.player.mouseWorldPos().y) &&
-                    Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
-                Tool.changeCursor(3);
-            }
-
             if (target == null) {
                 findTarget();
             } else {

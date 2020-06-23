@@ -30,9 +30,9 @@ public class WorldSelectionState extends State  implements InputProcessor {
     public static float scrollY, maxScroll, minScroll;
 
     private int selectedIndex = -1, switchCondition;
-    public static float transitionAlpha = 0f;
-    private boolean transitioning, canSwitch, buttonPressed;
-    public static boolean reversing;
+    public static float transitionAlpha = 0f, fadeAlpha;
+    public static boolean transitioning, canSwitch, buttonPressed;
+    public static boolean reversing, exitFromGame;
 
     public WorldSelectionState(StateManager stateManager) {
         super(stateManager);
@@ -106,8 +106,14 @@ public class WorldSelectionState extends State  implements InputProcessor {
 
     @Override
     public void tick(float delta) {
+        if(exitFromGame) {
+            fadeAlpha -= 0.03;
+            if(fadeAlpha <= 0) {
+                fadeAlpha = 0;
+                exitFromGame = false;
+            }
+        }
         updateLayers(delta);
-
         if(transitioning) {
             transitionAlpha += 0.03;
             if (transitionAlpha >= 1f) {
@@ -171,6 +177,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 activateTransition();
             }
         }
+
         if(newRealm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             stateManager.setState(StateManager.CurrentState.WORLD_CREATION_STATE);
         }
@@ -266,8 +273,14 @@ public class WorldSelectionState extends State  implements InputProcessor {
         confirm.render(batch);
         cancel.render(batch);
 
+        // transition between menu, world creation, and world loading
         if(transitioning || reversing) {
             batch.setColor(0f, 0f, 0f, transitionAlpha);
+            batch.draw(Tiles.blackTile, 0, 0, ControlCenter.width, ControlCenter.height);
+            batch.setColor(1, 1, 1, 1);
+        }
+        if(fadeAlpha > 0) {
+            batch.setColor(0f, 0f, 0f, fadeAlpha);
             batch.draw(Tiles.blackTile, 0, 0, ControlCenter.width, ControlCenter.height);
             batch.setColor(1, 1, 1, 1);
         }
