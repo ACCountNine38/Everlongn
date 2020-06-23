@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
-    public static Texture logSprite, stoneSprite;
+    public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
         arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite;
 
-    public static TextureRegion log, stone;
+    public static TextureRegion log, stone, omniEssence, omniCrystal;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
             arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
             arcaneOblivionL, arcaneOblivionR;
@@ -24,6 +24,14 @@ public class Items {
         stoneSprite = new Texture(Gdx.files.internal("items/stoneItem.png"), true);
         stoneSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         stone = new TextureRegion(stoneSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
+
+        omniEssenceSprite = new Texture(Gdx.files.internal("items/omniEssence.png"), true);
+        omniEssenceSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        omniEssence = new TextureRegion(omniEssenceSprite, 0, 0, omniEssenceSprite.getWidth(), omniEssenceSprite.getHeight());
+
+        omniCrystalSprite = new Texture(Gdx.files.internal("items/omniCrystal.png"), true);
+        omniCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        omniCrystal = new TextureRegion(omniCrystalSprite, 0, 0, omniCrystalSprite.getWidth(), omniCrystalSprite.getHeight());
 
         arcaneCasterSprite = new Texture(Gdx.files.internal("arcane/arcaneCaster.png"), true);
         arcaneCasterSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

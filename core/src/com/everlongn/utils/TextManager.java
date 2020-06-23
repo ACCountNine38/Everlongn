@@ -24,4 +24,14 @@ public class TextManager {
             bfont.draw(batch, str, x, y);
         }
     }
+    public static void draw(java.lang.CharSequence str, int x, int y, Color color, float scale, boolean center, BitmapFont font) {
+        font.setColor(color);
+        font.getData().setScale(scale);
+        if(center) {
+            layout.setText(font, str);
+            font.draw(batch, str, x - layout.width/2, y);
+        } else {
+            font.draw(batch, str, x, y);
+        }
+    }
 }

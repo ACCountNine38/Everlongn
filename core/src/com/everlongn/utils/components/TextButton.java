@@ -1,14 +1,24 @@
 package com.everlongn.utils.components;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.states.MenuState;
 import com.everlongn.utils.components.UIComponent;
 
 public class TextButton extends UIComponent {
+    public boolean center;
 
     public TextButton(float x, float y, String text, boolean clickable) {
         super(x, y, text, clickable, MenuState.menuFont);
+    }
+
+    public TextButton(float x, float y, String text, boolean clickable, boolean center, BitmapFont font) {
+        super(x, y, text, clickable, font);
+        this.center = center;
+        this.font = font;
+        layout.setText(font, text);
+        super.x -= layout.width/2;
     }
 
     @Override
