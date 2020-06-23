@@ -3,6 +3,7 @@ package com.everlongn.states;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -85,7 +86,8 @@ public class GameState extends State {
         rayHandler.setBlurNum(3);
         rayHandler.setShadows(true);
         updateStainAlpha();
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.B))
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         if(Player.blink && !Player.blinkAlphaMax) {
             screenTransitionAlpha+=0.2;
             if(screenTransitionAlpha > 1) {
