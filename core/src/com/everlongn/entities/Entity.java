@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public abstract class Entity {
     public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount;
     public float x, y, density; //protected allow extended class to have access to them
-    public int width, height, team;
+    public int width, height, team, boundWidth, boundHeight;
     public String name;
     public ArrayList<String> type = new ArrayList<String>();
     public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane;
@@ -64,7 +64,7 @@ public abstract class Entity {
     }
 
     public Rectangle getBound() {
-        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, width, height);
+        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
     }
 
     public void resetHealth(float amount) {

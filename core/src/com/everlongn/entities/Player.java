@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
-import com.everlongn.entities.creatures.Scavenger;
+import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Arcane;
@@ -80,6 +80,8 @@ public class Player extends Creature {
         resetHealth(100);
         baseRegenAmount = 0.1f;
         type.add("player");
+        boundWidth = 16;
+        boundHeight = 100;
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
         legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
@@ -1101,7 +1103,7 @@ public class Player extends Creature {
     public void inputUpdate() {
         horizontalForce = 0;
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
-            EntityManager.entities.add(new Scavenger(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100));
+            EntityManager.entities.add(new Spiderling(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1, 0f, 0f));

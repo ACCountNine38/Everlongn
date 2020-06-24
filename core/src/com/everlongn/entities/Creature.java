@@ -2,8 +2,10 @@ package com.everlongn.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
+import com.everlongn.assets.Tiles;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.states.GameState;
@@ -12,9 +14,11 @@ import com.everlongn.utils.Constants;
 import java.util.ArrayList;
 
 public abstract class Creature extends Entity {
-    public float speed, currentSpeed, sightRadius, knockbackResistance, yChangeTimer, previousVelY, fadeAlpha = 1f, jumpForce;
-    public int direction, damage;
-    public boolean canJump = true, jump, fall, airborn, alive = true;
+    public float speed, currentSpeed, sightRadius, knockbackResistance, yChangeTimer, previousVelY, fadeAlpha = 1f, jumpForce,
+        jumpCondition;
+    public int direction, damage, bonusDamage;
+    public boolean canJump = true, jump, fall, airborn, alive = true, jumpable;
+    public String status = "";
 
     public Entity target;
     public ArrayList<String> enemyList = new ArrayList<String>();
@@ -38,12 +42,12 @@ public abstract class Creature extends Entity {
 
     public void move() {
         if(!stunned) {
+            testBasicJump();
             if (direction == 0)
                 body.setLinearVelocity(-speed, body.getLinearVelocity().y);
             else {
                 body.setLinearVelocity(speed, body.getLinearVelocity().y);
             }
-            testBasicJump();
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/knockbackResistance, body.getLinearVelocity().y);
             if(body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
@@ -56,11 +60,14 @@ public abstract class Creature extends Entity {
         if(previousVelY == body.getLinearVelocity().y) {
             canJump = true;
         }
-        if(body.getLinearVelocity().x < 0.1 && canJump) {
+        previousVelY = body.getLinearVelocity().y;
+        if(!jumpable) {
+            return;
+        }
+        if(Math.abs(body.getLinearVelocity().x) < jumpCondition && canJump) {
             body.applyForceToCenter(0, jumpForce,false);
             canJump = false;
         }
-        previousVelY = body.getLinearVelocity().y;
     }
 
     public void findTarget() {
@@ -88,6 +95,14 @@ public abstract class Creature extends Entity {
         target = possibleTarget;
     }
 
+    public TextureRegion getCurrentFrame() {
+        if(status.equals("chase") && chase[direction].getFrame() != null) {
+            return chase[direction].getFrame();
+        }
+
+        return null;
+    }
+
     public void chase() {
         if(target == null)
             return;
@@ -99,6 +114,8 @@ public abstract class Creature extends Entity {
         } else {
             direction = 1;
         }
+        chase[direction].tick(Gdx.graphics.getDeltaTime());
+        status = "chase";
         move();
     }
 

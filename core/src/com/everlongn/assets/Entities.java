@@ -5,6 +5,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Entities {
+    // creatures
+    public static TextureRegion[][] spiderRun;
+    public static TextureRegion[] spiderLeap;
+    public static Texture spiderRunSprite, spiderLeapSprite;
+
+    // player
     public static TextureRegion[][] legRun, armRun, chestRun, headRun, legJump;
     public static TextureRegion[] armsHoldLeft, armsHoldRight, doubleArmsHold, shadowFriend;
 
@@ -12,8 +18,34 @@ public class Entities {
             armHoldLeftSprite, armHoldRightSprite, doubleArmsHoldSprite, shadowFriendSprite;
 
     public static void init() {
+        // creatures
+        spiderRunSprite = new Texture(Gdx.files.internal("creatures/dungonousSpawnling.png"),true);
+        spiderRunSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        spiderRun = new TextureRegion[2][30];
+
+        spiderLeapSprite = new Texture(Gdx.files.internal("creatures/dungonousSpawnlingJump.png"),true);
+        spiderLeapSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        spiderLeap = new TextureRegion[2];
+        spiderLeap[0] = new TextureRegion(spiderLeapSprite, 0, 0, 1080, 1080);
+        spiderLeap[0].flip(true, false);
+        spiderLeap[1] = new TextureRegion(spiderLeapSprite, 0, 0, 1080, 1080);
+
+        for(int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (j + i * 5 < 30) {
+                    spiderRun[1][j + i * 5] = new TextureRegion(spiderRunSprite, j * 1080, i * 1080, 1080, 1080);
+                    TextureRegion temp1 = new TextureRegion(spiderRunSprite, j * 1080, i * 1080, 1080, 1080);
+                    temp1.flip(true, false);
+                    spiderRun[0][j + i * 5] = temp1;
+                }
+            }
+        }
+
+        // player
         legRunSprite = new Texture(Gdx.files.internal("player/legsRun.png"),true);
         legRunSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
         legJumpSprite = new Texture(Gdx.files.internal("player/legsJump.png"),true);
         legJumpSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
