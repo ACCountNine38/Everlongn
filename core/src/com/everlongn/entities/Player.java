@@ -219,8 +219,8 @@ public class Player extends Creature {
         if(legAnimation) {
             legsRun[0].tick(Gdx.graphics.getDeltaTime());
             legsRun[1].tick(Gdx.graphics.getDeltaTime());
-            if(legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58 && !jump && !fall && canJump) {
-                int stepID = (int)(Math.random()*4);
+            if(legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58 && canJump) {
+                int stepID = (int)(Math.random()*3);
                 Sounds.playSound(Sounds.steps[stepID]);
             }
             if(!landSound) {

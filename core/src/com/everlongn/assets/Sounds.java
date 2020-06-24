@@ -10,7 +10,7 @@ public class Sounds {
     public static Music menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/dreamscape.mp3"));
 
     // player sfx
-    public static Sound[] steps = new Sound[4];
+    public static Sound[] steps = new Sound[3];
 
     public static Sound jump = Gdx.audio.newSound(Gdx.files.internal("audio/player/land.mp3"));
     public static Sound land = Gdx.audio.newSound(Gdx.files.internal("audio/player/land.mp3"));
@@ -24,7 +24,6 @@ public class Sounds {
         steps[0] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step1.mp3"));
         steps[1] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step2.mp3"));
         steps[2] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step3.mp3"));
-        steps[3] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step4.mp3"));
     }
 
     public static void playSound(Sound sound) {
