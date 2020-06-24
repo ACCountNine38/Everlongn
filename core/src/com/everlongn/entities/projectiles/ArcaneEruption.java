@@ -158,7 +158,7 @@ public class ArcaneEruption extends Projectile {
     public void finish() {
         lifeOut = true;
         movingParticle.getEmitters().get(0).setContinuous(false);
-        Sounds.playSound(Sounds.eruptionLand);
+        Sounds.playSound(Sounds.eruptionLand, 3f);
         explosion.start();
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.everlongn.assets.Entities;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Animation;
 import com.everlongn.entities.Creature;
@@ -156,6 +157,8 @@ public class Spiderling extends Creature {
 
     @Override
     public void die() {
+        int randomSound = (int)(Math.random()*3);
+        Sounds.playSound(Sounds.spider[randomSound]);
         destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - 10);
         destroyed.start();
     }

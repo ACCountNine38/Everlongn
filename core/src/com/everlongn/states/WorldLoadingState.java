@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -106,6 +107,9 @@ public class WorldLoadingState extends State {
         Pixmap tiles = new Pixmap(tilemap);
         Pixmap walls = new Pixmap(wallmap);
         Pixmap herbs = new Pixmap(herbsMap);
+
+        Sounds.ambientPercentage = 1;
+        Sounds.sfxPercentage = 1;
 
         GameState.worldWidth = tiles.getWidth();
         GameState.worldHeight = tiles.getHeight();

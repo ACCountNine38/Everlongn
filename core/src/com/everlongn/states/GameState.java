@@ -20,6 +20,7 @@ import com.everlongn.items.Inventory;
 import com.everlongn.popups.IngameOptions;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
+import com.everlongn.utils.frameworks.Telepathy;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
@@ -60,6 +61,7 @@ public class GameState extends State {
     public static float[] stainAlpha = new float[]{0f, 0f, 0f, 0f, 0f};
     boolean layerFlash;
     public static Inventory inventory;
+    public static Telepathy telepathy;
     ///////////////////
 
     // Cursor Selections //
@@ -77,6 +79,7 @@ public class GameState extends State {
         TextManager.bfont = new BitmapFont(Gdx.files.internal("fonts/chalk14.fnt"));
 
         inventory = new Inventory(c);
+        telepathy = new Telepathy(ControlCenter.width - 15 - 400, 10, 400, 35);
         background = new BackgroundManager();
         options = new IngameOptions();
         world.setContactListener(new WorldContactListener());
@@ -97,6 +100,7 @@ public class GameState extends State {
         updateStaticEntity();
         entityManager.tick();
         inventory.tick();
+        telepathy.tick();
         options.tick();
         updateCursor();
         batch.setProjectionMatrix(camera.combined);
@@ -386,6 +390,8 @@ public class GameState extends State {
             TextManager.draw("itemPickDrop: " + Inventory.itemPickDrop,
                     20, 220, Color.WHITE, 1, false);
         }
+
+        telepathy.render(batch);
 
         if(Player.forceCharge > 0) {
             batch.draw(UI.chargeCursor,Gdx.input.getX() - 38 + 16,  ControlCenter.height-Gdx.input.getY() - 38 - 16, 76, 76);

@@ -617,6 +617,7 @@ public class Player extends Creature {
                                 shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
+                            Sounds.playSound(Sounds.shadowCast, 2.5f);
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge, false);
@@ -635,6 +636,7 @@ public class Player extends Creature {
                                 shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
+                            Sounds.playSound(Sounds.shadowCast, 2.5f);
                             Shadow shadow = new Shadow(c,
                                     body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge, false);
@@ -655,6 +657,7 @@ public class Player extends Creature {
                     shadowExplosion.start();
                     blink = true;
 
+                    Sounds.playSound(Sounds.shadowShift, 0.5f);
                     Shadow shadow = shadows.poll();
                     body.setTransform(shadow.body.getPosition().x, shadow.body.getPosition().y, 0);
                     body.setLinearVelocity(0, 0);
@@ -698,6 +701,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
+                        Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
@@ -716,6 +720,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
+                        Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail(c,
                                 (body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
@@ -824,7 +829,7 @@ public class Player extends Creature {
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     cdr = 0;
                     casted = true;
-                    Sounds.arcaneReflection.play();
+                    Sounds.playSound(Sounds.arcaneReflection);
                     if (direction == 0) {
                         float xAim = (float) Math.sin(Math.toRadians(aimAngle + 45 + 90)) * (-70);
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
@@ -920,7 +925,7 @@ public class Player extends Creature {
                 if(eruptionHold) {
                     if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                         cdr = 0;
-                        Sounds.playSound(Sounds.eruptionCast);
+                        Sounds.playSound(Sounds.eruptionCast, 0.75f);
                         if (direction == 0) {
                             float xAim = (float) Math.cos(Math.toRadians(-armRotationRight + 180)) * (76);
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
@@ -1049,6 +1054,7 @@ public class Player extends Creature {
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    Sounds.playSound(Sounds.arcaneEscort);
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     cdr = 0;
                     casted = true;
