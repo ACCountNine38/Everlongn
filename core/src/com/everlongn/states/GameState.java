@@ -3,6 +3,7 @@ package com.everlongn.states;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -22,6 +23,8 @@ import com.everlongn.utils.*;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
+
+import java.security.Key;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -118,8 +121,13 @@ public class GameState extends State {
             }
         }
 
-        // processing world exit
+        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            Gdx.graphics.setWindowedMode(ControlCenter.width,ControlCenter.height);
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
 
+        // processing world exit
         if(exiting) {
             screenTransitionAlpha += 0.05f;
             if(screenTransitionAlpha >= 1f) {
