@@ -50,7 +50,7 @@ public class Message {
         } else if(text.equals("exit")) {
             System.exit(1);
             return;
-        } else if(text.equals("show analog")) {
+        } else if(text.equals("analog")) {
             ControlCenter.DEBUG = !ControlCenter.DEBUG;
             if(ControlCenter.DEBUG)
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Displaying Debug Analog", false, Color.YELLOW));
@@ -79,7 +79,7 @@ public class Message {
                 EntityManager.entities.get(i).health = -100;
             }
             return;
-        } else if(text.equals("fully heal")) {
+        } else if(text.equals("set health max")) {
             EntityManager.player.health = EntityManager.player.maxHealth;
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Player's health is set to max", false, Color.YELLOW));
             return;
@@ -118,7 +118,7 @@ public class Message {
                 EntityManager.player.health = Integer.parseInt(chars[2]);
                 if(EntityManager.player.health < 0)
                     EntityManager.player.health = 0;
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Health To: " + Integer.parseInt(chars[1]), false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Health To: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
@@ -128,7 +128,7 @@ public class Message {
                 EntityManager.player.speed = Integer.parseInt(chars[2]);
                 if(EntityManager.player.speed < 0)
                     EntityManager.player.speed = 0;
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Speed To: " + Integer.parseInt(chars[1]), false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Speed To: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
