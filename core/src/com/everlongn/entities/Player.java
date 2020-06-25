@@ -61,7 +61,7 @@ public class Player extends Creature {
     public static float aimAngle, haltForce, shootAngle, cdr, camX, camY;
     public static float armRotationRight, armRotationLeft = 15;
 
-    public static int currentChunkX, currentChunkY, horizontalForce;
+    public static int currentChunkX, currentChunkY, currentTileX, currentTileY, horizontalForce;
 
     private ParticleEffect smoke, eruptionCharge, shadowCharge, shadowExplosion;
     public static float forceCharge, forceMax, airbornTimer, particleTimer, landSoundTimer;
@@ -189,8 +189,14 @@ public class Player extends Creature {
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
+        currentTileX = (int)(body.getPosition().x);
+        currentTileY = (int)(body.getPosition().y);
+
         cameraUpdate();
-        inputUpdate();
+        horizontalForce = 0;
+        if(!GameState.telepathy.focused)
+            inputUpdate();
+        checkMovement();
         animationUpdate();
 
         regenerate();
@@ -1107,20 +1113,19 @@ public class Player extends Creature {
     }
 
     public void inputUpdate() {
-        horizontalForce = 0;
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Spiderling(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1, 0f, 0f));
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            int xForce = 200;
-            if(direction == 0)
-                xForce = -200;
-            int yForce = 100;
-            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
-        }
+//        if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+//            int xForce = 200;
+//            if(direction == 0)
+//                xForce = -200;
+//            int yForce = 100;
+//            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
+//        }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;
             currentSpeed += 0.2f;
@@ -1138,12 +1143,6 @@ public class Player extends Creature {
             direction = 1;
         }
 
-        if(horizontalForce == 0 && currentSpeed > 0) {
-            currentSpeed -= 0.2;
-            if(currentSpeed <= 0)
-                currentSpeed = 0;
-        }
-
         // jump test
         if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
             body.applyForceToCenter(0, 800/(body.getLinearVelocity().y/10 + 1), false);
@@ -1158,26 +1157,15 @@ public class Player extends Creature {
             legsRun[0].currentIndex = 0;
             legsRun[1].currentIndex = 0;
         }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            System.exit(1);
-        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
             health -= 10;
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_0)) {
             health += 10;
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F4)) {
-            ControlCenter.DEBUG = !ControlCenter.DEBUG;
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-            ControlCenter.DEBUG_RENDER = !ControlCenter.DEBUG_RENDER;
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F6)) {
-            speed += 5;
-        }
+    }
 
+    public void checkMovement() {
         if(body.getLinearVelocity().x != 0 && !cameraXStopped) {
             movingHorizontal = true;
             BackgroundManager.layers[0].x -= body.getLinearVelocity().x/4f;
@@ -1185,6 +1173,12 @@ public class Player extends Creature {
             BackgroundManager.layers[2].x -= body.getLinearVelocity().x/7f;
         } else {
             movingHorizontal = false;
+        }
+
+        if(horizontalForce == 0 && currentSpeed > 0) {
+            currentSpeed -= 0.2;
+            if(currentSpeed <= 0)
+                currentSpeed = 0;
         }
 
         if(direction == 0)
@@ -1435,7 +1429,7 @@ public class Player extends Creature {
     }
 
     @Override
-    public void die() {
+    public void finish() {
 
     }
 }

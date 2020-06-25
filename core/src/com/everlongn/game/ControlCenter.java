@@ -20,7 +20,7 @@ import static com.everlongn.utils.Constants.PPM;
 public class ControlCenter extends ApplicationAdapter {
 
 	public static Vector3 camStartingPosition;
-	public static boolean DEBUG = true, DEBUG_RENDER = false;
+	public static boolean DEBUG, DEBUG_RENDER;
 	public static float SCALE = 1f;
 	public static int width, height;
 

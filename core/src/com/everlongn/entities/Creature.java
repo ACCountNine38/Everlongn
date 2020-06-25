@@ -104,7 +104,7 @@ public abstract class Creature extends Entity {
     }
 
     public void chase() {
-        if(target == null)
+        if(target == null || target.body == null || !active || !target.active)
             return;
         if(!target.active) {
             target = null;
@@ -118,6 +118,4 @@ public abstract class Creature extends Entity {
         status = "chase";
         move();
     }
-
-    public abstract void die();
 }

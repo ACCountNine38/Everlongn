@@ -79,7 +79,7 @@ public class GameState extends State {
         TextManager.bfont = new BitmapFont(Gdx.files.internal("fonts/chalk14.fnt"));
 
         inventory = new Inventory(c);
-        telepathy = new Telepathy(ControlCenter.width - 15 - 400, 10, 400, 35);
+        telepathy = new Telepathy(15, 10, 400, 35);
         background = new BackgroundManager();
         options = new IngameOptions();
         world.setContactListener(new WorldContactListener());
@@ -100,8 +100,8 @@ public class GameState extends State {
         updateStaticEntity();
         entityManager.tick();
         inventory.tick();
-        telepathy.tick();
         options.tick();
+        telepathy.tick();
         updateCursor();
         batch.setProjectionMatrix(camera.combined);
         rayHandler.setCombinedMatrix(camera);
@@ -125,11 +125,11 @@ public class GameState extends State {
             }
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-            Gdx.graphics.setWindowedMode(ControlCenter.width,ControlCenter.height);
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
-            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-        }
+//        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+//            Gdx.graphics.setWindowedMode(ControlCenter.width,ControlCenter.height);
+//        } else if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+//            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+//        }
 
         // processing world exit
         if(exiting) {
@@ -366,29 +366,29 @@ public class GameState extends State {
         batch.begin();
 
         if(ControlCenter.DEBUG) {
-            TextManager.draw("FPS: " + Gdx.graphics.getFramesPerSecond(),
-                    20, 40, Color.WHITE, 1, false);
-            TextManager.draw("Velocity X: " + EntityManager.player.getBody().getLinearVelocity().x + "   " +
-                            "Velocity Y: " + EntityManager.player.getBody().getLinearVelocity().y,
-                    20, 60, Color.WHITE, 1, false);
-            TextManager.draw("Mouse Location: " + Gdx.input.getX() + ", " + Gdx.input.getY(),
-                    20, 80, Color.WHITE, 1, false);
-            TextManager.draw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
-                    20, 100, Color.WHITE, 1, false);
-            TextManager.draw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall + "   Can Jump: " + EntityManager.player.canJump,
-                    20, 120, Color.WHITE, 1, false);
-            TextManager.draw("Aim: " + Player.aimAngle + "   Melee Attack: " + Player.meleeAttack,
-                    20, 140, Color.WHITE, 1, false);
-            TextManager.draw("Halt: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
-                    20, 160, Color.WHITE, 1, false);
-            TextManager.draw("Inventory Hold: " + Player.inventoryHold + "   In Combat: " + Player.inCombat,
-                    20, 180, Color.WHITE, 1, false);
-            TextManager.draw("Player Health: " + EntityManager.player.health + "   Percentage: " + EntityManager.player.getHealthPercentage(),
-                    20, 200, Color.WHITE, 1, false);
-//            TextManager.draw("Stain Alpha: " + stainAlpha[0] + " " + stainAlpha[1] + " " + stainAlpha[2] + " " + stainAlpha[3] + " " + stainAlpha[4],
-//                    20, 220, Color.WHITE, 1, false);
-            TextManager.draw("itemPickDrop: " + Inventory.itemPickDrop,
-                    20, 220, Color.WHITE, 1, false);
+            TextManager.analogDraw("FPS: " + Gdx.graphics.getFramesPerSecond() + "   Max FPS: " + 60,
+                    ControlCenter.width - 15, 20, Color.WHITE);
+            TextManager.analogDraw("World Size: " + GameState.worldWidth + " by " + GameState.worldHeight,
+                    ControlCenter.width - 15, 40, Color.WHITE);
+            TextManager.analogDraw("Difficulty: " + GameState.difficulty + "   Mode: " + GameState.mode,
+                    ControlCenter.width - 15, 60, Color.WHITE);
+            TextManager.analogDraw("Velocity X: " + Math.round(EntityManager.player.getBody().getLinearVelocity().x) + "   " +
+                            "Velocity Y: " + Math.round(EntityManager.player.getBody().getLinearVelocity().y),
+                    ControlCenter.width - 15, 80, Color.WHITE);
+            TextManager.analogDraw("Mouse Location: " + Gdx.input.getX() + ", " + Gdx.input.getY(),
+                    ControlCenter.width - 15, 100, Color.WHITE);
+            TextManager.analogDraw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
+                    ControlCenter.width - 15, 120, Color.WHITE);
+            TextManager.analogDraw("Relative Location: " + Player.currentTileX + ", " + Player.currentTileY,
+                    ControlCenter.width - 15, 140, Color.WHITE);
+            TextManager.analogDraw("Jump: " + EntityManager.player.jump + "   Fall: " + EntityManager.player.fall + "   Can Jump: " + EntityManager.player.canJump,
+                    ControlCenter.width - 15, 160, Color.WHITE);
+            TextManager.analogDraw("Angle Between Mouse: " + Player.aimAngle,
+                    ControlCenter.width - 15, 180, Color.WHITE);
+            TextManager.analogDraw("Halt Attack: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
+                    ControlCenter.width - 15, 200, Color.WHITE);
+            TextManager.analogDraw("Player Health: " + EntityManager.player.health + "   Percentage: " + EntityManager.player.getHealthPercentage(),
+                    ControlCenter.width - 15, 220, Color.WHITE);
         }
 
         telepathy.render(batch);

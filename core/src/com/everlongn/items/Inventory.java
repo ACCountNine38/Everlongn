@@ -10,6 +10,7 @@ import com.everlongn.assets.UI;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.TextManager;
 import net.java.games.input.Component;
 
@@ -55,22 +56,24 @@ public class Inventory {
             Player.inventoryHold = false;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.E) && !GameState.telepathy.focused) {
             extended = !extended;
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            selectedIndex = 0;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            selectedIndex = 1;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            selectedIndex = 2;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            selectedIndex = 3;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            selectedIndex = 4;
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            selectedIndex = 5;
+        if(!GameState.telepathy.focused) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+                selectedIndex = 0;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+                selectedIndex = 1;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+                selectedIndex = 2;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+                selectedIndex = 3;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+                selectedIndex = 4;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                selectedIndex = 5;
+            }
         }
 
         if(extended && rowY[0] < slotSize + 10) {

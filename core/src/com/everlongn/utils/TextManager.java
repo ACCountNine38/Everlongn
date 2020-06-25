@@ -35,4 +35,10 @@ public class TextManager {
             font.draw(batch, str, x, y);
         }
     }
+
+    public static void analogDraw(java.lang.CharSequence str, int x, int y, Color color) {
+        bfont.setColor(color);
+        layout.setText(bfont, str);
+        bfont.draw(batch, str, x - layout.width, y);
+    }
 }

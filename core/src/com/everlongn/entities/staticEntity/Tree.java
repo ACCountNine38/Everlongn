@@ -26,4 +26,9 @@ public class Tree extends StaticEntity {
         batch.draw(Herbs.tree1, x * PPM - Tile.TILESIZE*2 - Tile.TILESIZE/2, y * PPM - Tile.TILESIZE*2, Tile.TILESIZE*5, height);
         batch.end();
     }
+
+    @Override
+    public void finish() {
+
+    }
 }

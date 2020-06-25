@@ -105,7 +105,7 @@ public class Spiderling extends Creature {
                 health = 0;
                 alive = false;
                 body.setActive(false);
-                die();
+                finish();
             }
         } else {
             destroyed.update(Gdx.graphics.getDeltaTime());
@@ -156,7 +156,7 @@ public class Spiderling extends Creature {
     }
 
     @Override
-    public void die() {
+    public void finish() {
         int randomSound = (int)(Math.random()*3);
         Sounds.playSound(Sounds.spider[randomSound]);
         destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - 10);

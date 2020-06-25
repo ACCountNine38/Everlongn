@@ -38,6 +38,4 @@ public abstract class Projectile extends Entity {
     @Override
     public abstract void render(SpriteBatch batch);
 
-    public abstract void finish();
-
 }

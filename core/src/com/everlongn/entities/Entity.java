@@ -44,6 +44,7 @@ public abstract class Entity {
 
     public abstract void tick();
     public abstract void render(SpriteBatch batch);
+    public abstract void finish();
 
     public Body getBody() {
         return body;

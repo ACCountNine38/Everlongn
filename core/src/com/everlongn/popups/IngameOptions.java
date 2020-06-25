@@ -31,7 +31,7 @@ public class IngameOptions extends Popup{
 
     @Override
     public void tick() {
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !GameState.telepathy.focused) {
             active = !active;
         }
 
