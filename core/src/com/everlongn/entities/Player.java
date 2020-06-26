@@ -215,10 +215,6 @@ public class Player extends Creature {
             body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y/1.15f);
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-            GameState.lightsOn = !GameState.lightsOn;
-        }
-
         checkItemOnHold();
     }
 

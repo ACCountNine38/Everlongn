@@ -89,7 +89,7 @@ public class Message {
         } else if(text.equals("tp spawn")) {
             try {
                 EntityManager.player.body.setTransform(GameState.spawnX, GameState.spawnY, 0);
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported To Spawn", false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to spawn", false, Color.YELLOW));
             } catch (NumberFormatException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
@@ -97,9 +97,17 @@ public class Message {
         } else if(text.equals("godmode")) {
             EntityManager.player.godMode = !EntityManager.player.godMode;
             if(EntityManager.player.godMode) {
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player Is Now Invulnerable", false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player is now invulnerable", false, Color.YELLOW));
             } else {
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player Is Now Vulnerable", false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player is now vulnerable", false, Color.YELLOW));
+            }
+            return;
+        } else if(text.equals("lights out")) {
+            GameState.lightsOn = !GameState.lightsOn;
+            if(GameState.lightsOn) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Enabling Light Casting", false, Color.YELLOW));
+            } else {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Disabling Light Casting", false, Color.YELLOW));
             }
             return;
         }
@@ -129,7 +137,7 @@ public class Message {
                 EntityManager.player.health = Integer.parseInt(chars[2]);
                 if(EntityManager.player.health < 0)
                     EntityManager.player.health = 0;
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Health To: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set health to: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
@@ -139,7 +147,7 @@ public class Message {
                 EntityManager.player.speed = Integer.parseInt(chars[2]);
                 if(EntityManager.player.speed < 0)
                     EntityManager.player.speed = 0;
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set Speed To: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Set speed to: " + Integer.parseInt(chars[2]), false, Color.YELLOW));
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
@@ -149,9 +157,9 @@ public class Message {
                 if(Integer.parseInt(chars[1]) >= 0 && Integer.parseInt(chars[1]) < GameState.worldWidth &&
                         Integer.parseInt(chars[2]) >= 0 && Integer.parseInt(chars[2]) < GameState.worldHeight) {
                     EntityManager.player.body.setTransform(Integer.parseInt(chars[1]), Integer.parseInt(chars[2]), 0);
-                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported To: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
                 } else {
-                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleportation Out Of Bounds", false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleportation out of bounds", false, Color.YELLOW));
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
@@ -171,14 +179,14 @@ public class Message {
                         }
                     }
                     if(item != null)
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Added " + Integer.parseInt(chars[2]) + " " + item.name + "(s) To Inventory", false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Added " + Integer.parseInt(chars[2]) + " " + item.name + "(s) to inventory", false, Color.YELLOW));
                     else
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Name", false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid item name", false, Color.YELLOW));
                 } else {
-                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Count", false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid item count", false, Color.YELLOW));
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Data", false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid item data", false, Color.YELLOW));
             }
             return;
         } else if(chars[0].equals("spawn")) {
@@ -188,14 +196,14 @@ public class Message {
                 if(xLoc >= 0 && xLoc < GameState.worldWidth && yLoc >= 0 && yLoc < GameState.worldHeight) {
                     if(chars[1].equals("Spawnling")) {
                         EntityManager.entities.add(new Spiderling(xLoc*Constants.PPM, yLoc*Constants.PPM, (int)(Math.random()*50)+ 75));
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawned Spawnling At: " + Integer.parseInt(chars[2]) + ", " + Integer.parseInt(chars[3]), false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawned Spawnling at: " + Integer.parseInt(chars[2]) + ", " + Integer.parseInt(chars[3]), false, Color.YELLOW));
                     } else
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Entity Name", false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid entity name", false, Color.YELLOW));
                 } else {
-                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawn Range Out Of Bounds", false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawn range out Of bounds", false, Color.YELLOW));
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Spawn Data", false, Color.YELLOW));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid spawn data", false, Color.YELLOW));
             }
             return;
         }
