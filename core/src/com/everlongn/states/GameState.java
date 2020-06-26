@@ -164,6 +164,7 @@ public class GameState extends State {
         } else if(aiming) {
             Tool.changeCursor(2);
         } else  {
+            Player.forceCharge = 0;
             Tool.changeCursor(0);
         }
     }
