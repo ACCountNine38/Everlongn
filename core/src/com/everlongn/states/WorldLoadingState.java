@@ -85,7 +85,7 @@ public class WorldLoadingState extends State {
     }
 
     public void createPlayer() {
-        GameState.entityManager = new EntityManager(c, new Player(c, GameState.spawnX*Tile.TILESIZE, GameState.spawnY*Tile.TILESIZE, 25, 110, 2.5f));
+        GameState.entityManager = new EntityManager(c, new Player(GameState.spawnX*Tile.TILESIZE, GameState.spawnY*Tile.TILESIZE, 25, 110, 2.5f));
 
         Vector3 position = ControlCenter.camera.position;
         position.x = GameState.spawnX*Tile.TILESIZE;
@@ -178,7 +178,7 @@ public class WorldLoadingState extends State {
                             break;
                         }
                     }
-                    GameState.herbs[x][GameState.worldHeight - 1 - y] = new Tree(c, x, (GameState.worldHeight - 1 - y), (height+2)*Tile.TILESIZE);
+                    GameState.herbs[x][GameState.worldHeight - 1 - y] = new Tree(x, (GameState.worldHeight - 1 - y), (height+2)*Tile.TILESIZE);
                 }
             }
         }

@@ -104,6 +104,7 @@ public class GameState extends State {
         telepathy.tick();
         updateCursor();
         batch.setProjectionMatrix(camera.combined);
+        // Shader.instance.update();
         rayHandler.setCombinedMatrix(camera);
         rayHandler.setBlurNum(3);
         rayHandler.setShadows(true);
@@ -124,7 +125,6 @@ public class GameState extends State {
                 Player.blinkAlphaMax = false;
             }
         }
-
 //        if(Gdx.input.isKeyJustPressed(Input.Keys.B)) {
 //            Gdx.graphics.setWindowedMode(ControlCenter.width,ControlCenter.height);
 //        } else if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
@@ -360,7 +360,6 @@ public class GameState extends State {
         batch.setProjectionMatrix(hud.combined);
         renderStain(batch);
         inventory.render(batch);
-
         options.render(batch);
 
         batch.begin();

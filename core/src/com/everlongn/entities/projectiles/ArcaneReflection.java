@@ -23,8 +23,8 @@ public class ArcaneReflection extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.01f, 0f, 0.01f, 1f);
 
-    public ArcaneReflection(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
-        super(c, x, y, 5, 5, density);
+    public ArcaneReflection(float x, float y, float density, int direction, float angle, float damage) {
+        super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

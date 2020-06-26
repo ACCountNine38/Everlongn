@@ -27,8 +27,8 @@ public class ArcaneEscort extends Projectile {
     public int numRotations = 0;
     public static Color color = new Color(0.02f, 0.02f, 0.04f, 1f);
 
-    public ArcaneEscort(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
-        super(c, x, y, 5, 5, density);
+    public ArcaneEscort(float x, float y, float density, int direction, float angle, float damage) {
+        super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

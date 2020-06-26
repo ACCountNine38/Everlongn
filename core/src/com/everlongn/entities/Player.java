@@ -70,8 +70,8 @@ public class Player extends Creature {
     // Testing variables
     public PointLight testLight;
 
-    public Player(ControlCenter c, float x, float y, int width, int height, float density) {
-        super(c, x, y, width, height, density, 5);
+    public Player(float x, float y, int width, int height, float density) {
+        super(x, y, width, height, density, 5);
         this.x = x;
         this.y = y;
         this.width = width;
@@ -287,14 +287,10 @@ public class Player extends Creature {
         GameState.aiming = false;
         GameState.charging = false;
         if(Inventory.inventory[Inventory.selectedIndex] == null) {
+            onhold = false;
             return;
         }
-        if(Inventory.inventory[Inventory.selectedIndex].id >= 200 && Inventory.inventory[Inventory.selectedIndex].id < 300) {
-            onhold = true;
-        } else {
-            onhold = false;
-        }
-
+        onhold = true;
         if((inCombat && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) || inventoryHold) {
             inCombat = false;
         }
@@ -340,6 +336,7 @@ public class Player extends Creature {
             checkArcaneCombat();
         } else {
             GameState.defaultCursor = true;
+            onhold = false;
         }
         if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT) || GameState.options.active) {
             if(eruptionHold)
@@ -624,8 +621,7 @@ public class Player extends Creature {
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Sounds.playSound(Sounds.shadowCast, 2.5f);
-                            Shadow shadow = new Shadow(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
+                            Shadow shadow = new Shadow(body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge, false);
 
                             EntityManager.entities.add(shadow);
@@ -643,8 +639,7 @@ public class Player extends Creature {
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Sounds.playSound(Sounds.shadowCast, 2.5f);
-                            Shadow shadow = new Shadow(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
+                            Shadow shadow = new Shadow(body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
                                     this, direction, (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge, false);
                             EntityManager.entities.add(shadow);
                             shadows.add(shadow);
@@ -708,8 +703,7 @@ public class Player extends Creature {
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         Sounds.playSound(Sounds.arcaneCaster);
-                        ArcaneTrail arcaneTrail = new ArcaneTrail(c,
-                                body.getPosition().x * PPM + width / 2 + xAim,
+                        ArcaneTrail arcaneTrail = new ArcaneTrail(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 1, direction, shootAngle + (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
 
@@ -727,8 +721,7 @@ public class Player extends Creature {
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         Sounds.playSound(Sounds.arcaneCaster);
-                        ArcaneTrail arcaneTrail = new ArcaneTrail(c,
-                                (body.getPosition().x * PPM + width / 2) + xAim,
+                        ArcaneTrail arcaneTrail = new ArcaneTrail((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 1, direction, shootAngle - (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneTrail);
@@ -780,8 +773,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
-                                body.getPosition().x * PPM + width / 2 + xAim,
+                        ArcaneDevastation arcaneTrail = new ArcaneDevastation(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 1, direction, shootAngle + (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
 
@@ -798,8 +790,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneDevastation arcaneTrail = new ArcaneDevastation(c,
-                                (body.getPosition().x * PPM + width / 2) + xAim,
+                        ArcaneDevastation arcaneTrail = new ArcaneDevastation((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 1, direction, shootAngle - (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneTrail);
@@ -848,8 +839,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneReflection arcaneReflection = new ArcaneReflection(c,
-                                body.getPosition().x * PPM + width / 2 + xAim,
+                        ArcaneReflection arcaneReflection = new ArcaneReflection(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 1, direction, shootAngle + (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneReflection);
@@ -866,8 +856,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneReflection arcaneReflection = new ArcaneReflection(c,
-                                (body.getPosition().x * PPM + width / 2) + xAim,
+                        ArcaneReflection arcaneReflection = new ArcaneReflection((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 1, direction, shootAngle - (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneReflection);
@@ -944,8 +933,7 @@ public class Player extends Creature {
                                 shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
-                            ArcaneEruption arcaneTrail = new ArcaneEruption(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim,
+                            ArcaneEruption arcaneTrail = new ArcaneEruption(body.getPosition().x * PPM + width / 2 + xAim,
                                     body.getPosition().y * PPM + 69 + yAim,
                                     10, direction, shootAngle,
                                     (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge,
@@ -963,8 +951,7 @@ public class Player extends Creature {
                                 shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                         (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
-                            ArcaneEruption arcaneTrail = new ArcaneEruption(c,
-                                    body.getPosition().x * PPM + width / 2 + xAim,
+                            ArcaneEruption arcaneTrail = new ArcaneEruption(body.getPosition().x * PPM + width / 2 + xAim,
                                     69 + body.getPosition().y * PPM + yAim,
                                     10, direction, shootAngle,
                                     (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge,
@@ -1014,8 +1001,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneRebound arcaneRebound = new ArcaneRebound(c,
-                                body.getPosition().x * PPM + width / 2 + xAim,
+                        ArcaneRebound arcaneRebound = new ArcaneRebound(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneRebound);
@@ -1031,8 +1017,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneRebound arcaneRebound = new ArcaneRebound(c,
-                                (body.getPosition().x * PPM + width / 2) + xAim,
+                        ArcaneRebound arcaneRebound = new ArcaneRebound((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneRebound);
@@ -1076,8 +1061,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneEscort arcaneEscort = new ArcaneEscort(c,
-                                body.getPosition().x * PPM + width / 2 + xAim,
+                        ArcaneEscort arcaneEscort = new ArcaneEscort(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
                                 1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneEscort);
@@ -1093,8 +1077,7 @@ public class Player extends Creature {
                             shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
                                     (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
-                        ArcaneEscort arcaneEscort = new ArcaneEscort(c,
-                                (body.getPosition().x * PPM + width / 2) + xAim,
+                        ArcaneEscort arcaneEscort = new ArcaneEscort((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
                                 1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
                         EntityManager.entities.add(arcaneEscort);
@@ -1114,7 +1097,7 @@ public class Player extends Creature {
 
     public void inputUpdate() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
-            EntityManager.entities.add(new Spiderling(c,  body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
+            EntityManager.entities.add(new Spiderling(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             EntityManager.items.add(Item.stone.createNew(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, 1, 0f, 0f));
@@ -1124,7 +1107,7 @@ public class Player extends Creature {
 //            if(direction == 0)
 //                xForce = -200;
 //            int yForce = 100;
-//            EntityManager.entities.add(new Shadow(c, body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
+//            EntityManager.entities.add(new Shadow(body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
 //        }
         if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             horizontalForce = -1;

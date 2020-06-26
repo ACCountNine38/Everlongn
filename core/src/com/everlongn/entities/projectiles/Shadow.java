@@ -21,8 +21,8 @@ public class Shadow extends Projectile {
     public float life, finishCounter, figureAlpha;
     public boolean lifeOut, casted;
 
-    public Shadow(ControlCenter c, float x, float y, Player player, int direction, float forceX, float forceY, boolean casted) {
-        super(c, x, y, 5, 5, 10);
+    public Shadow(float x, float y, Player player, int direction, float forceX, float forceY, boolean casted) {
+        super(x, y, 5, 5, 10);
         this.player = player;
         this.direction = direction;
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,

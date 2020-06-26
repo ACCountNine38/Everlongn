@@ -23,8 +23,8 @@ public class ArcaneDevastation extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.00f, 1f);
 
-    public ArcaneDevastation(ControlCenter c, float x, float y, float density, int direction, float angle, float xSize, float damage) {
-        super(c, x, y, 5, 5, density);
+    public ArcaneDevastation(float x, float y, float density, int direction, float angle, float xSize, float damage) {
+        super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

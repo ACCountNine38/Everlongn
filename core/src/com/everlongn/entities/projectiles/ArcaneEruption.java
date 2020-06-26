@@ -21,8 +21,8 @@ public class ArcaneEruption extends Projectile {
     public float angle, actionForce;
     public static Color color = new Color(0.04f, 0.02f, 0.02f, 1f);
 
-    public ArcaneEruption(ControlCenter c, float x, float y, float density, int direction, float angle, float forceX, float forceY, float damage) {
-        super(c, x, y, 4, 4, density);
+    public ArcaneEruption(float x, float y, float density, int direction, float angle, float forceX, float forceY, float damage) {
+        super(x, y, 4, 4, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

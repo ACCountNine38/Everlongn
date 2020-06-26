@@ -15,8 +15,8 @@ public abstract class Projectile extends Entity {
     public boolean maxReached;
     public PointLight light;
 
-    public Projectile(ControlCenter c, float x, float y, int width, int height, float density) {
-        super(c, x, y, width, height, density);
+    public Projectile(float x, float y, int width, int height, float density) {
+        super(x, y, width, height, density);
         health = 10000;
     }
 

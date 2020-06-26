@@ -48,7 +48,7 @@ public class Inventory {
         addItem(Arcane.shadowStaff.createNew(1));
         addItem(Melee.dragondance);
         addItem(Item.stone.createNew(1));
-        addItem(Item.log.createNew(12));
+        addItem(Item.log.createNew(20));
     }
 
     public void tick() {
@@ -136,23 +136,32 @@ public class Inventory {
 
     public void addItem(Item item) {
         if (item.stackable) {
-            for(int i = 0; i < inventory.length; i++) {
-                if(inventory[i] != null) {
+            for (int i = 0; i < inventory.length; i++) {
+                if (inventory[i] != null) {
                     if (inventory[i].id == item.id && inventory[i].count < inventory[i].capacity) {
                         inventory[i].count += item.count;
-                        if(inventory[i].count > inventory[i].capacity) {
-                            addItem(item.createNew(inventory[i].count - inventory[i].capacity));
+                        if (inventory[i].count > inventory[i].capacity) {
+                            int leftover = inventory[i].count - inventory[i].capacity;
                             inventory[i].count = inventory[i].capacity;
+                            addItem(item.createNew(leftover));
                         }
                         return;
                     }
                 }
             }
             if(canAddItem()) {
+                while(item.count > item.capacity) {
+                    addItem(item.createNew(item.capacity));
+                    item.count-=item.capacity;
+                }
                 setSlot(item);
             }
         } else {
             if(canAddItem()) {
+                while(item.count > item.capacity) {
+                    addItem(item.createNew(item.capacity));
+                    item.count-=item.capacity;
+                }
                 setSlot(item);
             }
         }

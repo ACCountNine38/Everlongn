@@ -21,12 +21,9 @@ public abstract class Entity {
     // timers
     public float regenTimer;
 
-    public ControlCenter c;
-
     public Body body;
 
-    public Entity(ControlCenter c, float x, float y, int width, int height, float density) {
-        this.c = c;
+    public Entity(float x, float y, int width, int height, float density) {
         this.x = x;
         this.y = y;
         this.width = width;

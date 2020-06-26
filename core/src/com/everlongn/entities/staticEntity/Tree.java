@@ -11,8 +11,8 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Tree extends StaticEntity {
 
-    public Tree(ControlCenter c, float x, float y, int height) {
-        super(c, x, y, 50, height, 5);
+    public Tree(float x, float y, int height) {
+        super(x, y, 50, height, 5);
     }
 
     @Override

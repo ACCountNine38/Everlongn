@@ -28,9 +28,9 @@ public class Item {
     //----------miscellaneous item declarations
 
     public static Item log = new Item(Items.log, "Wood", 0, true, true,
-            50, 50, 60, 60, 99,"doesn't look very healthy...", 0, 0, null);
+            50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
     public static Item stone = new Item(Items.stone, "Stone", 1, true, true,
-            35, 35, 44, 44, 99, "looks very durable", 0, 0, null);
+            35, 35, 44, 44, 32, "looks very durable", 0, 0, null);
 
 //new String[]{"miscellaneous"},
     //----------

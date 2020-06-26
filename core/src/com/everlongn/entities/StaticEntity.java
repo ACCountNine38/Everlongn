@@ -5,8 +5,8 @@ import com.everlongn.game.ControlCenter;
 
 public abstract class StaticEntity extends Entity{
 
-    public StaticEntity(ControlCenter c, float x, float y, int width, int height, float density) {
-        super(c, x, y, width, height, density);
+    public StaticEntity(float x, float y, int width, int height, float density) {
+        super(x, y, width, height, density);
     }
 
     @Override

@@ -34,6 +34,8 @@ public class Arcane extends Weapon {
         this.healthConsumption = healthConsumption;
         this.refreshSpeed = refreshSpeed;
         this.burst = burst;
+
+        items[id] = this;
     }
 
     public Arcane createNew(int count) {

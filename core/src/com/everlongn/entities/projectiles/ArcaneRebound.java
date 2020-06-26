@@ -23,8 +23,8 @@ public class ArcaneRebound extends Projectile {
     public float life, angle, yForce;
     public static Color color = new Color(0.00f, 0.01f, 0.00f, 1f);
 
-    public ArcaneRebound(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
-        super(c, x, y, 5, 5, density);
+    public ArcaneRebound(float x, float y, float density, int direction, float angle, float damage) {
+        super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

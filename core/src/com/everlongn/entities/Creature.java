@@ -26,8 +26,8 @@ public abstract class Creature extends Entity {
     public Animation[] chase, attack;
     public ParticleEffect destroyed;
 
-    public Creature(ControlCenter c, float x, float y, int width, int height, float density, float speed) {
-        super(c, x, y, width, height, density);
+    public Creature(float x, float y, int width, int height, float density, float speed) {
+        super(x, y, width, height, density);
 
         // default values
         this.speed = speed;

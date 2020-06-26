@@ -23,8 +23,8 @@ public class Spiderling extends Creature {
     public boolean leaping, landed;
     public float landTimer;
 
-    public Spiderling(ControlCenter c, float x, float y, int size) {
-        super(c, x, y, size, size, 1.5f, 2f + (float)Math.random()*1.5f);
+    public Spiderling(float x, float y, int size) {
+        super(x, y, size, size, 1.5f, 2f + (float)Math.random()*1.5f);
 
         if(size < 90) {
             density = 2;

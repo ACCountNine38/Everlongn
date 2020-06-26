@@ -5,9 +5,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
+import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
+import com.everlongn.items.Item;
 import com.everlongn.states.GameState;
+import com.everlongn.utils.Constants;
 import com.everlongn.utils.TextManager;
 
 import java.util.ArrayList;
@@ -144,6 +147,47 @@ public class Message {
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
+            }
+            return;
+        } else if(chars[0].equals("give")) {
+            try {
+                int count = Integer.parseInt(chars[chars.length-1]);
+                String name = chars[1];
+                if(count >= 0) {
+                    Item item = null;
+                    for(int i = 0; i < Item.items.length; i++) {
+                        if(Item.items[i] != null && Item.items[i].name.equals(name)) {
+                            item = Item.items[i];
+                            GameState.inventory.addItem(Item.items[i].createNew(count));
+                            break;
+                        }
+                    }
+                    if(item != null)
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Added " + Integer.parseInt(chars[2]) + " " + item.name + "(s) To Inventory", false, Color.YELLOW));
+                    else
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Name", false, Color.YELLOW));
+                } else {
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Count", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Item Data", false, Color.YELLOW));
+            }
+            return;
+        } else if(chars[0].equals("spawn")) {
+            try {
+                int xLoc = Integer.parseInt(chars[2]);
+                int yLoc = Integer.parseInt(chars[3]);
+                if(xLoc >= 0 && xLoc < GameState.worldWidth && yLoc >= 0 && yLoc < GameState.worldHeight) {
+                    if(chars[1].equals("Spawnling")) {
+                        EntityManager.entities.add(new Spiderling(xLoc*Constants.PPM, yLoc*Constants.PPM, (int)(Math.random()*50)+ 75));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawned Spawnling At: " + Integer.parseInt(chars[2]) + ", " + Integer.parseInt(chars[3]), false, Color.YELLOW));
+                    } else
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Entity Name", false, Color.YELLOW));
+                } else {
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawn Range Out Of Bounds", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Spawn Data", false, Color.YELLOW));
             }
             return;
         }

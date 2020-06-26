@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
@@ -24,8 +23,8 @@ public class ArcaneTrail extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.02f, 1f);
 
-    public ArcaneTrail(ControlCenter c, float x, float y, float density, int direction, float angle, float damage) {
-        super(c, x, y, 5, 5, density);
+    public ArcaneTrail(float x, float y, float density, int direction, float angle, float damage) {
+        super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
