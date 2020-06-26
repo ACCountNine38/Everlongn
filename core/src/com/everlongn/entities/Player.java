@@ -31,7 +31,7 @@ import static com.everlongn.utils.Constants.PPM;
 public class Player extends Creature {
 
     public static boolean movingHorizontal, onhold,
-            weaponActive = true, meleeAttack, meleeRecharge, halt;
+            weaponActive = true, meleeAttack, meleeRecharge, halt, godMode;
 
     private boolean cameraXStopped, armSwingUp = true;
 
@@ -182,7 +182,8 @@ public class Player extends Creature {
     @Override
     public void tick() {
         checkSpecialCase();
-
+        if(godMode)
+            health = maxHealth;
         testLight.setPosition(body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM);
 
@@ -290,7 +291,6 @@ public class Player extends Creature {
             onhold = false;
             return;
         }
-        onhold = true;
         if((inCombat && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) || inventoryHold) {
             inCombat = false;
         }
@@ -299,6 +299,7 @@ public class Player extends Creature {
             return;
         }
         if(Inventory.inventory[Inventory.selectedIndex] instanceof Melee) {
+            onhold = true;
             if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 haltReset = false;
             }
@@ -328,6 +329,7 @@ public class Player extends Creature {
             }
             checkMeleeCombat();
         } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
+            onhold = true;
             GameState.aiming = true;
             meleeAttack = false;
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {

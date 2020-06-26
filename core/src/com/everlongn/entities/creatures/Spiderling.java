@@ -45,7 +45,7 @@ public class Spiderling extends Creature {
 
         enemyList.add("player");
 
-        damage = size/8;
+        damage = size/6;
 
         knockbackResistance = 1.04f;
         jumpCondition = speed/2;

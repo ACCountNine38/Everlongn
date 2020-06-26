@@ -12,6 +12,7 @@ import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.TextManager;
+import com.everlongn.utils.frameworks.Message;
 import net.java.games.input.Component;
 
 import java.util.ArrayList;
@@ -58,6 +59,24 @@ public class Inventory {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.E) && !GameState.telepathy.focused) {
             extended = !extended;
+        }
+
+        if(!itemPickDrop && draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (EntityManager.player.direction == 1) {
+                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, (float) Math.random() * 50 + 150, (float) Math.random() * 50 + 100));
+            } else {
+                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, -(float) Math.random() * 50 - 150, (float) Math.random() * 50 + 100));
+            }
+            inventory[draggedIndex] = null;
+            draggedItem = null;
+        } else if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !itemPickDrop && itemPicking && draggedItem == null) {
+            if(EntityManager.player.direction == 1) {
+                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, (float)Math.random()*50 + 150, (float)Math.random()*50 + 100));
+            } else {
+                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, -(float)Math.random()*50 - 150, (float)Math.random()*50 + 100));
+            }
+            pickedItem = null;
+            itemPicking = false;
         }
 
         if(!GameState.telepathy.focused) {
@@ -264,24 +283,6 @@ public class Inventory {
             renderExtendedInventory(batch);
 
         renderHotbar(batch);
-
-        if(!itemPickDrop && draggedItem != null && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (EntityManager.player.direction == 1) {
-                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, (float) Math.random() * 50 + 150, (float) Math.random() * 50 + 100));
-            } else {
-                EntityManager.items.add(draggedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, draggedItem.count, -(float) Math.random() * 50 - 150, (float) Math.random() * 50 + 100));
-            }
-            inventory[draggedIndex] = null;
-            draggedItem = null;
-        } else if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !itemPickDrop && itemPicking && draggedItem == null) {
-            if(EntityManager.player.direction == 1) {
-                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, (float)Math.random()*50 + 150, (float)Math.random()*50 + 100));
-            } else {
-                EntityManager.items.add(pickedItem.createNew(EntityManager.player.body.getPosition().x * PPM, EntityManager.player.body.getPosition().y * PPM + 80, pickedItem.count, -(float)Math.random()*50 - 150, (float)Math.random()*50 + 100));
-            }
-            pickedItem = null;
-            itemPicking = false;
-        }
 
         // only display dragged item when the cursor is out of the selected slot
         if(draggedItem != null && !(Gdx.input.getX() > dragBoundX && Gdx.input.getX() < dragBoundX + slotSize &&

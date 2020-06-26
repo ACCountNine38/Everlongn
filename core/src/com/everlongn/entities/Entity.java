@@ -122,6 +122,8 @@ public abstract class Entity {
     // method that calculates damage to player and enemies by difficulty
     public void trueDamage(float damage, int difficulty) {
         if(name.equals("player")) {
+            if(EntityManager.player.godMode)
+                return;
             if (difficulty == 2) { // insane difficulty
                 if (damage*1.5 > 0) {
                     health -= damage*1.5;

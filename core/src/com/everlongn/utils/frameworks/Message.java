@@ -94,6 +94,14 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
             return;
+        } else if(text.equals("godmode")) {
+            EntityManager.player.godMode = !EntityManager.player.godMode;
+            if(EntityManager.player.godMode) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player Is Now Invulnerable", false, Color.YELLOW));
+            } else {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Player Is Now Vulnerable", false, Color.YELLOW));
+            }
+            return;
         }
 
         // multi-word commands
@@ -149,7 +157,7 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
             return;
-        } else if(chars[0].equals("give")) {
+        } else if(chars[0].equals("get")) {
             try {
                 int count = Integer.parseInt(chars[chars.length-1]);
                 String name = chars[1];

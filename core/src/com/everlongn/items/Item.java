@@ -78,7 +78,7 @@ public class Item {
         this.display = display;
         count = 1;
 
-        timeDropped = 0;
+        this.timeDropped = 0;
 
         items[id] = this;
         bounds = new Rectangle(0, 0, width, height);
@@ -86,10 +86,10 @@ public class Item {
 
     public void tick() {
         if(!pickedUp) {
-            timeDropped += Gdx.graphics.getDeltaTime();
-            if(timeDropped >= 180 && degeneratable) {
-                GameState.world.destroyBody(body);
-                pickedUp = true;
+            this.timeDropped += Gdx.graphics.getDeltaTime();
+            if(this.timeDropped >= 180 && this.degeneratable) {
+                GameState.world.destroyBody(this.body);
+                this.pickedUp = true;
             }
         }
 

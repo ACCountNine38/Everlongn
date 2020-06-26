@@ -386,7 +386,7 @@ public class GameState extends State {
                     ControlCenter.width - 15, 180, Color.WHITE);
             TextManager.analogDraw("Halt Attack: " + Player.halt + "   HaltForce: " + Player.haltForce*50,
                     ControlCenter.width - 15, 200, Color.WHITE);
-            TextManager.analogDraw("Player Health: " + EntityManager.player.health + "   Percentage: " + EntityManager.player.getHealthPercentage(),
+            TextManager.analogDraw("Player Health: " + Math.round(EntityManager.player.health) + "   Percentage: " + Math.round(EntityManager.player.getHealthPercentage()*100) + "%",
                     ControlCenter.width - 15, 220, Color.WHITE);
         }
 
