@@ -19,13 +19,15 @@ public class Telepathy {
 
     public InputListener input;
 
-    public static ArrayList<Message> messages = new ArrayList<Message>();
+    public static ArrayList<Message> messages = new ArrayList<>();
 
     public Telepathy(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+
+        messages = new ArrayList<>();
     }
 
     public void tick() {

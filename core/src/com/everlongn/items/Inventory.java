@@ -39,17 +39,17 @@ public class Inventory {
 
     public Inventory(ControlCenter c) {
         this.c = c;
-        addItem(Arcane.arcaneCaster);
-        addItem(Arcane.arcaneEruption);
-        addItem(Arcane.arcaneRebound);
-        addItem(Arcane.arcaneEscort);
-        addItem(Arcane.arcaneReflection);
-        addItem(Arcane.arcaneDevastation);
-        addItem(Melee.broadSword.createNew(1));
-        addItem(Arcane.shadowStaff.createNew(1));
-        addItem(Melee.dragondance);
-        addItem(Item.stone.createNew(1));
-        addItem(Item.log.createNew(20));
+//        addItem(Arcane.arcaneCaster);
+//        addItem(Arcane.arcaneEruption);
+//        addItem(Arcane.arcaneRebound);
+//        addItem(Arcane.arcaneEscort);
+//        addItem(Arcane.arcaneReflection);
+//        addItem(Arcane.arcaneDevastation);
+//        addItem(Melee.broadSword.createNew(1));
+//        addItem(Arcane.shadowStaff.createNew(1));
+//        addItem(Melee.dragondance);
+//        addItem(Item.stone.createNew(1));
+//        addItem(Item.log.createNew(20));
     }
 
     public void tick() {

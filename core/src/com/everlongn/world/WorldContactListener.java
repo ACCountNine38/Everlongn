@@ -61,7 +61,14 @@ public class WorldContactListener implements ContactListener {
                             ar.finish2(tile, false);
                         }
                     } else {
-                        temp.finish();
+                        if(b.getUserData() instanceof Entity) {
+                            Entity entity = (Entity)(b.getUserData());
+                            if(entity.active) {
+                                temp.finish();
+                            }
+                        } else {
+                            temp.finish();
+                        }
                     }
                 }
             }
@@ -81,7 +88,14 @@ public class WorldContactListener implements ContactListener {
                             ar.finish2(tile, false);
                         }
                     } else {
-                        temp.finish();
+                        if(a.getUserData() instanceof Entity) {
+                            Entity entity = (Entity)(a.getUserData());
+                            if(entity.active) {
+                                temp.finish();
+                            }
+                        } else {
+                            temp.finish();
+                        }
                     }
                 }
             }

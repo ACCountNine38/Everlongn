@@ -3,7 +3,6 @@ package com.everlongn.states;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -15,17 +14,22 @@ import com.everlongn.assets.UI;
 import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
+import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.popups.IngameOptions;
+import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
 import com.everlongn.utils.frameworks.Telepathy;
+import com.everlongn.walls.EarthWall;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
 
 import java.security.Key;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -47,7 +51,9 @@ public class GameState extends State {
     public static Entity[][] herbs;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
-    public static boolean mode, exiting;
+    public static String mode, name;
+    public static boolean[][] occupied;
+    public static boolean exiting;
     public static int chunkSize = 20, worldWidth, worldHeight, difficulty;
     ///////////////////
 
@@ -77,6 +83,11 @@ public class GameState extends State {
         super(stateManager);
 
         TextManager.bfont = new BitmapFont(Gdx.files.internal("fonts/chalk14.fnt"));
+
+        // reset debug variables
+        ControlCenter.DEBUG_RENDER = false;
+        ControlCenter.DEBUG = false;
+        lightsOn = true;
 
         inventory = new Inventory(c);
         telepathy = new Telepathy(15, 10, 400, 35);
@@ -151,8 +162,62 @@ public class GameState extends State {
         }
     }
 
-    public void save() {
+    public static void save() {
+        Pixmap tilemap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+        Pixmap wallmap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
+        for(int i = 0; i < worldWidth; i++) {
+            for(int j = 0; j < worldHeight; j++) {
+                if(tiles[i][GameState.worldHeight - 1 - j] instanceof EarthTile) {
+                    tilemap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
+                    tilemap.drawPixel(i, j);
+                }
+                if(walls[i][GameState.worldHeight - 1 - j] instanceof EarthWall) {
+                    wallmap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
+                    wallmap.drawPixel(i, j);
+                }
+            }
+        }
+
+        FileHandle tileFile = Gdx.files.external("everlongn/realms/tile/" + name + ".png");
+        PixmapIO.writePNG(tileFile, tilemap);
+
+        FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
+        PixmapIO.writePNG(wallFile, wallmap);
+
+        FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".txt");
+        boolean firstEnter = false;
+        for(int i = 0; i < worldWidth; i++) {
+            for(int j = 0; j < worldHeight; j++) {
+                if(herbs[i][j] instanceof Tree) {
+                    Tree temp = (Tree)herbs[i][j];
+                    if(!firstEnter) {
+                        firstEnter = true;
+                        herbsFile.writeString("Tree " + i + " " + (worldHeight - 1 - j) + " " + temp.height + "\n", false);
+                    } else {
+                        herbsFile.writeString("Tree " + i + " " + (worldHeight - 1 - j) + " " + temp.height + "\n", true);
+                    }
+                }
+            }
+        }
+
+        tilemap.dispose();
+        wallmap.dispose();
+
+        FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
+        meta.writeString("1\n", false);
+        meta.writeString(EntityManager.player.currentTileX + "\n", true);
+        meta.writeString(worldHeight - 1 - EntityManager.player.currentTileY + "\n", true);
+        meta.writeString(Math.round(EntityManager.player.maxHealth) + "\n", true);
+        meta.writeString(Math.round(EntityManager.player.health) + "\n", true);
+        for(int i = 0; i < Inventory.inventory.length; i++) {
+            if(Inventory.inventory[i] == null) {
+                meta.writeString( "null\n", true);
+            } else {
+                meta.writeString( Inventory.inventory[i].id + " " + Inventory.inventory[i].count + "\n", true);
+            }
+        }
+        meta.writeString("\n", true);
     }
 
     public void updateCursor() {

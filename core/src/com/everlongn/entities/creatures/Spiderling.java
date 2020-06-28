@@ -6,19 +6,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.everlongn.assets.Entities;
 import com.everlongn.assets.Sounds;
+import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Animation;
 import com.everlongn.entities.Creature;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
-import com.everlongn.utils.frameworks.Message;
 
 import static com.everlongn.utils.Constants.PPM;
 
 public class Spiderling extends Creature {
     public Rectangle leapBound;
-    public boolean leaping, landed;
-    public float landTimer, testTimer;
+    public boolean leaping, landed, paused;
+    public float landTimer, pausedTimer;
 
     public Spiderling(float x, float y, int size) {
         super(x, y, size, size, 1.5f, 2f + (float)Math.random()*1.5f);
@@ -49,8 +49,13 @@ public class Spiderling extends Creature {
 
         vulnerableToArcane = true;
 
-        destroyed.getEmitters().first().scaleSize(1.5f);
+        for(int i = 0; i < destroyed.length; i++)
+            destroyed[i].getEmitters().first().scaleSize(1.5f);
         jumpForce = size*7;
+
+        sightHeight = 200;
+        sightWidth = 600;
+        sightBound = new Rectangle(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2, sightWidth, sightHeight);
 
         // unique variables
         leapBound = new Rectangle(body.getPosition().x*Constants.PPM - 200, body.getPosition().y*Constants.PPM - 200, 400, 400);
@@ -59,15 +64,30 @@ public class Spiderling extends Creature {
     @Override
     public void tick() {
         if(alive) {
-            testTimer+=Gdx.graphics.getDeltaTime();
-//            if(testTimer > 1) {
-//                GameState.telepathy.messages.add(new Message(0, 0, 100, "" + health, false, Color.YELLOW));
-//                testTimer = 0;
-//            }
+            if(status.equals("chase")) {
+                sightWidth = 1500;
+                sightHeight = 450;
+            } else {
+                sightWidth = 800;
+                sightHeight = 300;
+            }
+            sightBound.setPosition(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2);
+            sightBound.setSize(sightWidth, sightHeight);
             if (target == null) {
                 findTarget();
+                natural();
             } else {
-                if(landed) {
+                if(paused) {
+                    stunned = true;
+                    pausedTimer += Gdx.graphics.getDeltaTime();
+                    body.setLinearVelocity(0, 0);
+                    if(pausedTimer > 0.5 && health > 0) {
+                        stunned = false;
+                        paused = false;
+                        pausedTimer = 0;
+                        leapStrike();
+                    }
+                } else if(landed) {
                     body.setLinearVelocity(body.getLinearVelocity().x/1.08f, body.getLinearVelocity().y);
                     landTimer += Gdx.graphics.getDeltaTime();
                     if(landTimer > 1f) {
@@ -79,7 +99,7 @@ public class Spiderling extends Creature {
                     leapBound.setPosition(body.getPosition().x * Constants.PPM - 200, body.getPosition().y * Constants.PPM - 200);
                     chase();
                     if (leapBound.contains(target.body.getPosition().x*Constants.PPM, target.body.getPosition().y*Constants.PPM)) {
-                        leapStrike();
+                        paused = true;
                     }
                 } else {
                     body.setLinearVelocity(body.getLinearVelocity().x/1.02f, body.getLinearVelocity().y);
@@ -96,12 +116,16 @@ public class Spiderling extends Creature {
                         leaping = false;
                         Sounds.playSound(Sounds.basicImpact[(int)(Math.random()*3)], 2f);
                         if(direction == 0)
-                            target.body.applyForceToCenter(-550, 150, false);
+                            target.body.applyForceToCenter(-550, 120, false);
                         else
-                            target.body.applyForceToCenter(550, 150, false);
+                            target.body.applyForceToCenter(550, 120, false);
                         target.hurt(damage, GameState.difficulty);
                     }
                 }
+            }
+
+            if(target != null && !target.getBound().overlaps(sightBound)) {
+                target = null;
             }
 
             if (health <= 0) {
@@ -111,14 +135,15 @@ public class Spiderling extends Creature {
                 finish();
             }
         } else {
-            destroyed.update(Gdx.graphics.getDeltaTime());
-            destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 10);
+            destroyed[destroyedDirection].update(Gdx.graphics.getDeltaTime());
+            //destroyed[destroyedDirection].getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 10);
             fadeAlpha-=0.15;
             if(fadeAlpha < 0) {
                 fadeAlpha = 0;
             }
-            if(destroyed.isComplete()) {
-                destroyed.dispose();
+            if(destroyed[destroyedDirection].isComplete()) {
+                for(int i = 0; i < destroyed.length; i++)
+                    destroyed[i].dispose();
                 GameState.world.destroyBody(body);
                 active = false;
             }
@@ -142,6 +167,7 @@ public class Spiderling extends Creature {
     public void render(SpriteBatch batch) {
         batch.begin();
         if(alive) {
+            //batch.draw(Tiles.blackTile, sightBound.x, sightBound.y, sightBound.width, sightBound.height);
             if(leaping)
                 batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
             else if(getCurrentFrame() != null)
@@ -153,7 +179,7 @@ public class Spiderling extends Creature {
             else if(getCurrentFrame() != null)
                 batch.draw(getCurrentFrame(), body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
             batch.setColor(1f, 1f, 1f, 1f);
-            destroyed.draw(batch);
+            destroyed[destroyedDirection].draw(batch);
         }
         batch.end();
     }
@@ -162,7 +188,15 @@ public class Spiderling extends Creature {
     public void finish() {
         int randomSound = (int)(Math.random()*3);
         Sounds.playSound(Sounds.spider[randomSound]);
-        destroyed.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - 10);
-        destroyed.start();
+
+        if(body.getLinearVelocity().x < 0) {
+            destroyedDirection = 0;
+        } else if(body.getLinearVelocity().x > 0) {
+            destroyedDirection = 1;
+        } else if(body.getLinearVelocity().x > 0) {
+            destroyedDirection = 2;
+        }
+        destroyed[destroyedDirection].getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 10);
+        destroyed[destroyedDirection].start();
     }
 }

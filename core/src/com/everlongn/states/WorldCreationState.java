@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.TextManager;
 import com.everlongn.utils.components.ImageLabel;
 import com.everlongn.utils.components.TextButton;
 import com.everlongn.utils.components.TextArea;
@@ -21,10 +22,10 @@ public class WorldCreationState extends State {
     public TextButton back, confirm;
     public TextImageButton small, medium, large;
     public TextImageButton standard, intense, insane;
-    public TextImageButton normal, hardcore;
+    public TextImageButton normal, hardcore, testing;
     public ImageLabel panel, boarder;
 
-    public boolean transitioning;
+    public boolean transitioning, identicalWarning;
     public float transitionAlpha;
     public String worldSize, worldDifficulty, worldMode;
 
@@ -59,37 +60,48 @@ public class WorldCreationState extends State {
         confirm = new TextButton((int)(ControlCenter.width/2 - layout.width/2), ControlCenter.height/2 - 240,  "Confirm", false);
 
         int buttonWidth = 125;
-        small = new TextImageButton(ControlCenter.width/2 - buttonWidth/2 - buttonWidth - 50, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6),
+        small = new TextImageButton(ControlCenter.width/2 - buttonWidth/2 - buttonWidth - 50, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Small", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
-        medium = new TextImageButton(ControlCenter.width/2 - buttonWidth/2, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6),
+        medium = new TextImageButton(ControlCenter.width/2 - buttonWidth/2, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Medium", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
-        large = new TextImageButton(ControlCenter.width/2 + buttonWidth/2 + 50, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6),
+        large = new TextImageButton(ControlCenter.width/2 + buttonWidth/2 + 50, (int)(realmName.y - 155 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Large", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
 
-        standard = new TextImageButton(ControlCenter.width/2 - buttonWidth/2 - buttonWidth - 50, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6),
+        standard = new TextImageButton(ControlCenter.width/2 - buttonWidth/2 - buttonWidth - 50, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Standard", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
-        intense = new TextImageButton(ControlCenter.width/2 - buttonWidth/2, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6),
+        intense = new TextImageButton(ControlCenter.width/2 - buttonWidth/2, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Intense", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
-        insane = new TextImageButton(ControlCenter.width/2 + buttonWidth/2 + 50, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6),
+        insane = new TextImageButton(ControlCenter.width/2 + buttonWidth/2 + 50, (int)(realmName.y - 245 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Insane", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
 
-        normal = new TextImageButton(ControlCenter.width/2 - buttonWidth - 25, (int)(realmName.y - 335 + seed.height/2 - buttonWidth/6),
+        normal = new TextImageButton(ControlCenter.width/2 - buttonWidth/2 - buttonWidth - 50, (int)(realmName.y - 335 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Normal", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
-        hardcore = new TextImageButton(ControlCenter.width/2 + 25, (int)(realmName.y - 335 + seed.height/2 - buttonWidth/6),
+        hardcore = new TextImageButton(ControlCenter.width/2 - buttonWidth/2, (int)(realmName.y - 335 + seed.height/2 - buttonWidth/6 + 5),
                 0, buttonWidth, buttonWidth/3, "Hardcore", UI.worldSelected, UI.worldSelect,
                 worldCreationFont, true);
+        testing = new TextImageButton(ControlCenter.width/2 + buttonWidth/2 + 50, (int)(realmName.y - 335 + seed.height/2 - buttonWidth/6 + 5),
+                0, buttonWidth, buttonWidth/3, "Testing", UI.worldSelected, UI.worldSelect,
+                worldCreationFont, true);
+
+        seed.currentText = (int)(Math.random()*1000000000) + "";
     }
 
     @Override
     public void tick(float delta) {
         updateLayers(delta);
+
+        if(WorldSelectionState.names.contains(realmName.currentText)) {
+            identicalWarning = true;
+        } else {
+            identicalWarning = false;
+        }
 
         if(transitioning) {
             transitionAlpha += 0.03;
@@ -117,7 +129,7 @@ public class WorldCreationState extends State {
 
         if(realmName.currentText.length() > 0 && (small.selected || medium.selected || large.selected) &&
                 (standard.selected || intense.selected || insane.selected) &&
-                (normal.selected || hardcore.selected)) {
+                (normal.selected || hardcore.selected || testing.selected) && !identicalWarning) {
             confirm.clickable = true;
         } else {
             confirm.clickable = false;
@@ -131,6 +143,10 @@ public class WorldCreationState extends State {
                 worldSize = "Medium";
             } else if(small.selected) {
                 worldSize = "Small";
+            }
+
+            if(seed.currentText.equals("")) {
+                seed.currentText = (int)(Math.random()*1000000000) + "";
             }
 
             worldDifficulty = "";
@@ -147,6 +163,8 @@ public class WorldCreationState extends State {
                 worldMode = "Normal";
             } else if(hardcore.selected) {
                 worldMode = "Hardcore";
+            } else if(testing.selected) {
+                worldMode = "Testing";
             }
 
             transitioning = true;
@@ -166,6 +184,7 @@ public class WorldCreationState extends State {
         insane.tick();
         normal.tick();
         hardcore.tick();
+        testing.tick();
 
         boarder.tick();
         panel.tick();
@@ -210,9 +229,15 @@ public class WorldCreationState extends State {
             else if(normal.hover) {
                 normal.selected = true;
                 hardcore.selected = false;
+                testing.selected = false;
             } else if(hardcore.hover) {
                 normal.selected = false;
+                testing.selected = false;
                 hardcore.selected = true;
+            } else if(testing.hover) {
+                normal.selected = false;
+                hardcore.selected = false;
+                testing.selected = true;
             }
 
             realmName.focused =  false;
@@ -234,17 +259,22 @@ public class WorldCreationState extends State {
 
         worldCreationFont.setColor(Color.WHITE);
         layout.setText(worldCreationFont2, "Realm Name:");
-        worldCreationFont2.draw(batch, "Realm Name:", ControlCenter.width/2 - layout.width/2, ControlCenter.height/2 + 250 - 40 + realmName.height/2);
+        worldCreationFont2.draw(batch, "Realm Name:", ControlCenter.width/2 - layout.width/2, ControlCenter.height/2 + 250 - 40 + realmName.height/2 + 5);
         layout.setText(worldCreationFont, "Seed: ");
-        worldCreationFont.draw(batch, "Seed:", realmName.x, realmName.y - 45 + seed.height/2);
+        worldCreationFont.draw(batch, "Seed:", realmName.x, realmName.y - 45 + seed.height/2 + 5);
         layout.setText(worldCreationFont, "Realm Size:");
-        worldCreationFont.draw(batch, "Realm Size:", ControlCenter.width/2 - layout.width/2, realmName.y - 100 + seed.height/2);
+        worldCreationFont.draw(batch, "Realm Size:", ControlCenter.width/2 - layout.width/2, realmName.y - 100 + seed.height/2 + 5);
         layout.setText(worldCreationFont, "Difficulty:");
-        worldCreationFont.draw(batch, "Difficulty:", ControlCenter.width/2 - layout.width/2, realmName.y - 190 + seed.height/2);
+        worldCreationFont.draw(batch, "Difficulty:", ControlCenter.width/2 - layout.width/2, realmName.y - 190 + seed.height/2 + 5);
         layout.setText(worldCreationFont, "Mode:");
-        worldCreationFont.draw(batch, "Mode:", ControlCenter.width/2 - layout.width/2, realmName.y - 280 + seed.height/2);
+        worldCreationFont.draw(batch, "Mode:", ControlCenter.width/2 - layout.width/2, realmName.y - 280 + seed.height/2 + 5);
 
         renderButtons();
+
+        if(identicalWarning) {
+            layout.setText(worldCreationFont, "Warning: Duplicate Realm Name!");
+            worldCreationFont.draw(batch, "Warning: Duplicate Realm Name!", ControlCenter.width/2 - layout.width/2, realmName.y - 460 + seed.height/2);
+        }
 
         if(transitioning) {
             batch.setColor(0f, 0f, 0f, transitionAlpha);
@@ -271,6 +301,7 @@ public class WorldCreationState extends State {
 
         normal.render(batch);
         hardcore.render(batch);
+        testing.render(batch);
     }
 
     @Override

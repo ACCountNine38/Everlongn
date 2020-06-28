@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
+import com.everlongn.assets.Tiles;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.game.ControlCenter;
@@ -69,14 +70,16 @@ public class Player extends Creature {
 
     // Testing variables
 
-    public Player(float x, float y, int width, int height, float density) {
+    public Player(float x, float y, int width, int height, float density, float maxHealth, float health) {
         super(x, y, width, height, density, 5);
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
 
-        resetHealth(100);
+        this.maxHealth = maxHealth;
+        this.health = health;
+
         baseRegenAmount = 0.1f;
         type.add("player");
         boundWidth = 16;
@@ -1196,6 +1199,14 @@ public class Player extends Creature {
         }
     }
 
+    @Override
+    public Rectangle getBound() {
+        if(jump || fall) {
+            return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM + 25, boundWidth, boundHeight - 25);
+        }
+        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
+    }
+
     public void checkMovement() {
         if(body.getLinearVelocity().x != 0 && !cameraXStopped) {
             movingHorizontal = true;
@@ -1253,7 +1264,7 @@ public class Player extends Creature {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-
+        //batch.draw(Tiles.blackTile, getBound().x, getBound().y, getBound().width, getBound().height);
         if(eruptionHold)
             eruptionCharge.draw(batch);
         else {

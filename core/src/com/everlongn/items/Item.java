@@ -33,9 +33,7 @@ public class Item {
     public static Item stone = new Item(Items.stone, "Stone", 1, true, true,
             35, 35, 44, 44, 32, "looks very durable", 0, 0, null);
 
-//new String[]{"miscellaneous"},
     //----------
-
     public float x, y;
     public int width, height, id, count, capacity, itemWidth, itemHeight, direction;
     public long timeDropped;

@@ -11,6 +11,7 @@ import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.states.MenuState;
 import com.everlongn.utils.TextManager;
+import com.everlongn.utils.Tool;
 import com.everlongn.utils.components.PercentageBar;
 import com.everlongn.utils.components.TextButton;
 
@@ -50,6 +51,8 @@ public class IngameOptions extends Popup{
             sfx.tick();
             Sounds.sfxPercentage = sfx.selectedPercentage;
             if(exit.hover && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                Tool.changeCursor(1);
+                GameState.save();
                 GameState.exiting = true;
             }
         } else {

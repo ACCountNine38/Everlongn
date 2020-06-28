@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.utils.Tool;
 import com.everlongn.utils.components.ImageLabel;
 import com.everlongn.utils.components.TextButton;
 import com.everlongn.utils.components.WorldSelectButton;
@@ -33,6 +34,8 @@ public class WorldSelectionState extends State  implements InputProcessor {
     public static float transitionAlpha = 0f, fadeAlpha;
     public static boolean transitioning, canSwitch, buttonPressed;
     public static boolean reversing, exitFromGame;
+
+    public static ArrayList<String> names = new ArrayList<String>();
 
     public WorldSelectionState(StateManager stateManager) {
         super(stateManager);
@@ -73,6 +76,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
     public void loadWorlds() {
         selectedIndex = -1;
         FileHandle dirHandle = null;
+
         if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
             dirHandle = Gdx.files.external("everlongn/data");
         }
@@ -83,22 +87,20 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 String read = entry.readString();
                 String[] data = read.split("\n");
 
-                boolean hardcore = false;
-                if(data[4].equals("Hardcore")) {
-                    hardcore = true;
-                }
-
                 FileHandle tilemap = Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png");
-                FileHandle wallMap = Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png");
+                FileHandle wallMap = Gdx.files.external("everlongn/realms/wall/" + data[0] + ".png");
+                FileHandle herbMap = Gdx.files.external("everlongn/realms/herb/" + data[0] + ".txt");
 
-                if(tilemap.exists() && wallMap.exists()) {
+                if(tilemap.exists() && wallMap.exists() && herbMap.exists()) {
                     worlds.add(new WorldSelectButton(ControlCenter.width / 2 - 265, ControlCenter.height / 2 - 235 + 360 + numWorlds * -110, "", true, MenuState.menuFont,
-                            data[0], data[1], data[2], Integer.parseInt(data[3]), hardcore, data[5],
+                            data[0], data[1], data[2], Integer.parseInt(data[3]), data[4], data[5],
                             Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png"),
                             Gdx.files.external("everlongn/realms/wall/" + data[0] + ".png"),
-                            Gdx.files.external("everlongn/realms/herb/" + data[0] + ".png")));
+                            Gdx.files.external("everlongn/realms/herb/" + data[0] + ".txt")));
 
                     numWorlds++;
+                    if(!names.contains(data[0]))
+                        names.add(data[0]);
                 }
             }
         }
@@ -106,6 +108,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
 
     @Override
     public void tick(float delta) {
+        Tool.changeCursor(0);
         if(exitFromGame) {
             fadeAlpha -= 0.03;
             if(fadeAlpha <= 0) {
@@ -123,11 +126,10 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 int diff = 0;
                 if(worlds.get(selectedIndex).difficulty.equals("Intense")) {
                     diff = 1;
-                } else if(worlds.get(selectedIndex).difficulty.equals("insane")) {
+                } else if(worlds.get(selectedIndex).difficulty.equals("Insane")) {
                     diff = 2;
                 }
-                System.out.println(diff);
-                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, diff, worlds.get(selectedIndex).hardcore));
+                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, diff, worlds.get(selectedIndex).mode, worlds.get(selectedIndex).worldName));
             }
             return;
         }
@@ -148,6 +150,12 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 }
                 selectedIndex = i;
                 worlds.get(selectedIndex).selected = true;
+
+                confirm.activate(-50, 10, 2);
+                cancel.activate(-50, 10, 2);
+                newRealm.activate(ControlCenter.height/2 - 235, 10, 2);
+                enterRealm.activate(ControlCenter.height/2 - 235, 10, 2);
+                deleteRealm.activate(ControlCenter.height/2 - 235, 10, 2);
             }
         }
         back.tick();
@@ -197,10 +205,12 @@ public class WorldSelectionState extends State  implements InputProcessor {
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
             Gdx.files.external("everlongn/data/" + worlds.get(selectedIndex).worldName + ".txt").delete();
+            Gdx.files.external("everlongn/meta/" + worlds.get(selectedIndex).worldName + ".txt").delete();
             Gdx.files.external("everlongn/realms/tile/" + worlds.get(selectedIndex).worldName + ".png").delete();
             Gdx.files.external("everlongn/realms/wall/" + worlds.get(selectedIndex).worldName + ".png").delete();
-            Gdx.files.external("everlongn/realms/herb/" + worlds.get(selectedIndex).worldName + ".png").delete();
+            Gdx.files.external("everlongn/realms/herb/" + worlds.get(selectedIndex).worldName + ".txt").delete();
 
+            names.remove(worlds.get(selectedIndex).worldName);
             worlds.clear();
             loadWorlds();
 
@@ -225,8 +235,10 @@ public class WorldSelectionState extends State  implements InputProcessor {
             canSwitch = true;
         }
         if(canSwitch) {
-            if(switchCondition == 0)
+            if(switchCondition == 0) {
+                canSwitch = false;
                 stateManager.setState(StateManager.CurrentState.MENU_STATE);
+            }
             else if(switchCondition == 1)
                 transitioning = true;
         }

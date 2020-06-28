@@ -13,14 +13,14 @@ import com.everlongn.utils.TextManager;
 import com.everlongn.utils.components.UIComponent;
 
 public class WorldSelectButton extends UIComponent {
-    public String worldName, difficulty, worldSize, date;
+    public String worldName, difficulty, worldSize, date, mode;
     public int seed;
-    public boolean hardcore, selected;
+    public boolean selected;
     public float startY, endY;
     public FileHandle tilemap, wallmap, herbsMap;
 
     public WorldSelectButton(float x, float y, String text, boolean clickable, BitmapFont font,
-                             String worldName, String difficulty, String worldSize, int seed, boolean hardcore, String date,
+                             String worldName, String difficulty, String worldSize, int seed, String mode, String date,
                              FileHandle tilemap, FileHandle wallmap, FileHandle herbsMap) {
         super(x, y, text, clickable, font);
 
@@ -28,7 +28,7 @@ public class WorldSelectButton extends UIComponent {
         this.difficulty = difficulty;
         this.worldSize = worldSize;
         this.seed = seed;
-        this.hardcore = hardcore;
+        this.mode = mode;
         this.date = date;
         this.tilemap = tilemap;
         this.wallmap = wallmap;
@@ -65,7 +65,7 @@ public class WorldSelectButton extends UIComponent {
         else
             batch.draw(UI.worldSelected, x, y + WorldSelectionState.scrollY, 530, 100);
 
-        if(hardcore)
+        if(mode.equals("Hardcore"))
             batch.draw(UI.hardcore, x + 10, y + 5 + WorldSelectionState.scrollY, 90, 90);
         else
             batch.draw(UI.normal, x + 10, y + 5 + WorldSelectionState.scrollY, 90, 90);
@@ -79,11 +79,7 @@ public class WorldSelectButton extends UIComponent {
         TextManager.draw(difficulty + " Journey", (int)x + 115, (int)(y + 95 + WorldSelectionState.scrollY - nameHeight - 5 - 10), Color.BLACK, 1f, false);
         TextManager.draw(worldSize + " Realm", (int)x + 115, (int)(y + 95 + WorldSelectionState.scrollY - nameHeight - 5 - 30), Color.BLACK, 1f, false);
 
-        if(hardcore) {
-            TextManager.draw( "Hardcore Mode", (int)x + 115, (int)(y + 95 + WorldSelectionState.scrollY - nameHeight - 5 - 50), Color.BLACK, 1f, false);
-        } else {
-            TextManager.draw( "Normal Mode", (int)x + 115, (int)(y + 95 + WorldSelectionState.scrollY - nameHeight - 5 - 50), Color.BLACK, 1f, false);
-        }
+        TextManager.draw( mode, (int)x + 115, (int)(y + 95 + WorldSelectionState.scrollY - nameHeight - 5 - 50), Color.BLACK, 1f, false);
 
         layout.setText(WorldSelectionState.buttonFont, date);
         float dateWidth = layout.width;

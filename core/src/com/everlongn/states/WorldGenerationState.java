@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Inventory;
 import com.everlongn.utils.PerlinNoiseGenerator;
 
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ public class WorldGenerationState extends State {
     private int horizon, underground, chunkSize, worldWidth, worldHeight, spawnX, spawnY, seed, numSteps, currentStep;
     private String name, size, difficulty, mode, currentStage = "Setting Up...";
 
-    private Pixmap caveMap, tileMap, wallMap, herbsMap;
+    private Pixmap caveMap, tileMap, wallMap;
     private ArrayList<Integer> elevation;
     private ArrayList<String> biomes;
     private ArrayList<Integer> vegetation;
@@ -33,6 +34,8 @@ public class WorldGenerationState extends State {
     private int currentElevation, caveInstance, previousTreeX;
     private float count;
     private boolean generated;
+
+    private ArrayList<String> herbData = new ArrayList<String>();
 
     public WorldGenerationState(StateManager stateManager, String name, int seed, String size, String difficulty, String mode) {
         super(stateManager);
@@ -55,6 +58,7 @@ public class WorldGenerationState extends State {
             currentStage = "Complete...";
             count += delta;
             if(count >= 0.5) {
+                WorldSelectionState.names.add(name);
                 WorldSelectionState.reversing = true;
                 WorldSelectionState.transitionAlpha = 1f;
                 stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
@@ -91,7 +95,7 @@ public class WorldGenerationState extends State {
 
             for(int i = 0; i < worldWidth/chunkSize; i++) {
                 biomes.add("plain");
-                elevation.add(4 - r.nextInt(9));
+                elevation.add(5 - r.nextInt(11));
                 vegetation.add(r.nextInt(10));
             }
 
@@ -112,7 +116,7 @@ public class WorldGenerationState extends State {
             wallMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
             wallMap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
 
-            herbsMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+            //herbsMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
             mainBranchCave = new boolean[worldWidth][worldHeight];
 
@@ -221,8 +225,8 @@ public class WorldGenerationState extends State {
         }
         else if(step == 4) {
             currentStage = "Finalizing...";
-            tileMap.setColor(1f, 1f, 1f, 1f);
-            tileMap.drawPixel(spawnX, spawnY);
+//            tileMap.setColor(1f, 1f, 1f, 1f);
+//            tileMap.drawPixel(spawnX, spawnY);
 
             FileHandle file = Gdx.files.external("everlongn/realms/tile/" + name + ".png");
             PixmapIO.writePNG(file, tileMap);
@@ -230,8 +234,14 @@ public class WorldGenerationState extends State {
             FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
             PixmapIO.writePNG(wallFile, wallMap);
 
-            FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".png");
-            PixmapIO.writePNG(herbsFile, herbsMap);
+            FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".txt");
+            for(int i = 0; i < herbData.size(); i++) {
+                if(i == 0) {
+                    herbsFile.writeString(herbData.get(i) + "\n", false);
+                } else {
+                    herbsFile.writeString(herbData.get(i) + "\n", true);
+                }
+            }
 
             FileHandle data = Gdx.files.external("everlongn/data/" + name + ".txt");
             data.writeString(name + "\n", false);
@@ -245,9 +255,19 @@ public class WorldGenerationState extends State {
             data.writeString(formatter.format(date), true);
             data.writeString("\n", true);
 
+            FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
+            meta.writeString("1\n", false); // version
+            meta.writeString(spawnX + "\n", true);
+            meta.writeString(spawnY + "\n", true);
+            meta.writeString(100 + "\n", true); // max health
+            meta.writeString(100 + "\n", true); // health
+            for(int i = 0; i < Inventory.inventory.length; i++) {
+                meta.writeString("null\n", true);
+            }
+            meta.writeString("\n", true);
+
             tileMap.dispose();
             wallMap.dispose();
-            herbsMap.dispose();
         }
         currentStep++;
 
@@ -421,40 +441,32 @@ public class WorldGenerationState extends State {
         }
 
         // generating trees
-        herbsMap.setColor(new Color(1, 0, 0, 1));
         if(vegetation.get(i) == 0) {
             // nothing happens
         } else if(vegetation.get(i) < 4) {
-            int treeSize = r.nextInt(3) + 9;
+            int treeSize = r.nextInt(4) + 13;
             if(r.nextInt(15) < 1 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
-                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
-                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
-                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
                 previousTreeX = i * chunkSize + j;
+
+                herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) <= 7) {
-            int treeSize = r.nextInt(3) + 9;
+            int treeSize = r.nextInt(4) + 13;
             if(r.nextInt(10) < 2 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
-                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
-                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
-                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
                 previousTreeX = i * chunkSize + j;
+                herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) == 8) {
-            int treeSize = r.nextInt(3) + 9;
+            int treeSize = r.nextInt(4) + 13;
             if(r.nextInt(10) < 4 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
-                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
-                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
-                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
                 previousTreeX = i * chunkSize + j;
+                herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) == 9) {
-            int treeSize = r.nextInt(3) + 9;
+            int treeSize = r.nextInt(4) + 13;
             if(r.nextInt(10) < 6 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
-                herbsMap.drawLine(i * chunkSize + j, currentElevation, i * chunkSize + j, currentElevation-treeSize);
-                herbsMap.setColor(new Color(130f/255f, 64f/255f, 12f/255f, 1));
-                herbsMap.drawPixel(i * chunkSize + j, currentElevation);
                 previousTreeX = i * chunkSize + j;
+                herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         }
 

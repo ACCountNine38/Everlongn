@@ -2,6 +2,7 @@ package com.everlongn.utils.frameworks;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -10,22 +11,23 @@ import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Item;
 import com.everlongn.states.GameState;
+import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.TextManager;
-
-import java.util.ArrayList;
+import com.everlongn.utils.Tool;
 
 public class Message {
+    public static GlyphLayout layout = new GlyphLayout();
     public String text;
-    public static float maxDuration = 10;
-    public float currentDuration, x, y, height;
-    public boolean isCommand, active = true;
+    public static float maxDuration = 15;
+    public float currentDuration, x, y, height, alpha = 1;
+    public boolean isCommand, active = true, fading;
 
     public float bonusY;
 
     public Color color;
 
-    public Message(int x, float y, float height, String text, boolean isCommand, Color color) {
+    public Message(int x, int y, float height, String text, boolean isCommand, Color color) {
         this.text = text;
         this.isCommand = isCommand;
         this.x = x;
@@ -34,8 +36,12 @@ public class Message {
         this.color = color;
 
         if(isCommand) {
-            this.text = text.substring(1);
-            checkCommandPrompt();
+            if(GameState.mode.equals("Testing")) {
+                this.text = text.substring(1);
+                checkCommandPrompt();
+            } else {
+                Telepathy.messages.add(new Message(x, y , height, "Commands are only allowed for Testing Mode", false, Color.YELLOW));
+            }
             active = false;
         } else {
             bonusY += height;
@@ -48,9 +54,13 @@ public class Message {
     public void checkCommandPrompt() {
         // single word commands
         if(text.equals("menu")) {
+            Tool.changeCursor(1);
+            GameState.save();
             GameState.exiting = true;
             return;
         } else if(text.equals("exit")) {
+            Tool.changeCursor(1);
+            GameState.save();
             System.exit(1);
             return;
         } else if(text.equals("analog")) {
@@ -110,6 +120,48 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Disabling Light Casting", false, Color.YELLOW));
             }
             return;
+        } else if(text.equals("help")) {
+            String message = "/help stage : view stage control commands\n" +
+                    "/help debug : view debug and testing commands\n" +
+                    "/help player : view player customization commands\n" +
+                    "/help utility : view other commands\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Command catagories:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("help stage")) {
+            String message = "/menu : return to world selection\n" +
+                    "/help debug : quit the program\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Stage Control Commands:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("help debug")) {
+            String message = "/analog : displays/disables the debug analog\n" +
+                    "/show bounds : displays/disables all the nearby bounding boxes\n" +
+                    "/lights out : disable/enable ray casting and remove all shadows\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Debug and Testing Commands:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("help player")) {
+            String message = "/set health amount : sets player’s health to a specific amount\n" +
+                    "/set health max : sets player’s health to max\n" +
+                    "/set speed amount : sets player’s speed to a specific amount\n" +
+                    "/speed+ amount : increase player’s speed by an amount\n" +
+                    "/speed- amount : decrease player’s speed by an amount\n" +
+                    "/tp x y : teleport the player to block x, y (relative position)\n" +
+                    "/tp spawn : teleport the player to spawn point\n" +
+                    "/set-spawn x y : sets the spawn location of the player\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Player Customization Commands:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("help utility")) {
+            String message = "/godmode : fully heals and making the player invulnerable\n" +
+                    "/kill all : exterminate any non-degenerable entities\n" +
+                    "/clear inventory : wipes the inventory\n" +
+                    "/get name amount : get a specific amount of a requested item\n" +
+                    "/spawn name x y : spawns a specific entity at location x, y\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Utility Commands:\n" + message, false, Color.YELLOW));
+            return;
         }
 
         // multi-word commands
@@ -165,10 +217,29 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }
             return;
+        } else if(chars[0].equals("set-spawn")) {
+            try {
+                if(Integer.parseInt(chars[1]) >= 0 && Integer.parseInt(chars[1]) < GameState.worldWidth &&
+                        Integer.parseInt(chars[2]) >= 0 && Integer.parseInt(chars[2]) < GameState.worldHeight) {
+                    GameState.spawnX = Integer.parseInt(chars[1]) * Tile.TILESIZE;
+                    GameState.spawnY = Integer.parseInt(chars[2]) * Tile.TILESIZE;
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawn set to: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
+                } else {
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawn point out of bounds", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
+            }
+            return;
         } else if(chars[0].equals("get")) {
             try {
                 int count = Integer.parseInt(chars[chars.length-1]);
-                String name = chars[1];
+                String name = "";
+                for(int i = 1; i < chars.length - 1; i++) {
+                    name += chars[i] + " ";
+                }
+                name = name.substring(0, name.length()-1);
+                System.out.println(name);
                 if(count >= 0) {
                     Item item = null;
                     for(int i = 0; i < Item.items.length; i++) {
@@ -179,7 +250,7 @@ public class Message {
                         }
                     }
                     if(item != null)
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Added " + Integer.parseInt(chars[2]) + " " + item.name + "(s) to inventory", false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Added " + count + " " + item.name + "(s) to inventory", false, Color.YELLOW));
                     else
                         Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid item name", false, Color.YELLOW));
                 } else {
@@ -213,12 +284,20 @@ public class Message {
 
     public void tick() {
         if(bonusY > 0) {
-            y += 2;
-            bonusY -= 2;
+            y += 3;
+            bonusY -= 3;
         }
         currentDuration += Gdx.graphics.getDeltaTime();
         if(currentDuration > maxDuration) {
-            active = false;
+            fading = true;
+        }
+
+        if(fading) {
+            alpha -= 0.01;
+            if(alpha <= 0) {
+                alpha = 0;
+                active = false;
+            }
         }
 
         if(!active) {
@@ -227,6 +306,6 @@ public class Message {
     }
 
     public void render(SpriteBatch batch) {
-        TextManager.draw(text, (int)x + 10, (int)y + 8, color, 1f, false);
+        TextManager.draw(text, (int)x + 10, (int)y + 8, new Color(color.r, color.g, color.b, alpha), 1f, false);
     }
 }

@@ -23,7 +23,7 @@ public class Tree extends StaticEntity {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        batch.draw(Herbs.tree1, x * PPM - Tile.TILESIZE*2 - Tile.TILESIZE/2, y * PPM - Tile.TILESIZE*2, Tile.TILESIZE*5, height);
+        batch.draw(Herbs.tree1, x * PPM - Tile.TILESIZE*2 - Tile.TILESIZE/2, y * PPM - Tile.TILESIZE*2, 5*Tile.TILESIZE, height*Tile.TILESIZE);
         batch.end();
     }
 
