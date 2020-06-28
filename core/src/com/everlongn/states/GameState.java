@@ -65,7 +65,7 @@ public class GameState extends State {
     ///////////////////
 
     // Cursor Selections //
-    public static boolean attackHover, defaultCursor, aiming, charging;
+    public static boolean attackHover, defaultCursor, aiming, charging, itemHover;
     ///////////////////
 
     // debug //
@@ -94,6 +94,7 @@ public class GameState extends State {
         }
 
         // updating world related fields
+        itemHover = false;
         updateWalls();
         updateTiles();
         rayHandler.update();
@@ -159,6 +160,8 @@ public class GameState extends State {
             Tool.changeCursor(0);
         } else if(charging) {
             Tool.changeCursor(1);
+        } else if(itemHover) {
+            Tool.changeCursor(4);
         } else if(attackHover) {
             Tool.changeCursor(3);
         } else if(aiming) {
@@ -366,7 +369,7 @@ public class GameState extends State {
         batch.begin();
 
         if(ControlCenter.DEBUG) {
-            TextManager.analogDraw("FPS: " + Gdx.graphics.getFramesPerSecond() + "   Max FPS: " + 60,
+            TextManager.analogDraw("Ticks: " + Math.round(Gdx.graphics.getDeltaTime()*1000) + "ms   FPS: " + Gdx.graphics.getFramesPerSecond(),
                     ControlCenter.width - 15, 20, Color.WHITE);
             TextManager.analogDraw("World Size: " + GameState.worldWidth + " by " + GameState.worldHeight,
                     ControlCenter.width - 15, 40, Color.WHITE);

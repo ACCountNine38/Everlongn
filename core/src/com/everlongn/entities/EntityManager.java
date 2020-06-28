@@ -3,6 +3,7 @@ package com.everlongn.entities;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
+import com.everlongn.states.GameState;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,9 @@ public class EntityManager {
         }
         for(int i = 0; i < items.size(); i++) {
             items.get(i).tick();
+            if(items.get(i).bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+                GameState.itemHover = true;
+            }
             if(items.get(i).pickedUp) {
                 items.remove(items.get(i));
                 i--;

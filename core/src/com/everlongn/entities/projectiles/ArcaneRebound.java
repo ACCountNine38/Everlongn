@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -170,6 +171,7 @@ public class ArcaneRebound extends Projectile {
             explosion.start();
         } else {
             numBounce++;
+            Sounds.playSound(Sounds.bounce, (float)(maxBounce - numBounce)/maxBounce);
         }
     }
 }

@@ -25,7 +25,7 @@ public class ControlCenter extends ApplicationAdapter {
 	public static float SCALE = 1f;
 	public static int width, height;
 
-	public static Pixmap cursor1, emptyCursor, aimCursor, attackCursor;
+	public static Pixmap cursor1, emptyCursor, aimCursor, attackCursor, handCursor;
 
 	/*
 	  Box2D world, where you put the physial body into
@@ -60,6 +60,7 @@ public class ControlCenter extends ApplicationAdapter {
 		emptyCursor = new Pixmap(Gdx.files.internal("UI/emptyCursor.png"));
 		aimCursor = new Pixmap(Gdx.files.internal("UI/aimCursor.png"));
 		attackCursor = new Pixmap(Gdx.files.internal("UI/swordCursor.png"));
+		handCursor = new Pixmap(Gdx.files.internal("UI/handCursor.png"));
 		Gdx.graphics.setCursor(Gdx.graphics.newCursor(cursor1, 0, 0));
 	}
 

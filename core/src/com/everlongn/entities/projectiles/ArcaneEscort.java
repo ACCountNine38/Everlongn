@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -172,8 +173,10 @@ public class ArcaneEscort extends Projectile {
     }
 
     public void explode() {
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 10, body.getPosition().y*Constants.PPM+2 - 10,
+                20, 20);
         for(int i = 0; i < EntityManager.entities.size(); i++) {
-            if(EntityManager.entities.get(i).getBound().overlaps(this.getBound()) && EntityManager.entities.get(i) != this) {
+            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
 

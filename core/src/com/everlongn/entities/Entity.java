@@ -62,7 +62,7 @@ public abstract class Entity {
     }
 
     public Rectangle getBound() {
-        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
+        return new Rectangle(body.getPosition().x*Constants.PPM - boundWidth, body.getPosition().y*Constants.PPM - boundHeight, boundWidth*2, boundHeight*2);
     }
 
     public void resetHealth(float amount) {

@@ -2,6 +2,7 @@ package com.everlongn.items;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,6 +56,7 @@ public class Item {
     public float critChance;
     public boolean heavy;
     public float drawSpeed, swingSpeed;
+    public Sound swingSound;
 
     // magic weapon properties
     public float healthConsumption, burst;

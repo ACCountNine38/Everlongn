@@ -1,27 +1,24 @@
 package com.everlongn.entities.creatures;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.everlongn.assets.Entities;
 import com.everlongn.assets.Sounds;
-import com.everlongn.assets.Tiles;
 import com.everlongn.entities.Animation;
 import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.game.ControlCenter;
-import com.everlongn.items.Inventory;
-import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
+import com.everlongn.utils.frameworks.Message;
 
 import static com.everlongn.utils.Constants.PPM;
 
 public class Spiderling extends Creature {
     public Rectangle leapBound;
     public boolean leaping, landed;
-    public float landTimer;
+    public float landTimer, testTimer;
 
     public Spiderling(float x, float y, int size) {
         super(x, y, size, size, 1.5f, 2f + (float)Math.random()*1.5f);
@@ -40,7 +37,7 @@ public class Spiderling extends Creature {
         boundWidth = size - 20;
         boundHeight = height/2;
 
-        setMaxHealth(35 + (width - 100));
+        setMaxHealth(size/3);
         setMaxResistance(5);
 
         enemyList.add("player");
@@ -62,6 +59,11 @@ public class Spiderling extends Creature {
     @Override
     public void tick() {
         if(alive) {
+            testTimer+=Gdx.graphics.getDeltaTime();
+//            if(testTimer > 1) {
+//                GameState.telepathy.messages.add(new Message(0, 0, 100, "" + health, false, Color.YELLOW));
+//                testTimer = 0;
+//            }
             if (target == null) {
                 findTarget();
             } else {
@@ -92,6 +94,7 @@ public class Spiderling extends Creature {
                     if(getBound().overlaps(target.getBound())) {
                         landed = true;
                         leaping = false;
+                        Sounds.playSound(Sounds.basicImpact[(int)(Math.random()*3)], 2f);
                         if(direction == 0)
                             target.body.applyForceToCenter(-550, 150, false);
                         else

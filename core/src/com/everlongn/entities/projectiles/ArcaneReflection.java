@@ -5,7 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -129,8 +131,11 @@ public class ArcaneReflection extends Projectile {
     }
 
     public void explode() {
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 10, body.getPosition().y*Constants.PPM+2 - 10,
+                20, 20);
+
         for(int i = 0; i < EntityManager.entities.size(); i++) {
-            if(EntityManager.entities.get(i).getBound().overlaps(this.getBound()) && EntityManager.entities.get(i) != this) {
+            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
 
@@ -175,6 +180,7 @@ public class ArcaneReflection extends Projectile {
             lifeOut = true;
             movingParticle.getEmitters().get(0).setContinuous(false);
             explosion.start();
+            Sounds.playSound(Sounds.bounce, 0.75f);
         } else {
             if(tile.numAdjacent == 2) {
                 if (tile.left && tile.right && !tile.up && !tile.down) {
@@ -203,6 +209,7 @@ public class ArcaneReflection extends Projectile {
                     numReflection++;
                 }
             }
+            Sounds.playSound(Sounds.bounce, 0.75f);
         }
     }
 }

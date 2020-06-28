@@ -53,6 +53,9 @@ public class Inventory {
     }
 
     public void tick() {
+        if(itemPicking || draggedItem != null) {
+            GameState.itemHover = true;
+        }
         if(Player.inventoryHold && !Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             Player.inventoryHold = false;
         }
@@ -112,6 +115,7 @@ public class Inventory {
     public void generateDescription() {
         if(extended && !itemPicking && draggedItem == null && hoveringItem != null) {
             itemDescription = hoveringItem.name;
+            // GameState.itemHover = true;
             if(hoveringItem instanceof Melee) {
                 Melee item = (Melee)hoveringItem;
                 itemDescription += "\nMelee Damage: " + item.damage;
@@ -209,7 +213,6 @@ public class Inventory {
         // check if the items can be stacked together
         if(inventory[i] != null && inventory[i].id == draggedItem.id && inventory[i].stackable &&
                !inventory[i].isFull() && !inventory[draggedIndex].isFull()) {
-
             if(i == draggedIndex) {
                 return;
             }

@@ -36,7 +36,7 @@ public class Player extends Creature {
     private boolean cameraXStopped, armSwingUp = true;
 
     // global item related variables
-    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset;
+    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset, heavySoundPlayed;
     public static Rectangle itemCollectBound, itemPickBound;
     public static String previousItem = "";
     public static float bonusArcanePercentage = 1, bonusMeleePercentage = 1;
@@ -68,7 +68,6 @@ public class Player extends Creature {
     public boolean landSound;
 
     // Testing variables
-    public PointLight testLight;
 
     public Player(float x, float y, int width, int height, float density) {
         super(x, y, width, height, density, 5);
@@ -111,9 +110,6 @@ public class Player extends Creature {
         shadowExplosion = new ParticleEffect();
         shadowExplosion.load(Gdx.files.internal("particles/shadowExplosion"), Gdx.files.internal(""));
 
-        testLight = new PointLight(GameState.rayHandler, 400, Color.BLACK, 0,
-                body.getPosition().x * Constants.PPM,
-                body.getPosition().y * Constants.PPM + 60);
         arcaneLight = new PointLight(GameState.rayHandler, 400, new Color(0.05f, 0.05f, 0.05f, 1), 0,
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM + 80);
@@ -161,7 +157,7 @@ public class Player extends Creature {
             if (yChangeTimer > 0.01) {
                 fall = false;
                 if(!canJump) {
-                    Sounds.playSound(Sounds.land);
+                    Sounds.playSound(Sounds.steps[0], 0.5f);
                     landSound = false;
                 }
                 canJump = true;
@@ -182,10 +178,9 @@ public class Player extends Creature {
     @Override
     public void tick() {
         checkSpecialCase();
-        if(godMode)
+        if(godMode) {
             health = maxHealth;
-        testLight.setPosition(body.getPosition().x * Constants.PPM,
-                body.getPosition().y * Constants.PPM);
+        }
 
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
@@ -222,9 +217,8 @@ public class Player extends Creature {
         if(legAnimation) {
             legsRun[0].tick(Gdx.graphics.getDeltaTime());
             legsRun[1].tick(Gdx.graphics.getDeltaTime());
-            if(legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58 && canJump) {
-                int stepID = (int)(Math.random()*3);
-                Sounds.playSound(Sounds.steps[stepID]);
+            if((legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58) && canJump) {
+                Sounds.playSound(Sounds.steps[(int)(Math.random()*3)], 0.5f);
             }
             if(!landSound) {
                 landSoundTimer += Gdx.graphics.getDeltaTime();
@@ -303,6 +297,7 @@ public class Player extends Creature {
                 meleeAttack = true;
                 inCombat = true;
                 targetAngle = 155;
+
                 if (aimAngle < 155)
                     armSwingUp = true;
                 else {
@@ -328,12 +323,14 @@ public class Player extends Creature {
             onhold = true;
             GameState.aiming = true;
             meleeAttack = false;
+            heavySoundPlayed = false;
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 inCombat = true;
             }
             checkArcaneCombat();
         } else {
             GameState.defaultCursor = true;
+            heavySoundPlayed = false;
             onhold = false;
         }
         if(!Gdx.input.isButtonPressed(Input.Buttons.LEFT) || GameState.options.active) {
@@ -376,11 +373,17 @@ public class Player extends Creature {
                             aimAngle = -targetAngle;
                             targetAngle = 0;
                             armSwingUp = false;
+                            if(!Inventory.inventory[Inventory.selectedIndex].heavy)
+                                Sounds.playSound(Inventory.inventory[Inventory.selectedIndex].swingSound);
                         }
                     } else {
                         if(Inventory.inventory[Inventory.selectedIndex].heavy) {
                             if ((!fall && !jump) || haltReset) {
                                 aimAngle += Inventory.inventory[Inventory.selectedIndex].swingSpeed;
+                                if(!heavySoundPlayed) {
+                                    Sounds.playSound(Inventory.inventory[Inventory.selectedIndex].swingSound);
+                                    heavySoundPlayed = true;
+                                }
                             } else {
                                 aimAngle += 1;
                                 if(haltForce < 45) {
@@ -395,9 +398,10 @@ public class Player extends Creature {
                             haltReset = false;
                             aimAngle = -targetAngle;
                             meleeRecharge = true;
-                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width, body.getPosition().y*PPM,
+                            Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width - width, body.getPosition().y*PPM,
                                     Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
 
+                            heavySoundPlayed = false;
                             // checks target for attack
                             if(Inventory.inventory[Inventory.selectedIndex].heavy) {
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
@@ -409,21 +413,37 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     -force, 250, false);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
                                         }
                                     }
                                 }
                             } else {
+                                float shortestDistance = -1;
+                                Entity targeted = null;
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
                                     if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
                                         if(EntityManager.entities.get(i) instanceof Creature) {
-                                            Creature c = (Creature)EntityManager.entities.get(i);
-                                            c.stunned = true;
-                                            float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
-                                            EntityManager.entities.get(i).body.applyForceToCenter(
-                                                    -force, 250, false);
+                                            if(targeted == null) {
+                                                targeted = EntityManager.entities.get(i);
+                                                shortestDistance = Math.abs(body.getPosition().x*PPM - EntityManager.entities.get(i).body.getPosition().x*PPM);
+                                            } else {
+                                                float distance = Math.abs(body.getPosition().x*PPM - EntityManager.entities.get(i).body.getPosition().x*PPM);
+                                                if(distance < shortestDistance) {
+                                                    targeted = EntityManager.entities.get(i);
+                                                    shortestDistance = distance;
+                                                }
+                                            }
                                         }
-                                        break;
                                     }
+                                }
+
+                                if(targeted != null) {
+                                    Creature c = (Creature)targeted;
+                                    c.stunned = true;
+                                    float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
+                                    c.body.applyForceToCenter(
+                                            -force, 250, false);
+                                    c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
                                 }
                             }
                             haltForce = 0;
@@ -472,10 +492,16 @@ public class Player extends Creature {
                             aimAngle = targetAngle;
                             targetAngle = 0;
                             armSwingUp = false;
+                            if(!Inventory.inventory[Inventory.selectedIndex].heavy)
+                                Sounds.playSound(Inventory.inventory[Inventory.selectedIndex].swingSound);
                         }
                     } else {
                         if(Inventory.inventory[Inventory.selectedIndex].heavy) {
                             if ((!fall && !jump) || haltReset) {
+                                if(!heavySoundPlayed) {
+                                    Sounds.playSound(Inventory.inventory[Inventory.selectedIndex].swingSound);
+                                    heavySoundPlayed = true;
+                                }
                                 aimAngle -= Inventory.inventory[Inventory.selectedIndex].swingSpeed;
                             } else {
                                 aimAngle -= 1;
@@ -492,6 +518,7 @@ public class Player extends Creature {
                             aimAngle = targetAngle;
                             meleeRecharge = true;
                             haltReset = false;
+                            heavySoundPlayed = false;
 
                             Rectangle attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM,
                                     Inventory.inventory[Inventory.selectedIndex].width + width, Inventory.inventory[Inventory.selectedIndex].height);
@@ -507,10 +534,13 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     force, 250, false);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
                                         }
                                     }
                                 }
                             } else {
+                                float shortestDistance = -1;
+                                Entity targeted = null;
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
                                     if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
                                         if(EntityManager.entities.get(i) instanceof Creature) {
@@ -519,9 +549,27 @@ public class Player extends Creature {
                                             float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     force, 250, false);
+                                            if(targeted == null) {
+                                                targeted = EntityManager.entities.get(i);
+                                                shortestDistance = Math.abs(body.getPosition().x*PPM - EntityManager.entities.get(i).body.getPosition().x*PPM);
+                                            } else {
+                                                float distance = Math.abs(body.getPosition().x*PPM - EntityManager.entities.get(i).body.getPosition().x*PPM);
+                                                if(distance < shortestDistance) {
+                                                    targeted = EntityManager.entities.get(i);
+                                                    shortestDistance = distance;
+                                                }
+                                            }
                                         }
-                                        break;
                                     }
+                                }
+
+                                if(targeted != null) {
+                                    Creature c = (Creature)targeted;
+                                    c.stunned = true;
+                                    float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
+                                    c.body.applyForceToCenter(
+                                            -force, 250, false);
+                                    c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
                                 }
                             }
                             haltForce = 0;
@@ -983,7 +1031,9 @@ public class Player extends Creature {
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 cdr += Gdx.graphics.getDeltaTime();
+
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
+                    Sounds.playSound(Sounds.arcaneRebound, 1.5f);
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     cdr = 0;
                     casted = true;
@@ -1131,7 +1181,7 @@ public class Player extends Creature {
             fall = false;
             canJump = false;
             airborn = true;
-            Sounds.playSound(Sounds.jump);
+            Sounds.playSound(Sounds.steps[0]);
 
             legsJump[0].currentIndex = 0;
             legsJump[1].currentIndex = 0;
