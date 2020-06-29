@@ -3,11 +3,13 @@ package com.everlongn.utils.components;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.assets.Sounds;
 import com.everlongn.states.MenuState;
 import com.everlongn.utils.components.UIComponent;
 
 public class TextButton extends UIComponent {
     public boolean center;
+    public boolean soundCanPlay;
 
     public TextButton(float x, float y, String text, boolean clickable) {
         super(x, y, text, clickable, MenuState.menuFont);
@@ -25,8 +27,13 @@ public class TextButton extends UIComponent {
     public void tick() {
         if(isHovering()) {
             hover = true;
+            if(soundCanPlay) {
+                Sounds.playSound(Sounds.buttonHover);
+                soundCanPlay = false;
+            }
         } else {
             hover = false;
+            soundCanPlay = true;
         }
 
         updatePosition();

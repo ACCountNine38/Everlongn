@@ -8,8 +8,10 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Item;
+import com.everlongn.items.Melee;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
@@ -120,6 +122,36 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Disabling Light Casting", false, Color.YELLOW));
             }
             return;
+        } else if(text.equals("get arcane set")) {
+            GameState.inventory.addItem(Arcane.arcaneCaster.createNew(1));
+            GameState.inventory.addItem(Arcane.arcaneReflection.createNew(1));
+            GameState.inventory.addItem(Arcane.arcaneEscort.createNew(1));
+            GameState.inventory.addItem(Arcane.arcaneRebound.createNew(1));
+            GameState.inventory.addItem(Arcane.arcaneEruption.createNew(1));
+            GameState.inventory.addItem(Arcane.arcaneDevastation.createNew(1));
+            GameState.inventory.addItem(Arcane.shadowStaff.createNew(1));
+
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Arcane Weapon", false, Color.YELLOW));
+
+            return;
+        } else if(text.equals("get melee set")) {
+            GameState.inventory.addItem(Melee.broadSword.createNew(1));
+            GameState.inventory.addItem(Melee.dragondance.createNew(1));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Melee Weapon", false, Color.YELLOW));
+
+            return;
+        } else if(text.equals("get item set")) {
+            GameState.inventory.addItem(Item.log.createNew(Item.log.capacity));
+            GameState.inventory.addItem(Item.stone.createNew(Item.stone.capacity));
+
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each material item", false, Color.YELLOW));
+
+            return;
+        } else if(text.equals("clear text")) {
+            for(int i = 0; i < Telepathy.messages.size(); i++) {
+                Telepathy.messages.get(i).currentDuration = maxDuration;
+            }
+            return;
         } else if(text.equals("help")) {
             String message = "/help stage : view stage control commands\n" +
                     "/help debug : view debug and testing commands\n" +
@@ -130,14 +162,17 @@ public class Message {
             return;
         } else if(text.equals("help stage")) {
             String message = "/menu : return to world selection\n" +
-                    "/help debug : quit the program\n";
+                    "/exit : quit the program\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Stage Control Commands:\n" + message, false, Color.YELLOW));
             return;
         } else if(text.equals("help debug")) {
             String message = "/analog : displays/disables the debug analog\n" +
                     "/show bounds : displays/disables all the nearby bounding boxes\n" +
-                    "/lights out : disable/enable ray casting and remove all shadows\n";
+                    "/lights out : disable/enable ray casting and remove all shadows\n" +
+                    "/get item set : gets one of each existing miscellaneous item\n" +
+                    "/get melee set : gets one of each existing melee weapon\n" +
+                    "/get arcane set : gets one of each existing arcane weapon\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Debug and Testing Commands:\n" + message, false, Color.YELLOW));
             return;
@@ -158,7 +193,8 @@ public class Message {
                     "/kill all : exterminate any non-degenerable entities\n" +
                     "/clear inventory : wipes the inventory\n" +
                     "/get name amount : get a specific amount of a requested item\n" +
-                    "/spawn name x y : spawns a specific entity at location x, y\n";
+                    "/spawn name x y : spawns a specific entity at location x, y\n" +
+                    "/clear text : removes all the messages\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Utility Commands:\n" + message, false, Color.YELLOW));
             return;

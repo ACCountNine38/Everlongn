@@ -20,6 +20,7 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Item;
 import com.everlongn.tiles.EarthTile;
@@ -71,11 +72,14 @@ public class WorldLoadingState extends State {
         GameState.spawnY = GameState.worldHeight - 1 - Integer.parseInt(data[2]);
         maxHealth = Integer.parseInt(data[3]);
         health = Integer.parseInt(data[4]);
+
+        Inventory.inventory = new Item[18];
         for(int i = 5; i < Inventory.inventory.length + 5; i++) {
             if(!data[i].equals("null")) {
                 String[] info = data[i].split(" ");
                 int id = Integer.parseInt(info[0]);
                 int amount = Integer.parseInt(info[1]);
+                System.out.println(id + " " + amount);
                 Inventory.inventory[i - 5] = Item.items[id].createNew(amount);
             }
         }
@@ -201,31 +205,6 @@ public class WorldLoadingState extends State {
                 GameState.herbs[treeX][GameState.worldHeight - 1 - treeY] = new Tree(treeX, (GameState.worldHeight - 1 - treeY), treeHeight);
             }
         }
-//        for(int y=0; y < GameState.worldHeight; y++){
-//            for(int x=0; x < GameState.worldWidth; x++){
-//                int color = herbs.getPixel(x, y);
-//                String hexColor = Integer.toHexString(color);
-//                float red = color >>> 24;
-//                float green = (color & 0xFF0000) >>> 16;
-//                float blue = (color & 0xFF00) >>> 8;
-//                float alpha = color & 0xFF;
-//                if(red == 130 && green == 64 && blue == 12 && !GameState.occupied[x][GameState.worldHeight - 1 - y]) {
-//                    int height = 0;
-//                    int currentIndex = y;
-//                    GameState.occupied[x][GameState.worldHeight - 1 - y] = true;
-//                    while(true) {
-//                        currentIndex--;
-//                        if(findColor(herbs.getPixel(x, currentIndex)).equals(Color.RED)) {
-//                            height++;
-//                            GameState.occupied[x][GameState.worldHeight - 1 - currentIndex] = true;
-//                        } else {
-//                            break;
-//                        }
-//                    }
-//                    GameState.herbs[x][GameState.worldHeight - 1 - y] = new Tree(x, (GameState.worldHeight - 1 - y), (height+2)*Tile.TILESIZE);
-//                }
-//            }
-//        }
     }
 
     public Color findColor(int color) {
@@ -268,6 +247,8 @@ public class WorldLoadingState extends State {
         } else {
             count += delta;
             if(count >= 1f) { // 1 second timer
+                Sounds.gameAmbient.setVolume(1);
+                Sounds.playMusic(Sounds.gameAmbient, 2);
                 stateManager.setState(StateManager.CurrentState.GAME_STATE);
             }
         }

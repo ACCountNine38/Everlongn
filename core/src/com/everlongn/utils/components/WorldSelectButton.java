@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
@@ -15,7 +16,7 @@ import com.everlongn.utils.components.UIComponent;
 public class WorldSelectButton extends UIComponent {
     public String worldName, difficulty, worldSize, date, mode;
     public int seed;
-    public boolean selected;
+    public boolean selected, soundCanPlay;
     public float startY, endY;
     public FileHandle tilemap, wallmap, herbsMap;
 
@@ -53,8 +54,13 @@ public class WorldSelectButton extends UIComponent {
         if(Gdx.input.getY() < startY && Gdx.input.getY() > endY &&
                 Gdx.input.getX() > x && Gdx.input.getX() < x + 530) {
             hover = true;
+            if(soundCanPlay) {
+                Sounds.playSound(Sounds.buttonHover);
+                soundCanPlay = false;
+            }
         } else {
             hover = false;
+            soundCanPlay = true;
         }
     }
 

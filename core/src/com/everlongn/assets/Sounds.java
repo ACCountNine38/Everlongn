@@ -5,10 +5,10 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
 public class Sounds {
-    public static float ambientPercentage, sfxPercentage;
+    public static float ambientPercentage = 1f, sfxPercentage = 1f;
     // music
     public static Music menuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/dreamscape.mp3"));
-    public static Music gameAmbient = Gdx.audio.newMusic(Gdx.files.internal("music/dreamscape.mp3"));
+    public static Music gameAmbient = Gdx.audio.newMusic(Gdx.files.internal("music/dreamAmbient.mp3"));
 
     // player sfx
     public static Sound[] steps = new Sound[3];
@@ -29,6 +29,7 @@ public class Sounds {
     public static Sound shadowShift = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/shadowShift.mp3"));
     public static Sound arcaneEscort = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/arcaneEscort.mp3"));
     public static Sound arcaneRebound = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/arcaneRebound.mp3"));
+    public static Sound arcaneDevastation = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/arcaneDevastation.mp3"));
 
     public static Sound bounce = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/bounce.mp3"));
     public static Sound reflect = Gdx.audio.newSound(Gdx.files.internal("audio/arcane/reflect.mp3"));
@@ -37,12 +38,16 @@ public class Sounds {
     public static Sound bladeSwing1 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/bladeSwing1.mp3"));
     public static Sound bladeSwing2 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/bladeSwing2.mp3"));
     public static Sound bladeSwing3 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/bladeSwing3.mp3"));
-    public static Sound bladeSwing4 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/bladeSwing4.mp3"));
+    public static Sound bladeSwing4 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/bladeSwing4.mp3")); // basic blade
 
     public static Sound swordSwing1 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing1.mp3"));
     public static Sound swordSwing2 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing2.mp3"));
     public static Sound swordSwing3 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing3.mp3"));
     public static Sound swordSwing4 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing4.mp3")); // basic sword
+
+    // utils
+    public static Sound buttonHover = Gdx.audio.newSound(Gdx.files.internal("audio/util/hover.mp3"));
+    public static Sound buttonClick = Gdx.audio.newSound(Gdx.files.internal("audio/util/click.mp3"));
 
     public static void init() {
         steps[0] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step1.mp3"));
@@ -68,6 +73,11 @@ public class Sounds {
 
     public static void playMusic(Music music) {
         music.setVolume(ambientPercentage);
+        music.play();
+    }
+
+    public static void playMusic(Music music, float mod) {
+        music.setVolume(ambientPercentage*mod);
         music.play();
     }
 }

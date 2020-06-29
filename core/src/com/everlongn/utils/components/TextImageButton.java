@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.assets.Sounds;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.components.UIComponent;
 
 public class TextImageButton extends UIComponent {
     public float ey;
     public Texture on, off;
-    public boolean selected;
+    public boolean selected, soundCanPlay;
 
     public TextImageButton(int x, int y, int ey, int width, int height, String text,
                            Texture on, Texture off, BitmapFont font, boolean clickable) {
@@ -28,8 +29,13 @@ public class TextImageButton extends UIComponent {
         if(Gdx.input.getX() > x && Gdx.input.getX() < x + width &&
                 Gdx.input.getY() < ControlCenter.height - y && Gdx.input.getY() > ControlCenter.height - y - height) {
             hover = true;
+            if(soundCanPlay) {
+                Sounds.playSound(Sounds.buttonHover);
+                soundCanPlay = false;
+            }
         } else {
             hover = false;
+            soundCanPlay = true;
         }
         if(y < ey) {
             y += 5;

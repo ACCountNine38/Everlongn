@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
@@ -120,6 +121,7 @@ public class WorldCreationState extends State {
 
 
         if(back.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             WorldSelectionState.reversing = true;
             stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
         }
@@ -136,6 +138,7 @@ public class WorldCreationState extends State {
         }
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             worldSize = "";
             if(large.selected) {
                 worldSize = "Large";
@@ -198,6 +201,7 @@ public class WorldCreationState extends State {
             realmName.focused =  true;
             seed.focused = false;
         } else if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             if(small.hover) {
                 small.selected = true;
                 medium.selected = false;

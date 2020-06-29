@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.utils.BufferUtils;
+import com.everlongn.assets.Sounds;
 import com.everlongn.utils.PerlinNoiseGenerator;
 
 import java.io.File;
@@ -21,8 +22,9 @@ public class SplashState extends State {
     @Override
     public void tick(float delta) {
         count += delta;
-        if(count >= 0.5) { // 2 seconds
+        if(count >= 0.25) { // 2 seconds
             stateManager.setState(StateManager.CurrentState.MENU_STATE);
+            Sounds.playMusic(Sounds.menuMusic, 0.75f);
         }
     }
 

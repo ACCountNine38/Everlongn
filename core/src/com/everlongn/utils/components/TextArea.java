@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
 
@@ -12,7 +13,7 @@ public class TextArea extends UIComponent {
     public boolean focused, numbersOnly;
     public String currentText = "";
     public int limit;
-    public boolean center;
+    public boolean center, soundCanPlay;
 
     public TextArea(float x, float y, float width,
                     String text, boolean clickable, BitmapFont font, boolean numbersOnly, int limit, boolean center) {
@@ -29,8 +30,13 @@ public class TextArea extends UIComponent {
         if (Gdx.input.getX() >= x && Gdx.input.getX() < x + width &&
                 Gdx.input.getY() >= ControlCenter.height-y-height - 20 && Gdx.input.getY() < ControlCenter.height - y) {
             hover = true;
+            if(soundCanPlay) {
+                Sounds.playSound(Sounds.buttonHover);
+                soundCanPlay = false;
+            }
         } else {
             hover = false;
+            soundCanPlay = true;
         }
 
         if(focused) {

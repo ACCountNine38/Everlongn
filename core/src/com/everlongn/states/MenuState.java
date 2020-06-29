@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.utils.components.TextButton;
@@ -49,7 +50,7 @@ public class MenuState extends State {
 
             menu = new World(new Vector2(0, 0), true);
             rayHandler = new RayHandler(menu);
-            rayHandler.setAmbientLight(.6f);
+            rayHandler.setAmbientLight(.65f);
 
             mouseLight = new PointLight(rayHandler, 20, new Color(0.2f, 0.2f, 0.2f, 1f),
                     lightSize, Gdx.input.getX(), ControlCenter.height - Gdx.input.getY());
@@ -72,6 +73,7 @@ public class MenuState extends State {
             buttons[i].tick();
             if(buttons[i].hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 if(i == 0) {
+                    Sounds.playSound(Sounds.buttonClick);
                     buttonPressed = true;
                     for(int j = 0; j < buttons.length; j++) {
                         buttons[j].activate(-50, 13, 3);

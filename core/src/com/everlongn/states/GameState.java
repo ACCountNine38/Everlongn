@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.entities.Entity;
@@ -146,7 +147,12 @@ public class GameState extends State {
         // processing world exit
         if(exiting) {
             screenTransitionAlpha += 0.05f;
-            if(screenTransitionAlpha >= 1f) {
+            if(Sounds.gameAmbient.getVolume() > 0) {
+                Sounds.gameAmbient.setVolume(Sounds.gameAmbient.getVolume() - 0.02f);
+            } else {
+                Sounds.gameAmbient.setVolume(0);
+            }
+            if(screenTransitionAlpha >= 1f && Sounds.gameAmbient.getVolume() == 0) {
                 screenTransitionAlpha = 1f;
                 camera.position.set(ControlCenter.width/2, ControlCenter.height/2, 0);
                 camera.update();
@@ -156,7 +162,11 @@ public class GameState extends State {
                 WorldSelectionState.canSwitch = false;
                 WorldSelectionState.fadeAlpha = 1f;
                 WorldSelectionState.exitFromGame = true;
+
+                Sounds.gameAmbient.stop();
+
                 stateManager.setState(StateManager.CurrentState.WORLD_SELECTION_STATE);
+
                 exiting = false;
             }
         }

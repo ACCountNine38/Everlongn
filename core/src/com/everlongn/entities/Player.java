@@ -3,6 +3,7 @@ package com.everlongn.entities;
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -808,6 +809,7 @@ public class Player extends Creature {
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     cdr = 0;
+                    Sounds.playSound(Sounds.arcaneDevastation, forceCharge/forceMax);
                     casted = true;
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
                     if (direction == 0) {

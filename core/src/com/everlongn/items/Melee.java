@@ -9,15 +9,19 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class Melee extends Weapon {
-    public static Melee barkBane = new Melee(Items.darkBaneR, "Dark Bane", 101, false, false, 100, 100, 60, 60,
-            1, "Its power consumes you...", 26, 26, new TextureRegion[]{Items.darkBaneL, Items.darkBaneR},  new String[]{"shadow"}, 120, 8, 16,0.1f, 550, false, Sounds.bladeSwing1);
+    public static Item barkBane, broadSword, dragondance;
 
-    public static Melee broadSword = new Melee(Items.broadSwordR, "Broad Sword", 102, false, false, 125, 125, 74, 74,
-            1, "A heavy but powerful blade. Hold left while in midair to halt. Sweeping Target",
-            22, 24, new TextureRegion[]{Items.broadSwordL, Items.broadSwordR}, new String[]{"steel"}, 100, 4.5f, 20, 0.2f, 800, true, Sounds.bladeSwing1);
+    public static void init() {
+        barkBane = new Melee(Items.darkBaneR, "Dark Bane", 101, false, false, 100, 100, 60, 60,
+                1, "Its power consumes you...", 26, 26, new TextureRegion[]{Items.darkBaneL, Items.darkBaneR},  new String[]{"shadow"}, 120, 8, 16,0.1f, 550, false, Sounds.bladeSwing1);
 
-    public static Melee dragondance = new Melee(Items.dragonDanceR, "Dragondance", 103, false, false, 150, 150, 80, 80,
-            1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 30, 32, new TextureRegion[]{Items.dragonDanceL, Items.dragonDanceR}, new String[]{"dragon"}, 150, 10, 30, 0.2f, 600, false, Sounds.swordSwing1);
+        broadSword = new Melee(Items.broadSwordR, "Broad Sword", 102, false, false, 125, 125, 74, 74,
+                1, "A heavy but powerful blade. Hold left while in midair to halt. Sweeping Target",
+                22, 24, new TextureRegion[]{Items.broadSwordL, Items.broadSwordR}, new String[]{"steel"}, 100, 4.5f, 20, 0.2f, 800, true, Sounds.bladeSwing1);
+
+        dragondance = new Melee(Items.dragonDanceR, "Dragondance", 103, false, false, 150, 150, 80, 80,
+                1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 30, 32, new TextureRegion[]{Items.dragonDanceL, Items.dragonDanceR}, new String[]{"dragon"}, 150, 10, 30, 0.2f, 600, false, Sounds.swordSwing1);
+    }
 
     public Melee(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,
                  int damage, float drawSpeed, float swingSpeed, float critChance, int force, boolean heavy, Sound swingSound) {
@@ -30,7 +34,7 @@ public class Melee extends Weapon {
         this.heavy = heavy;
         this.swingSound = swingSound;
 
-        items[id] = this;
+        Item.items[id] = this;
     }
 
     public Melee createNew(int count) {

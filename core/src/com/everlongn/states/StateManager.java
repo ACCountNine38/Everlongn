@@ -21,7 +21,7 @@ public class StateManager {
     public StateManager(ControlCenter c) {
         this.c = c;
         this.states = new Stack<State>();
-        this.setState(CurrentState.MENU_STATE); // initial state
+        this.setState(CurrentState.SPLASH); // initial state
     }
 
     public void tick(float delta) {

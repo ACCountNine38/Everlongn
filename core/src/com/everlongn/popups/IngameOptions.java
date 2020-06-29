@@ -21,8 +21,8 @@ public class IngameOptions extends Popup{
     public PercentageBar masterVolume, sfx;
 
     public IngameOptions() {
-        controls = new TextButton(ControlCenter.width/2, ControlCenter.height/2 - 50, "Controls", true, true, MenuState.menuFont);
-        achievements = new TextButton(ControlCenter.width/2, ControlCenter.height/2 - 125, "Achievements", true, true, MenuState.menuFont);
+        controls = new TextButton(ControlCenter.width/2, ControlCenter.height/2 - 50, "Controls", false, true, MenuState.menuFont);
+        achievements = new TextButton(ControlCenter.width/2, ControlCenter.height/2 - 125, "Achievements", false, true, MenuState.menuFont);
         exit = new TextButton(ControlCenter.width/2, ControlCenter.height/2 - 200, "Save and Exit", true, true, MenuState.menuFont);
 
         masterVolume = new PercentageBar(ControlCenter.width/2 - 50, ControlCenter.height/2 + 135, 260, 54, true, 1, 1f);
@@ -48,10 +48,13 @@ public class IngameOptions extends Popup{
             exit.tick();
             masterVolume.tick();
             Sounds.ambientPercentage = masterVolume.selectedPercentage;
+            if(Sounds.gameAmbient.getVolume() != masterVolume.selectedPercentage && !GameState.exiting) {
+                Sounds.gameAmbient.setVolume(masterVolume.selectedPercentage);
+            }
             sfx.tick();
             Sounds.sfxPercentage = sfx.selectedPercentage;
-            if(exit.hover && Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                Tool.changeCursor(1);
+            if(exit.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                Sounds.playSound(Sounds.buttonClick);
                 GameState.save();
                 GameState.exiting = true;
             }

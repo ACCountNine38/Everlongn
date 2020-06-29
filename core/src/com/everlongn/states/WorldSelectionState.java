@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
 import com.everlongn.game.ControlCenter;
@@ -69,8 +70,11 @@ public class WorldSelectionState extends State  implements InputProcessor {
         confirm = new TextButton(ControlCenter.width/2 - (int)(layout.width) - 40, -50,  "Confirm", true);
         cancel = new TextButton(ControlCenter.width/2 + 40, -50,  "Cancel", true);
 
-        worlds = new ArrayList<WorldSelectButton>();
+        worlds = new ArrayList<>();
         loadWorlds();
+
+        Sounds.menuMusic.setVolume(1);
+        Sounds.playMusic(Sounds.menuMusic, 0.75f);
     }
 
     public void loadWorlds() {
@@ -119,7 +123,12 @@ public class WorldSelectionState extends State  implements InputProcessor {
         updateLayers(delta);
         if(transitioning) {
             transitionAlpha += 0.03;
-            if (transitionAlpha >= 1f) {
+            if(Sounds.menuMusic.getVolume()-0.02f > 0) {
+                Sounds.menuMusic.setVolume(Sounds.menuMusic.getVolume() - 0.02f);
+            } else {
+                Sounds.menuMusic.setVolume(0);
+            }
+            if (transitionAlpha >= 1f && Sounds.menuMusic.getVolume() <= 0) {
                 if(StateManager.states.size() >= 1) {
                     StateManager.states.pop().dispose();
                 }
@@ -129,6 +138,8 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 } else if(worlds.get(selectedIndex).difficulty.equals("Insane")) {
                     diff = 2;
                 }
+
+                Sounds.menuMusic.stop();
                 StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, diff, worlds.get(selectedIndex).mode, worlds.get(selectedIndex).worldName));
             }
             return;
@@ -145,6 +156,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
         for(int i = 0; i < worlds.size(); i++) {
             worlds.get(i).tick();
             if(worlds.get(i).hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                // Sounds.playSound(Sounds.buttonClick);
                 if(selectedIndex != -1) {
                     worlds.get(selectedIndex).selected = false;
                 }
@@ -173,12 +185,14 @@ public class WorldSelectionState extends State  implements InputProcessor {
         }
 
         if(back.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             buttonPressed = true;
             switchCondition = 0;
             activateTransition();
         }
 
         if(enterRealm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             if(selectedIndex != -1) {
                 buttonPressed = true;
                 switchCondition = 1;
@@ -187,10 +201,12 @@ public class WorldSelectionState extends State  implements InputProcessor {
         }
 
         if(newRealm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
             stateManager.setState(StateManager.CurrentState.WORLD_CREATION_STATE);
         }
 
         if(deleteRealm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
+            Sounds.playSound(Sounds.buttonClick);
             confirm.activate(ControlCenter.height/2 - 235, 10, 2);
             cancel.activate(ControlCenter.height/2 - 235, 10, 2);
             newRealm.activate(-50, 10, 2);
@@ -204,6 +220,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
         }
 
         if(confirm.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
+            Sounds.playSound(Sounds.buttonClick);
             Gdx.files.external("everlongn/data/" + worlds.get(selectedIndex).worldName + ".txt").delete();
             Gdx.files.external("everlongn/meta/" + worlds.get(selectedIndex).worldName + ".txt").delete();
             Gdx.files.external("everlongn/realms/tile/" + worlds.get(selectedIndex).worldName + ".png").delete();
@@ -224,6 +241,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
         }
 
         if(cancel.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT) && selectedIndex != -1) {
+            Sounds.playSound(Sounds.buttonClick);
             confirm.activate(-50, 10, 2);
             cancel.activate(-50, 10, 2);
             newRealm.activate(ControlCenter.height/2 - 235, 10, 2);
