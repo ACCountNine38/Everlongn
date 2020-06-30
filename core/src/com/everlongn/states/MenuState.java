@@ -50,7 +50,7 @@ public class MenuState extends State {
 
             menu = new World(new Vector2(0, 0), true);
             rayHandler = new RayHandler(menu);
-            rayHandler.setAmbientLight(.65f);
+            rayHandler.setAmbientLight(.75f);
 
             mouseLight = new PointLight(rayHandler, 20, new Color(0.2f, 0.2f, 0.2f, 1f),
                     lightSize, Gdx.input.getX(), ControlCenter.height - Gdx.input.getY());

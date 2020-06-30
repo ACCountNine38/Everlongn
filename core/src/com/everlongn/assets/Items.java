@@ -25,11 +25,11 @@ public class Items {
         stoneSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         stone = new TextureRegion(stoneSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
 
-        omniEssenceSprite = new Texture(Gdx.files.internal("items/omniEssence.png"), true);
+        omniEssenceSprite = new Texture(Gdx.files.internal("items/OmniEssence.png"), true);
         omniEssenceSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         omniEssence = new TextureRegion(omniEssenceSprite, 0, 0, omniEssenceSprite.getWidth(), omniEssenceSprite.getHeight());
 
-        omniCrystalSprite = new Texture(Gdx.files.internal("items/omniCrystal.png"), true);
+        omniCrystalSprite = new Texture(Gdx.files.internal("items/OmniCrystal.png"), true);
         omniCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         omniCrystal = new TextureRegion(omniCrystalSprite, 0, 0, omniCrystalSprite.getWidth(), omniCrystalSprite.getHeight());
 

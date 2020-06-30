@@ -20,7 +20,6 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.items.Arcane;
 import com.everlongn.items.Inventory;
 import com.everlongn.items.Item;
 import com.everlongn.tiles.EarthTile;
@@ -29,9 +28,6 @@ import com.everlongn.utils.Chunk;
 import com.everlongn.walls.EarthWall;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
-import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
 
 public class WorldLoadingState extends State {
     private String currentStage = "Loading...";
@@ -68,8 +64,8 @@ public class WorldLoadingState extends State {
 
         String read = meta.readString();
         String[] data = read.split("\n");
-        GameState.spawnX = Integer.parseInt(data[1]);
-        GameState.spawnY = GameState.worldHeight - 1 - Integer.parseInt(data[2]);
+        GameState.spawnX = Float.parseFloat(data[1]);
+        GameState.spawnY = Float.parseFloat(data[2]);
         maxHealth = Integer.parseInt(data[3]);
         health = Integer.parseInt(data[4]);
 
@@ -121,12 +117,12 @@ public class WorldLoadingState extends State {
     }
 
     public void createPlayer() {
-        GameState.entityManager = new EntityManager(c, new Player(GameState.spawnX*Tile.TILESIZE, GameState.spawnY*Tile.TILESIZE,
+        GameState.entityManager = new EntityManager(c, new Player(GameState.spawnX, GameState.spawnY,
                 25, 110, 2.5f, maxHealth, health));
 
         Vector3 position = ControlCenter.camera.position;
-        position.x = GameState.spawnX*Tile.TILESIZE;
-        position.y = GameState.spawnY*Tile.TILESIZE;
+        position.x = GameState.spawnX;
+        position.y = GameState.spawnY;
         GameState.parallaxBackground.position.set(position);
 
         for(int i = 0; i < BackgroundManager.layers.length; i++) {
@@ -135,8 +131,8 @@ public class WorldLoadingState extends State {
             BackgroundManager.layers[i].y = 800/2 - 25*Tile.TILESIZE + 120;
         }
 
-        ControlCenter.camera.position.x = GameState.spawnX*Tile.TILESIZE; //getting back to scale by *PPM
-        ControlCenter.camera.position.y = GameState.spawnY*Tile.TILESIZE + 200;
+        ControlCenter.camera.position.x = GameState.spawnX; //getting back to scale by *PPM
+        ControlCenter.camera.position.y = GameState.spawnY + 200;
         ControlCenter.camera.update();//397 × 581
     }
 
@@ -205,14 +201,6 @@ public class WorldLoadingState extends State {
                 GameState.herbs[treeX][GameState.worldHeight - 1 - treeY] = new Tree(treeX, (GameState.worldHeight - 1 - treeY), treeHeight);
             }
         }
-    }
-
-    public Color findColor(int color) {
-        int red = color >>> 24;
-        int green = (color & 0xFF0000) >>> 16;
-        int blue = (color & 0xFF00) >>> 8;
-
-        return new Color(red/255, green/255, blue/255, 1);
     }
 
     public void initializing() {

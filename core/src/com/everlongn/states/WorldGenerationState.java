@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
+import com.everlongn.tiles.Tile;
 import com.everlongn.utils.PerlinNoiseGenerator;
 
 import java.text.SimpleDateFormat;
@@ -257,8 +258,8 @@ public class WorldGenerationState extends State {
 
             FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
             meta.writeString("1\n", false); // version
-            meta.writeString(spawnX + "\n", true);
-            meta.writeString(spawnY + "\n", true);
+            meta.writeString((spawnX* Tile.TILESIZE) + "\n", true);
+            meta.writeString(((worldHeight - 1 - spawnY)* Tile.TILESIZE) + "\n", true);
             meta.writeString(100 + "\n", true); // max health
             meta.writeString(100 + "\n", true); // health
             for(int i = 0; i < Inventory.inventory.length; i++) {

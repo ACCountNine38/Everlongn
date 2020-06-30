@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.everlongn.assets.Entities;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
@@ -63,7 +64,8 @@ public class GameState extends State {
     ///////////////////
 
     // Player Related Fields //
-    public static int spawnX, spawnY, xStart, xEnd, yStart, yEnd;
+    public static float spawnX, spawnY;
+    public static int xStart, xEnd, yStart, yEnd;
 
     public static float[] stainAlpha = new float[]{0f, 0f, 0f, 0f, 0f};
     boolean layerFlash;
@@ -107,8 +109,8 @@ public class GameState extends State {
 
         // updating world related fields
         itemHover = false;
-        updateWalls();
         updateTiles();
+        updateWalls();
         rayHandler.update();
         updateStaticEntity();
         entityManager.tick();
@@ -216,8 +218,8 @@ public class GameState extends State {
 
         FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
         meta.writeString("1\n", false);
-        meta.writeString(EntityManager.player.currentTileX + "\n", true);
-        meta.writeString(worldHeight - 1 - EntityManager.player.currentTileY + "\n", true);
+        meta.writeString(EntityManager.player.body.getPosition().x*Tile.TILESIZE + "\n", true);
+        meta.writeString(EntityManager.player.body.getPosition().y*Tile.TILESIZE + "\n", true);
         meta.writeString(Math.round(EntityManager.player.maxHealth) + "\n", true);
         meta.writeString(Math.round(EntityManager.player.health) + "\n", true);
         for(int i = 0; i < Inventory.inventory.length; i++) {
@@ -448,7 +450,15 @@ public class GameState extends State {
                     ControlCenter.width - 15, 20, Color.WHITE);
             TextManager.analogDraw("World Size: " + GameState.worldWidth + " by " + GameState.worldHeight,
                     ControlCenter.width - 15, 40, Color.WHITE);
-            TextManager.analogDraw("Difficulty: " + GameState.difficulty + "   Mode: " + GameState.mode,
+            String diff = "";
+            if(GameState.difficulty == 0) {
+                diff = "Standard";
+            } else if(GameState.difficulty == 1) {
+                diff = "Intense";
+            } else if(GameState.difficulty == 2) {
+                diff = "Insane";
+            }
+            TextManager.analogDraw("Difficulty: " + diff + "   Mode: " + GameState.mode,
                     ControlCenter.width - 15, 60, Color.WHITE);
             TextManager.analogDraw("Velocity X: " + Math.round(EntityManager.player.getBody().getLinearVelocity().x) + "   " +
                             "Velocity Y: " + Math.round(EntityManager.player.getBody().getLinearVelocity().y),

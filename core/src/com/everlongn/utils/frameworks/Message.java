@@ -100,7 +100,7 @@ public class Message {
             return;
         } else if(text.equals("tp spawn")) {
             try {
-                EntityManager.player.body.setTransform(GameState.spawnX, GameState.spawnY, 0);
+                EntityManager.player.body.setTransform(GameState.spawnX/Tile.TILESIZE, GameState.spawnY/Tile.TILESIZE, 0);
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to spawn", false, Color.YELLOW));
             } catch (NumberFormatException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
@@ -301,9 +301,9 @@ public class Message {
                 int xLoc = Integer.parseInt(chars[2]);
                 int yLoc = Integer.parseInt(chars[3]);
                 if(xLoc >= 0 && xLoc < GameState.worldWidth && yLoc >= 0 && yLoc < GameState.worldHeight) {
-                    if(chars[1].equals("Spawnling")) {
+                    if(chars[1].equals("Spider")) {
                         EntityManager.entities.add(new Spiderling(xLoc*Constants.PPM, yLoc*Constants.PPM, (int)(Math.random()*50)+ 75));
-                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawned Spawnling at: " + Integer.parseInt(chars[2]) + ", " + Integer.parseInt(chars[3]), false, Color.YELLOW));
+                        Telepathy.messages.add(new Message((int)x, (int)y , height, "Spawned Spider at: " + Integer.parseInt(chars[2]) + ", " + Integer.parseInt(chars[3]), false, Color.YELLOW));
                     } else
                         Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid entity name", false, Color.YELLOW));
                 } else {
