@@ -53,6 +53,12 @@ public class Inventory {
     }
 
     public void tick() {
+        for(int i = 0; i < inventory.length; i++) {
+            if(inventory[i] != null && inventory[i].count <= 0) {
+                inventory[i] = null;
+            }
+        }
+
         if(itemPicking || draggedItem != null) {
             GameState.itemHover = true;
         }

@@ -80,7 +80,7 @@ public class Spiderling extends Creature {
                 if(paused) {
                     stunned = true;
                     pausedTimer += Gdx.graphics.getDeltaTime();
-                    body.setLinearVelocity(0, 0);
+                    body.setLinearVelocity(0, body.getLinearVelocity().y);
                     if(pausedTimer > 0.5 && health > 0) {
                         stunned = false;
                         paused = false;

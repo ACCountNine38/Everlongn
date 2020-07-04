@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
-    public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite;
+    public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite, tristarSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
         arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite;
 
-    public static TextureRegion log, stone, omniEssence, omniCrystal;
+    public static TextureRegion log, stone, omniEssence, omniCrystal, tristar;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
             arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
             arcaneOblivionL, arcaneOblivionR;
@@ -20,6 +20,10 @@ public class Items {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
         logSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         log = new TextureRegion(logSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
+
+        tristarSprite = new Texture(Gdx.files.internal("throwing/tristar.png"),true);
+        tristarSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        tristar = new TextureRegion(tristarSprite, 0, 0, tristarSprite.getWidth(), tristarSprite.getHeight());
 
         stoneSprite = new Texture(Gdx.files.internal("items/stoneItem.png"), true);
         stoneSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

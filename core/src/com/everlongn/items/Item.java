@@ -30,8 +30,6 @@ public class Item {
 
     public static Item log = new Item(Items.log, "Wood", 0, true, true,
             50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
-    public static Item stone = new Item(Items.stone, "Stone", 1, true, true,
-            35, 35, 44, 44, 32, "looks very durable", 0, 0, null);
 
     //----------
     public float x, y;
@@ -56,9 +54,14 @@ public class Item {
     public float drawSpeed, swingSpeed;
     public Sound swingSound;
 
+    // global ranged properties
+    public float refreshSpeed;
+
     // magic weapon properties
     public float healthConsumption, burst;
-    public float refreshSpeed;
+
+    // ranged weapon properties
+    public float throwingDamage, throwSpeed;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
@@ -107,6 +110,7 @@ public class Item {
         if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && bounds.overlaps(Player.itemPickBound)) {
             collected = true;
         }
+
         if(collected) {
             float sx = Player.itemCollectBound.x/Constants.PPM;
             float sy = Player.itemCollectBound.y/Constants.PPM;

@@ -20,7 +20,7 @@ public class Melee extends Weapon {
                 22, 24, new TextureRegion[]{Items.broadSwordL, Items.broadSwordR}, new String[]{"steel"}, 100, 4.5f, 20, 0.2f, 800, true, Sounds.bladeSwing1);
 
         dragondance = new Melee(Items.dragonDanceR, "Dragondance", 103, false, false, 150, 150, 80, 80,
-                1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 30, 32, new TextureRegion[]{Items.dragonDanceL, Items.dragonDanceR}, new String[]{"dragon"}, 150, 10, 30, 0.2f, 600, false, Sounds.swordSwing1);
+                1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 30, 32, new TextureRegion[]{Items.dragonDanceL, Items.dragonDanceR}, new String[]{"dragon"}, 250, 10, 30, 0.2f, 600, false, Sounds.swordSwing1);
     }
 
     public Melee(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,

@@ -75,7 +75,6 @@ public class WorldLoadingState extends State {
                 String[] info = data[i].split(" ");
                 int id = Integer.parseInt(info[0]);
                 int amount = Integer.parseInt(info[1]);
-                System.out.println(id + " " + amount);
                 Inventory.inventory[i - 5] = Item.items[id].createNew(amount);
             }
         }

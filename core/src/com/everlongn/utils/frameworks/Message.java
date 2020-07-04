@@ -8,10 +8,7 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.items.Arcane;
-import com.everlongn.items.Inventory;
-import com.everlongn.items.Item;
-import com.everlongn.items.Melee;
+import com.everlongn.items.*;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
@@ -142,9 +139,16 @@ public class Message {
             return;
         } else if(text.equals("get item set")) {
             GameState.inventory.addItem(Item.log.createNew(Item.log.capacity));
-            GameState.inventory.addItem(Item.stone.createNew(Item.stone.capacity));
+            GameState.inventory.addItem(Throwing.stone.createNew(Throwing.stone.capacity));
 
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each material item", false, Color.YELLOW));
+
+            return;
+        } else if(text.equals("get throwing set")) {
+            GameState.inventory.addItem(Throwing.stone.createNew(Throwing.stone.capacity));
+            GameState.inventory.addItem(Throwing.triStar.createNew(Throwing.triStar.capacity));
+
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each throwing item", false, Color.YELLOW));
 
             return;
         } else if(text.equals("clear text")) {
@@ -311,6 +315,19 @@ public class Message {
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid spawn data", false, Color.YELLOW));
+            }
+            return;
+        }  else if(chars[0].equals("learn")) {
+            try {
+                String ability = chars[1];
+                if(ability.equals("dash")) {
+                    Player.dash = true;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                } else {
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid learn data", false, Color.YELLOW));
             }
             return;
         }

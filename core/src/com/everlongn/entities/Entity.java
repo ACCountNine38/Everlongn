@@ -33,7 +33,7 @@ public abstract class Entity {
         // default values
         maxHealth = 100;
         health = 100;
-        maxResistance = 10;
+        maxResistance = 5;
         resistance = maxResistance;
         name = "UNNAMED";
         team = -1;
