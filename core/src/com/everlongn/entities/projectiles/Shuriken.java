@@ -88,7 +88,7 @@ public class Shuriken extends Projectile {
         } else {
             checkPickedUp();
             if(!collected)
-                body.setLinearVelocity(0, body.getLinearVelocity().y);
+                body.setLinearVelocity(0, 0);
             if(!exploded) {
                 explosionTimer += Gdx.graphics.getDeltaTime();
                 if(explosionTimer > 0.01) {

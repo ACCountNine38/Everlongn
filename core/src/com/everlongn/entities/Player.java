@@ -66,8 +66,12 @@ public class Player extends Creature {
     public boolean landSound;
 
     // Abilities
-    public static boolean dash, dashing;
-    public static float dashTimer;
+    public static boolean dash, dashing, canDash;
+    public static float dashTimer, dashResetTimer;
+    public static int dashDirection;
+
+    // Passives
+    public static boolean duoToss, triToss, glaiveLord;
 
     // Testing variables
 
@@ -426,26 +430,50 @@ public class Player extends Creature {
 
                         if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
                                 aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
-                            Inventory.inventory[Inventory.selectedIndex].count--;
                             thrown = true;
+                            int amount = 0;
+                            if(glaiveLord) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 5) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 5;
+                                }
+                            } else if(triToss) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 3) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 3;
+                                }
+                            } else if(duoToss) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 2) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 2;
+                                }
+                            } else {
+                                amount = 1;
+                            }
 
+                            Inventory.inventory[Inventory.selectedIndex].count-=amount;
                             findShootAngle(xAim, yAim);
 
-                            Projectile temp = null;
-                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                temp = new TriStar(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            for(int i = 0; i < amount; i++) {
+                                Projectile temp = null;
+                                if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
+                                    temp = new TriStar(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                                    temp = new Rock(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                                    Sounds.playSound(Sounds.shurikenThrow);
+                                    temp = new Shuriken(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                EntityManager.projectiles.add(temp);
                             }
-                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                                temp = new Rock(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                            }
-                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
-                                Sounds.playSound(Sounds.shurikenThrow);
-                                temp = new Shuriken(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                            }
-                            EntityManager.projectiles.add(temp);
                         }
                     }
                 }
@@ -517,26 +545,52 @@ public class Player extends Creature {
 
                         if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
                                 aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
-                            Inventory.inventory[Inventory.selectedIndex].count--;
+
                             thrown = true;
 
+                            int amount = 0;
+                            if(glaiveLord) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 5) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 5;
+                                }
+                            } else if(triToss) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 3) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 3;
+                                }
+                            } else if(duoToss) {
+                                if(Inventory.inventory[Inventory.selectedIndex].count < 2) {
+                                    amount = Inventory.inventory[Inventory.selectedIndex].count;
+                                } else {
+                                    amount = 2;
+                                }
+                            } else {
+                                amount = 1;
+                            }
+
+                            Inventory.inventory[Inventory.selectedIndex].count-=amount;
                             findShootAngle(xAim, yAim);
 
-                            Projectile temp = null;
-                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                temp = new TriStar(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            for(int i = 0; i < amount; i++) {
+                                Projectile temp = null;
+                                if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
+                                    temp = new TriStar(throwX, throwY,
+                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                                    temp = new Rock(throwX, throwY,
+                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                                    Sounds.playSound(Sounds.shurikenThrow);
+                                    temp = new Shuriken(throwX, throwY,
+                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                EntityManager.projectiles.add(temp);
                             }
-                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                                temp = new Rock(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                            }
-                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
-                                Sounds.playSound(Sounds.shurikenThrow);
-                                temp = new Shuriken(throwX, throwY,
-                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                            }
-                            EntityManager.projectiles.add(temp);
                         }
                     }
                 }
@@ -1368,6 +1422,33 @@ public class Player extends Creature {
 //            int yForce = 100;
 //            EntityManager.entities.add(new Shadow(body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
 //        }
+        if(dash) {;
+            if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+                canDash = true;
+                dashDirection = 0;
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+                canDash = true;
+                dashDirection = 1;
+            }
+            if(canDash) {
+                dashResetTimer += Gdx.graphics.getDeltaTime();
+                if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer <= 0.25f && dashDirection == 0) {
+                    body.setLinearVelocity(-50, -2);
+                    dashing = true;
+                    canDash = false;
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer <= 0.25f && dashDirection == 1) {
+                    body.setLinearVelocity(50, -2);
+                    dashing = true;
+                    canDash = false;
+                }
+                if(dashResetTimer > 0.25f) {
+                    canDash = false;
+                }
+            }
+        }
+
         if(Gdx.input.isKeyPressed(Input.Keys.A) && !dashing) {
             horizontalForce = -1;
             currentSpeed += 0.2f;
@@ -1398,15 +1479,6 @@ public class Player extends Creature {
             legsJump[1].currentIndex = 0;
             legsRun[0].currentIndex = 0;
             legsRun[1].currentIndex = 0;
-        }
-
-        if(dash && Gdx.input.isKeyJustPressed(Input.Keys.F) && !dashing) {
-            dashing = true;
-            if(direction == 0) {
-                body.setLinearVelocity(-50, -2);
-            } else {
-                body.setLinearVelocity(50, -2);
-            }
         }
 
         if(dashing) {

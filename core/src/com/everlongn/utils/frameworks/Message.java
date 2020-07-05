@@ -279,7 +279,6 @@ public class Message {
                     name += chars[i] + " ";
                 }
                 name = name.substring(0, name.length()-1);
-                System.out.println(name);
                 if(count >= 0) {
                     Item item = null;
                     for(int i = 0; i < Item.items.length; i++) {
@@ -319,10 +318,24 @@ public class Message {
             return;
         }  else if(chars[0].equals("learn")) {
             try {
-                String ability = chars[1];
+                String ability = "";
+                for(int i = 1; i < chars.length; i++) {
+                    ability += chars[i] + " ";
+                }
+                ability = ability.substring(0, ability.length()-1);
+
                 if(ability.equals("dash")) {
                     Player.dash = true;
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("Duo-toss")) {
+                    Player.duoToss = true;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("Tri-toss")) {
+                    Player.triToss = true;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("Glaive Lord")) {
+                    Player.glaiveLord = true;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have evolved to become a " + chars[1], false, Color.YELLOW));
                 } else {
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
                 }

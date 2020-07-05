@@ -35,8 +35,8 @@ public class TriStar extends Projectile {
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
 
-        float forceX = (float)(Math.abs(Math.sin(angle)*6));
-        float forceY = (float)(Math.cos(angle)*6);
+        float forceX = (float)(Math.abs(Math.sin(angle)*8));
+        float forceY = (float)(Math.cos(angle)*5);
 
         if(direction == 0) {
             moveByForce(new Vector2(-forceX, -forceY));
