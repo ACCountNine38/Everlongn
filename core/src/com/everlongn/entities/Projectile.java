@@ -3,17 +3,20 @@ package com.everlongn.entities;
 import box2dLight.PointLight;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.game.ControlCenter;
 
 public abstract class Projectile extends Entity {
     public float speedX, speedY, explosionTimer, damage;
-    public boolean deactivate, lifeOut, exploded;
+    public boolean deactivate, lifeOut, exploded, pickedUp;
 
     // light effects
     public float maxMovingRadius, maxExplodingRadius, currentRadius;
     public boolean maxReached;
     public PointLight light;
+
+    public Rectangle throwBound;
 
     public Projectile(float x, float y, int width, int height, float density) {
         super(x, y, width, height, density);

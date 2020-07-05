@@ -7,13 +7,15 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class Throwing extends Weapon {
-    public static Throwing stone, triStar;
+    public static Throwing stone, triStar, shuriken;
 
     public static void init() {
         stone = new Throwing(Items.stone, "Rock", 300, true, true,
-                26, 26, 44, 44, 32, "looks very durable", 1, 10, new TextureRegion[]{Items.stone, Items.stone}, new String[]{"Arcane", "Air"}, 5f, 15f, 20);
-        triStar = new Throwing(Items.tristar, "Tristar", 301, true, true,
-                34, 34, 50, 50, 128, "sharp", 1, 10, new TextureRegion[]{Items.tristar, Items.tristar}, new String[]{"Arcane", "Wind"}, 10f, 20f, 35);
+                26, 26, 44, 44, 32, "looks very durable", 1, 10, new TextureRegion[]{Items.stone, Items.stone}, new String[]{"Throwing", "Earth"}, 5f, 15f, 20);
+        triStar = new Throwing(Items.tristar, "Shuriken", 301, true, true,
+                34, 34, 50, 50, 128, "sharp", 1, 10, new TextureRegion[]{Items.tristar, Items.tristar}, new String[]{"Throwing", "Wind"}, 10f, 20f, 28);
+        shuriken = new Throwing(Items.shuriken, "Shredder", 302, true, false,
+                64, 64, 60, 60, 2, "sharp", 19, 26, new TextureRegion[]{Items.shuriken, Items.shuriken}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 80);
     }
 
     public Throwing(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,

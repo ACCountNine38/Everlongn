@@ -45,6 +45,11 @@ public class Sounds {
     public static Sound swordSwing3 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing3.mp3"));
     public static Sound swordSwing4 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing4.mp3")); // basic sword
 
+    // throwing sfx
+    public static Sound shurikenThrow = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenThrow.mp3")); // basic sword
+    public static Sound shurikenLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenLand.mp3")); // basic sword
+    public static Sound shurikenSlice = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/slice.mp3")); // basic sword
+
     // utils
     public static Sound buttonHover = Gdx.audio.newSound(Gdx.files.internal("audio/util/hover.mp3"));
     public static Sound buttonClick = Gdx.audio.newSound(Gdx.files.internal("audio/util/click.mp3"));

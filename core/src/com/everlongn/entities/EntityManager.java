@@ -12,13 +12,15 @@ public class EntityManager {
 
     public static ArrayList<Entity> entities;
     public static ArrayList<Item> items;
+    public static ArrayList<Projectile> projectiles;
     public static Player player;
 
     public EntityManager(ControlCenter c, Player player) {
         this.c = c;
 
-        entities = new ArrayList<Entity>();
-        items = new ArrayList<Item>();
+        entities = new ArrayList<>();
+        items = new ArrayList<>();
+        projectiles = new ArrayList<>();
 
         this.player = player;
         entities.add(this.player);
@@ -42,6 +44,16 @@ public class EntityManager {
                 i--;
             }
         }
+        for(int i = 0; i < projectiles.size(); i++) {
+            projectiles.get(i).tick();
+            if(projectiles.get(i).throwBound.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+                GameState.itemHover = true;
+            }
+            if(projectiles.get(i).pickedUp || !projectiles.get(i).active) {
+                projectiles.remove(projectiles.get(i));
+                i--;
+            }
+        }
     }
 
     public void render(SpriteBatch batch) {
@@ -50,6 +62,9 @@ public class EntityManager {
         }
         for(int i = 0; i < items.size(); i++) {
             items.get(i).render(batch);
+        }
+        for(int i = 0; i < projectiles.size(); i++) {
+            projectiles.get(i).render(batch);
         }
     }
 }

@@ -18,7 +18,6 @@ import com.everlongn.utils.Tool;
 public class Rock extends Projectile {
     //public ParticleEffect explosion;
     public int direction;
-
     public float life, angle, rotation;
 
     public Rock(float x, float y, float density, int direction, float angle, float damage) {
@@ -39,6 +38,7 @@ public class Rock extends Projectile {
             moveByForce(new Vector2(forceX, -forceY));
         }
 
+        throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
 //        explosion = new ParticleEffect();
 //        explosion.load(Gdx.files.internal("particles/bounceExplosion"), Gdx.files.internal(""));
 //        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);

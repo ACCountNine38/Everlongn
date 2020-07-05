@@ -432,7 +432,7 @@ public class Player extends Creature {
                             findShootAngle(xAim, yAim);
 
                             Projectile temp = null;
-                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Tristar")) {
+                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
                                 temp = new TriStar(throwX, throwY,
                                         1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                             }
@@ -440,7 +440,12 @@ public class Player extends Creature {
                                 temp = new Rock(throwX, throwY,
                                         1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                             }
-                            EntityManager.entities.add(temp);
+                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                                Sounds.playSound(Sounds.shurikenThrow);
+                                temp = new Shuriken(throwX, throwY,
+                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            }
+                            EntityManager.projectiles.add(temp);
                         }
                     }
                 }
@@ -518,7 +523,7 @@ public class Player extends Creature {
                             findShootAngle(xAim, yAim);
 
                             Projectile temp = null;
-                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Tristar")) {
+                            if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
                                 temp = new TriStar(throwX, throwY,
                                         1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                             }
@@ -526,7 +531,12 @@ public class Player extends Creature {
                                 temp = new Rock(throwX, throwY,
                                         1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                             }
-                            EntityManager.entities.add(temp);
+                            else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                                Sounds.playSound(Sounds.shurikenThrow);
+                                temp = new Shuriken(throwX, throwY,
+                                        1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            }
+                            EntityManager.projectiles.add(temp);
                         }
                     }
                 }

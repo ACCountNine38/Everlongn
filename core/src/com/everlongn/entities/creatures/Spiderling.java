@@ -54,18 +54,18 @@ public class Spiderling extends Creature {
         jumpForce = size*7;
 
         sightHeight = 200;
-        sightWidth = 600;
+        sightWidth = 800;
         sightBound = new Rectangle(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2, sightWidth, sightHeight);
 
         // unique variables
-        leapBound = new Rectangle(body.getPosition().x*Constants.PPM - 200, body.getPosition().y*Constants.PPM - 200, 400, 400);
+        leapBound = new Rectangle(body.getPosition().x*Constants.PPM - 180 + width/2, body.getPosition().y*Constants.PPM - 180, 360, 360);
     }
 
     @Override
     public void tick() {
         if(alive) {
             if(status.equals("chase")) {
-                sightWidth = 1500;
+                sightWidth = 1600;
                 sightHeight = 450;
             } else {
                 sightWidth = 800;
@@ -96,7 +96,7 @@ public class Spiderling extends Creature {
                        leaping = false;
                     }
                 } else if(!leaping) {
-                    leapBound.setPosition(body.getPosition().x * Constants.PPM - 200, body.getPosition().y * Constants.PPM - 200);
+                    leapBound.setPosition(body.getPosition().x * Constants.PPM - 180 + width/2, body.getPosition().y * Constants.PPM - 180);
                     chase();
                     if (leapBound.contains(target.body.getPosition().x*Constants.PPM, target.body.getPosition().y*Constants.PPM)) {
                         paused = true;
@@ -167,7 +167,7 @@ public class Spiderling extends Creature {
     public void render(SpriteBatch batch) {
         batch.begin();
         if(alive) {
-            //batch.draw(Tiles.blackTile, sightBound.x, sightBound.y, sightBound.width, sightBound.height);
+            //batch.draw(Tiles.blackTile, leapBound.x, leapBound.y, leapBound.width, leapBound.height);
             if(leaping)
                 batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
             else if(getCurrentFrame() != null)
