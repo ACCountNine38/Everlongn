@@ -1422,29 +1422,35 @@ public class Player extends Creature {
 //            int yForce = 100;
 //            EntityManager.entities.add(new Shadow(body.getPosition().x * PPM + width/2, body.getPosition().y * PPM, this, direction, xForce, yForce, false));
 //        }
-        if(dash) {;
-            if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-                canDash = true;
-                dashDirection = 0;
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-                canDash = true;
-                dashDirection = 1;
-            }
+        if(dash) {
             if(canDash) {
                 dashResetTimer += Gdx.graphics.getDeltaTime();
-                if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer <= 0.25f && dashDirection == 0) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 0) {
                     body.setLinearVelocity(-50, -2);
                     dashing = true;
                     canDash = false;
+                    dashResetTimer = 0;
                 }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer <= 0.25f && dashDirection == 1) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 1) {
                     body.setLinearVelocity(50, -2);
                     dashing = true;
                     canDash = false;
+                    dashResetTimer = 0;
                 }
                 if(dashResetTimer > 0.25f) {
                     canDash = false;
+                    dashResetTimer = 0;
+                }
+            } else {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+                    canDash = true;
+                    dashDirection = 0;
+                    dashResetTimer = 0;
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+                    canDash = true;
+                    dashDirection = 1;
+                    dashResetTimer = 0;
                 }
             }
         }

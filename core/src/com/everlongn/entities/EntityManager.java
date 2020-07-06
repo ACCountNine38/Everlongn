@@ -1,5 +1,7 @@
 package com.everlongn.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -13,6 +15,7 @@ public class EntityManager {
     public static ArrayList<Entity> entities;
     public static ArrayList<Item> items;
     public static ArrayList<Projectile> projectiles;
+    public static ArrayList<ParticleEffect> particles;
     public static Player player;
 
     public EntityManager(ControlCenter c, Player player) {
@@ -54,6 +57,14 @@ public class EntityManager {
                 i--;
             }
         }
+        for(int i = 0; i < particles.size(); i++) {
+            particles.get(i).update(Gdx.graphics.getDeltaTime());
+            if(particles.get(i).isComplete()) {
+                particles.get(i).dispose();
+                particles.remove(particles.get(i));
+                i--;
+            }
+        }
     }
 
     public void render(SpriteBatch batch) {
@@ -65,6 +76,9 @@ public class EntityManager {
         }
         for(int i = 0; i < projectiles.size(); i++) {
             projectiles.get(i).render(batch);
+        }
+        for(int i = 0; i < particles.size(); i++) {
+            particles.get(i).draw(batch);
         }
     }
 }
