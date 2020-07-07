@@ -54,8 +54,8 @@ timeline0: 0.0
 - Spawn Height - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 114.0
-highMax: 114.0
+highMin: 100.0
+highMax: 100.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -105,8 +105,8 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 150.0
-highMax: 150.0
+highMin: 275.0
+highMax: 275.0
 relative: false
 scalingCount: 1
 scaling0: 1.0

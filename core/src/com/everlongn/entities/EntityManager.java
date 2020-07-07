@@ -24,6 +24,7 @@ public class EntityManager {
         entities = new ArrayList<>();
         items = new ArrayList<>();
         projectiles = new ArrayList<>();
+        particles = new ArrayList<>();
 
         this.player = player;
         entities.add(this.player);
@@ -58,7 +59,7 @@ public class EntityManager {
             }
         }
         for(int i = 0; i < particles.size(); i++) {
-            particles.get(i).update(Gdx.graphics.getDeltaTime());
+            particles.get(i).update(ControlCenter.delta);
             if(particles.get(i).isComplete()) {
                 particles.get(i).dispose();
                 particles.remove(particles.get(i));
@@ -78,7 +79,9 @@ public class EntityManager {
             projectiles.get(i).render(batch);
         }
         for(int i = 0; i < particles.size(); i++) {
+            batch.begin();
             particles.get(i).draw(batch);
+            batch.end();
         }
     }
 }

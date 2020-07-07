@@ -9,6 +9,7 @@ import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.*;
+import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
@@ -90,7 +91,7 @@ public class Shuriken extends Projectile {
             if(!collected)
                 body.setLinearVelocity(0, 0);
             if(!exploded) {
-                explosionTimer += Gdx.graphics.getDeltaTime();
+                explosionTimer += ControlCenter.delta;
                 if(explosionTimer > 0.01) {
                     explode();
                     exploded = true;

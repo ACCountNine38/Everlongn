@@ -446,7 +446,7 @@ public class GameState extends State {
         batch.begin();
 
         if(ControlCenter.DEBUG) {
-            TextManager.analogDraw("Ticks: " + Math.round(Gdx.graphics.getDeltaTime()*1000) + "ms   FPS: " + Gdx.graphics.getFramesPerSecond(),
+            TextManager.analogDraw("Ticks: " + Math.round(ControlCenter.delta*1000) + "ms   FPS: " + Gdx.graphics.getFramesPerSecond(),
                     ControlCenter.width - 15, 20, Color.WHITE);
             TextManager.analogDraw("World Size: " + GameState.worldWidth + " by " + GameState.worldHeight,
                     ControlCenter.width - 15, 40, Color.WHITE);

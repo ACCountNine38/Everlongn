@@ -39,6 +39,8 @@ public class ControlCenter extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private StateManager stateManager;
 
+	public static float delta;
+
 	public ControlCenter(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -73,7 +75,8 @@ public class ControlCenter extends ApplicationAdapter {
 	// note (0, 0) is now at bottom left not top left
 	@Override
 	public void render () {
-		stateManager.tick(Gdx.graphics.getDeltaTime());
+		delta = Gdx.graphics.getDeltaTime();
+		stateManager.tick(delta);
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		// allows the use of alpha channel

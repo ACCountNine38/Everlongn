@@ -327,10 +327,10 @@ public class Message {
                 if(ability.equals("dash")) {
                     Player.dash = true;
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
-                } else if(ability.equals("Duo-toss")) {
+                } else if(ability.equals("duo-toss")) {
                     Player.duoToss = true;
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
-                } else if(ability.equals("Tri-toss")) {
+                } else if(ability.equals("tri-toss")) {
                     Player.triToss = true;
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
                 } else if(ability.equals("Glaive Lord")) {

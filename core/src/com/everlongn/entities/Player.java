@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.creatures.Spiderling;
@@ -69,6 +70,7 @@ public class Player extends Creature {
     public static boolean dash, dashing, canDash;
     public static float dashTimer, dashResetTimer;
     public static int dashDirection;
+    public ParticleEffect dashEffect = null;
 
     // Passives
     public static boolean duoToss, triToss, glaiveLord;
@@ -148,7 +150,7 @@ public class Player extends Creature {
 
         // airborn check
         if(airborn) {
-            airbornTimer += Gdx.graphics.getDeltaTime();
+            airbornTimer += ControlCenter.delta;
             if(airbornTimer > 0.25) {
                 airborn = false;
             }
@@ -161,7 +163,7 @@ public class Player extends Creature {
 
         // check jump timer
         if(body.getLinearVelocity().y > previousVelY - 0.01 && body.getLinearVelocity().y < previousVelY + 0.01) {
-            yChangeTimer += Gdx.graphics.getDeltaTime();
+            yChangeTimer += ControlCenter.delta;
             if (yChangeTimer > 0.01) {
                 fall = false;
                 if(!canJump) {
@@ -223,13 +225,13 @@ public class Player extends Creature {
 
     public void animationUpdate() {
         if(legAnimation) {
-            legsRun[0].tick(Gdx.graphics.getDeltaTime());
-            legsRun[1].tick(Gdx.graphics.getDeltaTime());
+            legsRun[0].tick(ControlCenter.delta);
+            legsRun[1].tick(ControlCenter.delta);
             if((legsRun[direction].currentIndex == 29 || legsRun[direction].currentIndex == 58) && canJump) {
                 Sounds.playSound(Sounds.steps[(int)(Math.random()*3)], 0.5f);
             }
             if(!landSound) {
-                landSoundTimer += Gdx.graphics.getDeltaTime();
+                landSoundTimer += ControlCenter.delta;
                 if (landSoundTimer >= 0.5f) {
                     landSoundTimer = 0;
                     landSound = true;
@@ -238,46 +240,46 @@ public class Player extends Creature {
         }
 
         if(jumpAnimation) {
-            legsJump[0].tick(Gdx.graphics.getDeltaTime());
-            legsJump[1].tick(Gdx.graphics.getDeltaTime());
+            legsJump[0].tick(ControlCenter.delta);
+            legsJump[1].tick(ControlCenter.delta);
         }
 
         if(armAnimation) {
-            armsRun[0].tick(Gdx.graphics.getDeltaTime());
-            armsRun[1].tick(Gdx.graphics.getDeltaTime());
+            armsRun[0].tick(ControlCenter.delta);
+            armsRun[1].tick(ControlCenter.delta);
         }
 
         if(bodyAnimation) {
-            chestRun[0].tick(Gdx.graphics.getDeltaTime());
-            chestRun[1].tick(Gdx.graphics.getDeltaTime());
+            chestRun[0].tick(ControlCenter.delta);
+            chestRun[1].tick(ControlCenter.delta);
         }
 
         if(headAnimation) {
-            headRun[0].tick(Gdx.graphics.getDeltaTime());
-            headRun[1].tick(Gdx.graphics.getDeltaTime());
+            headRun[0].tick(ControlCenter.delta);
+            headRun[1].tick(ControlCenter.delta);
         }
 
         if(eruptionHold)
-            eruptionCharge.update(Gdx.graphics.getDeltaTime());
+            eruptionCharge.update(ControlCenter.delta);
         else {
             if(!eruptionCharge.isComplete()) {
-                eruptionCharge.update(Gdx.graphics.getDeltaTime());
+                eruptionCharge.update(ControlCenter.delta);
             }
         }
 
         if(shadowHold)
-            shadowCharge.update(Gdx.graphics.getDeltaTime());
+            shadowCharge.update(ControlCenter.delta);
         else {
             if(!shadowCharge.isComplete()) {
-                shadowCharge.update(Gdx.graphics.getDeltaTime());
+                shadowCharge.update(ControlCenter.delta);
             }
         }
 
         if(blink) {
-            shadowExplosion.update(Gdx.graphics.getDeltaTime());
+            shadowExplosion.update(ControlCenter.delta);
         } else {
             if(!shadowExplosion.isComplete()) {
-                shadowExplosion.update(Gdx.graphics.getDeltaTime());
+                shadowExplosion.update(ControlCenter.delta);
             }
         }
     }
@@ -472,6 +474,14 @@ public class Player extends Creature {
                                     temp = new Shuriken(throwX, throwY,
                                             1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
+                                    temp = new Dagger(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                                    temp = new ThrowKnife(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
                                 EntityManager.projectiles.add(temp);
                             }
                         }
@@ -588,6 +598,14 @@ public class Player extends Creature {
                                     Sounds.playSound(Sounds.shurikenThrow);
                                     temp = new Shuriken(throwX, throwY,
                                             1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
+                                    temp = new Dagger(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                }
+                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                                    temp = new ThrowKnife(throwX, throwY,
+                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 EntityManager.projectiles.add(temp);
                             }
@@ -869,10 +887,10 @@ public class Player extends Creature {
                 if(forceCharge < forceMax) {
                     forceCharge += 0.08;
                 }
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
 
-                particleTimer+=Gdx.graphics.getDeltaTime();
-                health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption * Gdx.graphics.getDeltaTime();
+                particleTimer+=ControlCenter.delta;
+                health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption * ControlCenter.delta;
                 if(particleTimer > 0.25) {
                     shadowHold = true;
                     shadowCharge.start();
@@ -975,7 +993,7 @@ public class Player extends Creature {
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     cdr = 0;
@@ -1038,7 +1056,7 @@ public class Player extends Creature {
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
                 GameState.charging = true;
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
 
                 if(!previousItem.equals("Devastation")) {
                     previousItem = "Devastation";
@@ -1112,7 +1130,7 @@ public class Player extends Creature {
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
@@ -1181,9 +1199,9 @@ public class Player extends Creature {
                 if(forceCharge < forceMax) {
                     forceCharge += 0.5;
                 }
-                cdr += Gdx.graphics.getDeltaTime();
-                health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption*Gdx.graphics.getDeltaTime();
-                particleTimer+=Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
+                health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption*ControlCenter.delta;
+                particleTimer+=ControlCenter.delta;
                 if(particleTimer > 0.25) {
                     eruptionHold = true;
                     eruptionCharge.start();
@@ -1276,7 +1294,7 @@ public class Player extends Creature {
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
 
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     Sounds.playSound(Sounds.arcaneRebound, 1.5f);
@@ -1337,7 +1355,7 @@ public class Player extends Creature {
                         (body.getPosition().y * PPM + 46 + 23) + yAim);
             }
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !GameState.options.active) {
-                cdr += Gdx.graphics.getDeltaTime();
+                cdr += ControlCenter.delta;
                 if(cdr >= Inventory.inventory[Inventory.selectedIndex].refreshSpeed) {
                     Sounds.playSound(Sounds.arcaneEscort);
                     health -= Inventory.inventory[Inventory.selectedIndex].healthConsumption;
@@ -1424,18 +1442,28 @@ public class Player extends Creature {
 //        }
         if(dash) {
             if(canDash) {
-                dashResetTimer += Gdx.graphics.getDeltaTime();
+                dashResetTimer += ControlCenter.delta;
                 if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 0) {
                     body.setLinearVelocity(-50, -2);
                     dashing = true;
                     canDash = false;
                     dashResetTimer = 0;
+                    dashEffect = new ParticleEffect();
+                    dashEffect.load(Gdx.files.internal("particles/dashLeft"), Gdx.files.internal(""));
+                    dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+                    dashEffect.start();
+                    //EntityManager.particles.add(dashEffect);
                 }
                 if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 1) {
                     body.setLinearVelocity(50, -2);
                     dashing = true;
                     canDash = false;
                     dashResetTimer = 0;
+                    dashEffect = new ParticleEffect();
+                    dashEffect.load(Gdx.files.internal("particles/dashRight"), Gdx.files.internal(""));
+                    dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+                    dashEffect.start();
+                    //EntityManager.particles.add(dashEffect);
                 }
                 if(dashResetTimer > 0.25f) {
                     canDash = false;
@@ -1452,6 +1480,15 @@ public class Player extends Creature {
                     dashDirection = 1;
                     dashResetTimer = 0;
                 }
+            }
+        }
+
+        if(dashEffect != null && !dashEffect.isComplete()) {
+            dashEffect.update(ControlCenter.delta);
+            dashEffect.setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            if(dashEffect.isComplete()) {
+                dashEffect.dispose();
+                dashEffect = null;
             }
         }
 
@@ -1493,7 +1530,7 @@ public class Player extends Creature {
             } else {
                 body.setLinearVelocity(50, -2);
             }
-            dashTimer += Gdx.graphics.getDeltaTime();
+            dashTimer += ControlCenter.delta;
             if(dashTimer > 0.1f) {
                 dashing = false;
                 dashTimer = 0;
@@ -1607,6 +1644,10 @@ public class Player extends Creature {
             if(!shadowCharge.isComplete()) {
                 shadowCharge.draw(batch);
             }
+        }
+
+        if(dashEffect != null && !dashEffect.isComplete()) {
+            dashEffect.draw(batch);
         }
 
         if(blink) {

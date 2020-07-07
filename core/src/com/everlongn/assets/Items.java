@@ -9,14 +9,14 @@ public class Items {
     public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite, tristarSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
         arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite;
-    public static Texture shurikenSprite;
+    public static Texture shurikenSprite, daggerSprite, throwKnifeSprite;
 
     public static TextureRegion log, stone, omniEssence, omniCrystal, tristar;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
             arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
             arcaneOblivionL, arcaneOblivionR;
     public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
-    public static TextureRegion shuriken;
+    public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
@@ -30,6 +30,18 @@ public class Items {
         shurikenSprite = new Texture(Gdx.files.internal("throwing/shuriken.png"),true);
         shurikenSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         shuriken = new TextureRegion(shurikenSprite, 0, 0, shurikenSprite.getWidth(), shurikenSprite.getHeight());
+
+        daggerSprite = new Texture(Gdx.files.internal("throwing/dagger.png"),true);
+        daggerSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        daggerR = new TextureRegion(daggerSprite, 0, 0, daggerSprite.getWidth(), daggerSprite.getHeight());
+        daggerL = new TextureRegion(daggerSprite, 0, 0, daggerSprite.getWidth(), daggerSprite.getHeight());
+        daggerL.flip(true, false);
+
+        throwKnifeSprite = new Texture(Gdx.files.internal("throwing/throwKnife.png"),true);
+        throwKnifeSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        throwKnifeR = new TextureRegion(throwKnifeSprite, 0, 0, throwKnifeSprite.getWidth(), throwKnifeSprite.getHeight());
+        throwKnifeL = new TextureRegion(throwKnifeSprite, 0, 0, throwKnifeSprite.getWidth(), throwKnifeSprite.getHeight());
+        throwKnifeL.flip(true, false);
 
         stoneSprite = new Texture(Gdx.files.internal("items/stoneItem.png"), true);
         stoneSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
