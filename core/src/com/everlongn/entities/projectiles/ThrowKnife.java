@@ -32,8 +32,8 @@ public class ThrowKnife extends Projectile {
         body = Tool.createEntity((int) (x), (int) (y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0, this);
 
-        float forceX = (float) (Math.abs(Math.sin(angle) * 200));
-        float forceY = (float) (Math.cos(angle) * 160);
+        float forceX = (float) (Math.abs(Math.sin(angle) * 175));
+        float forceY = (float) (Math.cos(angle) * 150);
 
         if (direction == 0) {
             moveByForce(new Vector2(-forceX, -forceY));

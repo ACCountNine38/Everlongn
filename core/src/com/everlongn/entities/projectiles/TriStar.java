@@ -10,21 +10,22 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Items;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
+import java.util.ArrayList;
+
 public class TriStar extends Projectile {
     //public ParticleEffect explosion;
     public int direction;
     public float life, angle, rotation;
     public boolean despawn, collected;
+
+    public ArrayList<Entity> damaged = new ArrayList<>();
 
     public TriStar(float x, float y, float density, int direction, float angle, float damage) {
         super(x, y, 5, 5, density);
@@ -33,7 +34,7 @@ public class TriStar extends Projectile {
         this.damage = damage;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
-                (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
+                (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE), (short)0, this);
 
         float forceX = (float)(Math.abs(Math.sin(angle)*8));
         float forceY = (float)(Math.cos(angle)*5);
@@ -57,6 +58,24 @@ public class TriStar extends Projectile {
         throwBound.setPosition(body.getPosition().x*Constants.PPM+2 - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.triStar.height/2);
 
         if(!lifeOut) {
+            for(Entity e: EntityManager.entities) {
+                if(e.getBound().overlaps(throwBound) && !damaged.contains(e) && e.team != EntityManager.player.team) {
+                    damaged.add(e);
+                    e.stunned = true;
+
+                    float force = 500 + (float)Math.random()*100;
+                    float angle = (float)(Math.random()*(Math.PI/4));
+                    if(direction == 0) {
+                        e.body.applyForceToCenter(
+                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
+                    } else {
+                        e.body.applyForceToCenter(
+                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
+                    }
+
+                    e.hurt(damage, GameState.difficulty);
+                }
+            }
             if(direction == 0)
                 rotation += 15;
             else
@@ -64,13 +83,7 @@ public class TriStar extends Projectile {
         } else {
             //body.setLinearVelocity(0, body.getLinearVelocity().y);
             checkPickedUp();
-            if(!exploded) {
-                explosionTimer += Gdx.graphics.getDeltaTime();
-                if(explosionTimer > 0.01) {
-                    explode();
-                    exploded = true;
-                }
-            }
+            body.setLinearVelocity(0, 0);
         }
 
         if(lifeOut && despawn) {
@@ -126,34 +139,6 @@ public class TriStar extends Projectile {
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/1.04f, body.getLinearVelocity().y);
-        }
-    }
-
-    public void explode() {
-        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.triStar.height/2,
-                Throwing.triStar.width, Throwing.triStar.height);
-        for(int i = 0; i < EntityManager.entities.size(); i++) {
-            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
-                if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
-                    Creature c = (Creature)EntityManager.entities.get(i);
-
-                    c.stunned = true;
-
-                    float force = 500 + (float)Math.random()*100;
-                    float angle = (float)(Math.random()*(Math.PI/4));
-                    if(direction == 0) {
-                        c.body.applyForceToCenter(
-                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
-                    } else {
-                        c.body.applyForceToCenter(
-                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
-                    }
-
-                    c.hurt(damage, GameState.difficulty);
-
-                    break;
-                }
-            }
         }
     }
 

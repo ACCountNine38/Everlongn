@@ -88,15 +88,7 @@ public class Shuriken extends Projectile {
             }
         } else {
             checkPickedUp();
-            if(!collected)
-                body.setLinearVelocity(0, 0);
-            if(!exploded) {
-                explosionTimer += ControlCenter.delta;
-                if(explosionTimer > 0.01) {
-                    explode();
-                    exploded = true;
-                }
-            }
+            body.setLinearVelocity(0, 0);
         }
 
         if(lifeOut && despawn) {
@@ -152,32 +144,6 @@ public class Shuriken extends Projectile {
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/1.04f, body.getLinearVelocity().y);
-        }
-    }
-
-    public void explode() {
-        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - Throwing.shuriken.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.shuriken.height/2,
-                Throwing.shuriken.width, Throwing.shuriken.height);
-        for(int i = 0; i < EntityManager.entities.size(); i++) {
-            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
-                if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
-                    Creature c = (Creature)EntityManager.entities.get(i);
-
-                    c.stunned = true;
-
-                    float force = 500 + (float)Math.random()*100;
-                    float angle = (float)(Math.random()*(Math.PI/4));
-                    if(direction == 0) {
-                        c.body.applyForceToCenter(
-                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
-                    } else {
-                        c.body.applyForceToCenter(
-                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
-                    }
-                    Sounds.playSound(Sounds.shurikenSlice);
-                    c.hurt(damage, GameState.difficulty);
-                }
-            }
         }
     }
 
