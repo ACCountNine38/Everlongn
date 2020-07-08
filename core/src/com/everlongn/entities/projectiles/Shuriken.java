@@ -55,7 +55,7 @@ public class Shuriken extends Projectile {
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM+2 - Throwing.shuriken.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.shuriken.height/2);
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2);
 
         if(!lifeOut) {
             for(Entity e: EntityManager.entities) {
@@ -90,13 +90,13 @@ public class Shuriken extends Projectile {
             checkPickedUp();
             if(!collected)
                 body.setLinearVelocity(0, 0);
-            if(!exploded) {
-                explosionTimer += ControlCenter.delta;
-                if(explosionTimer > 0.01) {
-                    explode();
-                    exploded = true;
-                }
-            }
+//            if(!exploded) {
+//                explosionTimer += ControlCenter.delta;
+//                if(explosionTimer > 0.01) {
+//                    explode();
+//                    exploded = true;
+//                }
+//            }
         }
 
         if(lifeOut && despawn) {

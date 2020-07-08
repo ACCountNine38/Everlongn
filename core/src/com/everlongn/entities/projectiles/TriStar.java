@@ -54,7 +54,7 @@ public class TriStar extends Projectile {
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM+2 - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.triStar.height/2);
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM - Throwing.triStar.height/2);
 
         if(!lifeOut) {
             if(direction == 0)
@@ -62,15 +62,16 @@ public class TriStar extends Projectile {
             else
                 rotation -= 15;
         } else {
-            //body.setLinearVelocity(0, body.getLinearVelocity().y);
             checkPickedUp();
-            if(!exploded) {
-                explosionTimer += Gdx.graphics.getDeltaTime();
-                if(explosionTimer > 0.01) {
-                    explode();
-                    exploded = true;
-                }
-            }
+            if(!collected)
+                body.setLinearVelocity(0, 0);
+//            if(!exploded) {
+//                explosionTimer += Gdx.graphics.getDeltaTime();
+//                if(explosionTimer > 0.01) {
+//                    explode();
+//                    exploded = true;
+//                }
+//            }
         }
 
         if(lifeOut && despawn) {
