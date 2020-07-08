@@ -47,15 +47,11 @@ public class Shuriken extends Projectile {
         }
 
         throwBound = new Rectangle(0, 0, Throwing.shuriken.width, Throwing.shuriken.height);
-//        explosion = new ParticleEffect();
-//        explosion.load(Gdx.files.internal("particles/trailExplosion"), Gdx.files.internal(""));
-//        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-
     }
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM+2 - Throwing.shuriken.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.shuriken.height/2);
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.shuriken.height/2 + height/2);
 
         if(!lifeOut) {
             for(Entity e: EntityManager.entities) {
@@ -87,26 +83,15 @@ public class Shuriken extends Projectile {
                 direction = 0;
             }
         } else {
+            if(!collected)
+                body.setLinearVelocity(0, 0);
             checkPickedUp();
-            body.setLinearVelocity(0, 0);
         }
 
         if(lifeOut && despawn) {
             GameState.world.destroyBody(body);
             active = false;
         }
-
-//        if(lifeOut && explosion.isComplete() && currentRadius <= 0) {
-//            GameState.world.destroyBody(body);
-//            explosion.dispose();
-//            light.remove();
-//            active = false;
-//        }
-//
-//        if(lifeOut) {
-//            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-//            explosion.update(Gdx.graphics.getDeltaTime());
-//        }
     }
 
     public void checkPickedUp() {
@@ -155,9 +140,7 @@ public class Shuriken extends Projectile {
             batch.draw(Items.shuriken, body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.shuriken.height/2 + height/2,
                     Throwing.shuriken.width/2, Throwing.shuriken.height/2,
                     Throwing.shuriken.width, Throwing.shuriken.height, 1f, 1f, rotation);
-//        if(lifeOut) {
-//            explosion.draw(batch);
-//        }
+
         batch.end();
     }
 

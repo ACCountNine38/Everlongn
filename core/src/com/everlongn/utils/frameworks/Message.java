@@ -147,6 +147,9 @@ public class Message {
         } else if(text.equals("get throwing set")) {
             GameState.inventory.addItem(Throwing.stone.createNew(Throwing.stone.capacity));
             GameState.inventory.addItem(Throwing.triStar.createNew(Throwing.triStar.capacity));
+            GameState.inventory.addItem(Throwing.shuriken.createNew(Throwing.shuriken.capacity));
+            GameState.inventory.addItem(Throwing.dagger.createNew(Throwing.dagger.capacity));
+            GameState.inventory.addItem(Throwing.throwKnife.createNew(Throwing.throwKnife.capacity));
 
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each throwing item", false, Color.YELLOW));
 
@@ -188,7 +191,10 @@ public class Message {
                     "/speed- amount : decrease player’s speed by an amount\n" +
                     "/tp x y : teleport the player to block x, y (relative position)\n" +
                     "/tp spawn : teleport the player to spawn point\n" +
-                    "/set-spawn x y : sets the spawn location of the player\n";
+                    "/set-spawn x y : sets the spawn location of the player\n" +
+                    "/learn skill : learns the specified skill\n" +
+                    "/forget skill : forgets the specified skill\n" +
+                    "/wipe memory : return to your original form and forget all skills\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Player Customization Commands:\n" + message, false, Color.YELLOW));
             return;
@@ -201,6 +207,18 @@ public class Message {
                     "/clear text : removes all the messages\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Utility Commands:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("wipe memory")) {
+            Player.dash = false;
+            Player.duoToss = false;
+            Player.triToss = false;
+            Player.glaiveLord = false;
+
+            String message ="You have forgotten all your skills\n" +
+                    "You have returned to your original form";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, message, false, Color.YELLOW));
+
             return;
         }
 
@@ -316,7 +334,7 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid spawn data", false, Color.YELLOW));
             }
             return;
-        }  else if(chars[0].equals("learn")) {
+        } else if(chars[0].equals("learn")) {
             try {
                 String ability = "";
                 for(int i = 1; i < chars.length; i++) {
@@ -335,7 +353,34 @@ public class Message {
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
                 } else if(ability.equals("Glaive Lord")) {
                     Player.glaiveLord = true;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have evolved to become a " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have evolved to " + chars[1], false, Color.YELLOW));
+                } else {
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid learn data", false, Color.YELLOW));
+            }
+            return;
+        } else if(chars[0].equals("forget")) {
+            try {
+                String ability = "";
+                for(int i = 1; i < chars.length; i++) {
+                    ability += chars[i] + " ";
+                }
+                ability = ability.substring(0, ability.length()-1);
+
+                if(ability.equals("dash")) {
+                    Player.dash = false;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("duo-toss")) {
+                    Player.duoToss = false;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("tri-toss")) {
+                    Player.triToss = false;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                } else if(ability.equals("Glaive Lord")) {
+                    Player.glaiveLord = false;
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have devolved to " + chars[1], false, Color.YELLOW));
                 } else {
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
                 }

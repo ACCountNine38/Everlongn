@@ -32,8 +32,8 @@ public class ThrowKnife extends Projectile {
         body = Tool.createEntity((int) (x), (int) (y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0, this);
 
-        float forceX = (float) (Math.abs(Math.sin(angle) * 175));
-        float forceY = (float) (Math.cos(angle) * 150);
+        float forceX = (float) (Math.abs(Math.sin(angle) * 135));
+        float forceY = (float) (Math.cos(angle) * 110);
 
         if (direction == 0) {
             moveByForce(new Vector2(-forceX, -forceY));
@@ -54,7 +54,6 @@ public class ThrowKnife extends Projectile {
             else
                 rotation -= 10;
         } else {
-            //body.setLinearVelocity(0, body.getLinearVelocity().y);
             checkPickedUp();
             if (!exploded) {
                 explosionTimer += ControlCenter.delta;
@@ -69,7 +68,6 @@ public class ThrowKnife extends Projectile {
             GameState.world.destroyBody(body);
             active = false;
         }
-
     }
 
     public void checkPickedUp() {
@@ -158,7 +156,6 @@ public class ThrowKnife extends Projectile {
     public void finish() {
         lifeOut = true;
 
-        //explosion.start();
         body.setLinearVelocity(0, 0);
 
         if ((int) (Math.random() * 100) < 25) {

@@ -183,6 +183,28 @@ public class Player extends Creature {
 
         itemCollectBound.setPosition(body.getPosition().x*PPM + 10, body.getPosition().y*PPM + 80);
         itemPickBound.setPosition(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50);
+
+        if(dashEffect != null && !dashEffect.isComplete()) {
+            dashEffect.update(ControlCenter.delta);
+            dashEffect.setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            if(dashEffect.isComplete()) {
+                dashEffect.dispose();
+                dashEffect = null;
+            }
+        }
+
+        if(dashing) {
+            if(direction == 0) {
+                body.setLinearVelocity(-50, -2);
+            } else {
+                body.setLinearVelocity(50, -2);
+            }
+            dashTimer += ControlCenter.delta;
+            if(dashTimer > 0.1f) {
+                dashing = false;
+                dashTimer = 0;
+            }
+        }
     }
 
     @Override
@@ -1483,15 +1505,6 @@ public class Player extends Creature {
             }
         }
 
-        if(dashEffect != null && !dashEffect.isComplete()) {
-            dashEffect.update(ControlCenter.delta);
-            dashEffect.setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-            if(dashEffect.isComplete()) {
-                dashEffect.dispose();
-                dashEffect = null;
-            }
-        }
-
         if(Gdx.input.isKeyPressed(Input.Keys.A) && !dashing) {
             horizontalForce = -1;
             currentSpeed += 0.2f;
@@ -1522,19 +1535,6 @@ public class Player extends Creature {
             legsJump[1].currentIndex = 0;
             legsRun[0].currentIndex = 0;
             legsRun[1].currentIndex = 0;
-        }
-
-        if(dashing) {
-            if(direction == 0) {
-                body.setLinearVelocity(-50, -2);
-            } else {
-                body.setLinearVelocity(50, -2);
-            }
-            dashTimer += ControlCenter.delta;
-            if(dashTimer > 0.1f) {
-                dashing = false;
-                dashTimer = 0;
-            }
         }
     }
 

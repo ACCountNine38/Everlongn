@@ -19,7 +19,7 @@ public class Throwing extends Weapon {
         dagger = new Throwing(Items.daggerR, "Dagger", 303, true, false,
                 46, 46, 46, 46, 64, "sharp", 5, 12, new TextureRegion[]{Items.daggerL, Items.daggerR}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 35);
         throwKnife = new Throwing(Items.throwKnifeR, "Throw Knife", 304, true, false,
-                54, 54, 54, 54, 32, "sharp", 7, 14, new TextureRegion[]{Items.throwKnifeL, Items.throwKnifeR}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 50);
+                54, 54, 54, 54, 16, "sharp", 7, 14, new TextureRegion[]{Items.throwKnifeL, Items.throwKnifeR}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 50);
     }
 
     public Throwing(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,

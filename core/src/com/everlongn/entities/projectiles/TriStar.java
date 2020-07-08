@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Items;
 import com.everlongn.entities.*;
+import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
@@ -20,7 +21,6 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public class TriStar extends Projectile {
-    //public ParticleEffect explosion;
     public int direction;
     public float life, angle, rotation;
     public boolean despawn, collected;
@@ -28,7 +28,7 @@ public class TriStar extends Projectile {
     public ArrayList<Entity> damaged = new ArrayList<>();
 
     public TriStar(float x, float y, float density, int direction, float angle, float damage) {
-        super(x, y, 5, 5, density);
+        super(x, y, 10, 10, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
@@ -36,8 +36,8 @@ public class TriStar extends Projectile {
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE), (short)0, this);
 
-        float forceX = (float)(Math.abs(Math.sin(angle)*8));
-        float forceY = (float)(Math.cos(angle)*5);
+        float forceX = (float)(Math.abs(Math.sin(angle)*30));
+        float forceY = (float)(Math.cos(angle)*25);
 
         if(direction == 0) {
             moveByForce(new Vector2(-forceX, -forceY));
@@ -46,16 +46,11 @@ public class TriStar extends Projectile {
         }
 
         throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
-
-//        explosion = new ParticleEffect();
-//        explosion.load(Gdx.files.internal("particles/trailExplosion"), Gdx.files.internal(""));
-//        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-
     }
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM+2 - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM+2 - Throwing.triStar.height/2);
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.triStar.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.triStar.height/2 + height/2);
 
         if(!lifeOut) {
             for(Entity e: EntityManager.entities) {
@@ -81,27 +76,15 @@ public class TriStar extends Projectile {
             else
                 rotation -= 15;
         } else {
-            //body.setLinearVelocity(0, body.getLinearVelocity().y);
+            if(!collected)
+                body.setLinearVelocity(0, 0);
             checkPickedUp();
-            body.setLinearVelocity(0, 0);
         }
 
         if(lifeOut && despawn) {
             GameState.world.destroyBody(body);
             active = false;
         }
-
-//        if(lifeOut && explosion.isComplete() && currentRadius <= 0) {
-//            GameState.world.destroyBody(body);
-//            explosion.dispose();
-//            light.remove();
-//            active = false;
-//        }
-//
-//        if(lifeOut) {
-//            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-//            explosion.update(Gdx.graphics.getDeltaTime());
-//        }
     }
 
     public void checkPickedUp() {
@@ -146,12 +129,9 @@ public class TriStar extends Projectile {
     public void render(SpriteBatch batch) {
         batch.begin();
         if(body != null)
-            batch.draw(Items.tristar, body.getPosition().x*Constants.PPM - Throwing.triStar.width/2, body.getPosition().y*Constants.PPM -Throwing.triStar.height/2,
+            batch.draw(Items.tristar, body.getPosition().x*Constants.PPM - Throwing.triStar.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.triStar.height/2 + height/2,
                     Throwing.triStar.width/2, Throwing.triStar.height/2,
                     Throwing.triStar.width, Throwing.triStar.height, 1f, 1f, rotation);
-//        if(lifeOut) {
-//            explosion.draw(batch);
-//        }
         batch.end();
     }
 
@@ -159,7 +139,6 @@ public class TriStar extends Projectile {
     public void finish() {
         lifeOut = true;
 
-        //explosion.start();
         body.setLinearVelocity(0,0);
 
         if((int)(Math.random()*100) < 50) {
