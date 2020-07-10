@@ -43,9 +43,8 @@ public class Player extends Creature {
     private boolean eruptionHold, shadowHold;
     public static Queue<Shadow> shadows = new LinkedList<Shadow>();
     public PointLight arcaneLight;
-    public boolean casted, armsThrow;
+    public boolean casted, canThrow;
     public float arcaneLightSize, maxLightRadius, throwAngle;
-    public int throwDirection;
 
     // animation variables ------
     private boolean legAnimation, armAnimation, bodyAnimation, headAnimation, jumpAnimation;
@@ -353,7 +352,8 @@ public class Player extends Creature {
                 GameState.attackHover = false;
             }
             checkMeleeCombat();
-        } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
+        }
+        else if(Inventory.inventory[Inventory.selectedIndex] instanceof Arcane) {
             onhold = true;
             GameState.aiming = true;
             meleeAttack = false;
@@ -364,24 +364,33 @@ public class Player extends Creature {
                 inCombat = true;
             }
             checkArcaneCombat();
-        } else if(Inventory.inventory[Inventory.selectedIndex] instanceof Throwing) {
+        }
+        else if(Inventory.inventory[Inventory.selectedIndex] instanceof Throwing) {
             onhold = true;
             GameState.aiming = true;
             meleeAttack = false;
             heavySoundPlayed = false;
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !throwAttack && !GameState.options.active) {
-                throwAttack = true;
-                inCombat = true;
-                targetAngle = 185;
 
-                if (aimAngle < 185)
-                    armSwingUp = true;
-                else {
-                    targetAngle = 0;
+            Throwing t = (Throwing)(Inventory.inventory[Inventory.selectedIndex]);
+            if(t.hold) {
+                targetAngle = 185;
+                checkHoldThrowing();
+            } else {
+                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !throwAttack && !GameState.options.active) {
+                    throwAttack = true;
+                    inCombat = true;
+                    targetAngle = 185;
+
+                    if (aimAngle < 185)
+                        armSwingUp = true;
+                    else {
+                        targetAngle = 0;
+                    }
                 }
+                checkThrowing();
             }
-            checkThrowing();
-        } else {
+        }
+        else {
             GameState.defaultCursor = true;
             heavySoundPlayed = false;
             onhold = false;
@@ -396,6 +405,234 @@ public class Player extends Creature {
                 shadowHold = false;
             forceCharge = 0;
             cdr = 0;
+        }
+    }
+
+    public void checkHoldThrowing() {
+        throwAttack = false;
+        if(direction == 0) {
+            if(aimAngle > 0) {
+                aimAngle = -aimAngle;
+            }
+            if(throwRecharge) {
+                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() > ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+
+                if(aimAngle < tempAngle - 5) {
+                    aimAngle+=Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                } else if(aimAngle > tempAngle + 5) {
+                    aimAngle-=Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                } else {
+                    throwRecharge = false;
+                    thrown = false;
+                }
+            } else if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !thrown) {
+                aimAngle -= Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                if (aimAngle <= -targetAngle) {
+                    aimAngle = -targetAngle;
+                    canThrow = true;
+                    thrown = false;
+                } else {
+                    canThrow = false;
+                }
+            } else if(canThrow) {
+                aimAngle += Inventory.inventory[Inventory.selectedIndex].throwSpeed;
+                if (aimAngle >= 0) {
+                    aimAngle = 0;
+                    canThrow = false;
+                    throwRecharge = true;
+                }
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (width/2);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (width/2);
+
+                float throwX = body.getPosition().x * PPM + width / 2 + xAim;
+                float throwY = body.getPosition().y * PPM + 46 + 23 + yAim;
+
+                Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
+
+                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
+                        Gdx.input.getY() - 8 - vec.y));
+                if (Gdx.input.getX() > ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                            ControlCenter.height - vec.y - 8));
+                }
+
+                if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
+                        aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
+                    thrown = true;
+                    int amount = 0;
+                    if(glaiveLord) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 5) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 5;
+                        }
+                    } else if(triToss) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 3) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 3;
+                        }
+                    } else if(duoToss) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 2) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 2;
+                        }
+                    } else {
+                        amount = 1;
+                    }
+
+                    Inventory.inventory[Inventory.selectedIndex].count-=amount;
+                    findShootAngle(xAim, yAim);
+
+                    for(int i = 0; i < amount; i++) {
+                        Projectile temp = null;
+                        if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                            temp = new Rock(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                            Sounds.playSound(Sounds.shurikenThrow);
+                            temp = new Shuriken(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                            temp = new ThrowKnife(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        EntityManager.projectiles.add(temp);
+                    }
+                }
+            } else {
+                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() > ControlCenter.width / 2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+                thrown = false;
+            }
+            armRotationRight = aimAngle + 45 - 360;
+        }
+
+        else {
+            if(aimAngle < 0) {
+                aimAngle = Math.abs(aimAngle);
+            }
+            if(throwRecharge) {
+                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() < ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+
+                if(aimAngle < tempAngle - 5) {
+                    aimAngle+=Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                } else if(aimAngle > tempAngle + 5) {
+                    aimAngle-=Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                } else {
+                    throwRecharge = false;
+                    thrown = false;
+                }
+            } else if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !thrown) {
+                aimAngle += Inventory.inventory[Inventory.selectedIndex].drawSpeed;
+                if (aimAngle >= targetAngle) {
+                    aimAngle = targetAngle;
+                    canThrow = true;
+                    thrown = false;
+                } else {
+                    canThrow = false;
+                }
+            } else if(canThrow) {
+                aimAngle -= Inventory.inventory[Inventory.selectedIndex].throwSpeed;
+                if (aimAngle <= 0) {
+                    aimAngle = 0;
+                    canThrow = false;
+                    throwRecharge = true;
+                }
+
+                float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (width/2);
+                float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (width/2);
+
+                float throwX = body.getPosition().x * PPM + width / 2 + xAim;
+                float throwY = body.getPosition().y * PPM + 46 + 23 + yAim;
+
+                Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
+
+                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
+                        Gdx.input.getY() - 8 - vec.y));
+                if (Gdx.input.getX() < ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                            ControlCenter.height - vec.y - 8));
+                }
+
+                if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
+                        aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
+                    thrown = true;
+                    int amount = 0;
+                    if(glaiveLord) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 5) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 5;
+                        }
+                    } else if(triToss) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 3) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 3;
+                        }
+                    } else if(duoToss) {
+                        if(Inventory.inventory[Inventory.selectedIndex].count < 2) {
+                            amount = Inventory.inventory[Inventory.selectedIndex].count;
+                        } else {
+                            amount = 2;
+                        }
+                    } else {
+                        amount = 1;
+                    }
+
+                    Inventory.inventory[Inventory.selectedIndex].count-=amount;
+                    findShootAngle(xAim, yAim);
+
+                    for(int i = 0; i < amount; i++) {
+                        Projectile temp = null;
+                        if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                            temp = new Rock(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
+                            Sounds.playSound(Sounds.shurikenThrow);
+                            temp = new Shuriken(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                            temp = new ThrowKnife(throwX, throwY,
+                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        EntityManager.projectiles.add(temp);
+                    }
+                }
+            } else {
+                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
+                        Gdx.input.getY() - ControlCenter.height / 2));
+                if (Gdx.input.getX() < ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                                    ControlCenter.width / 2),
+                            Gdx.input.getY() - ControlCenter.height / 2));
+                }
+                thrown = false;
+            }
+            armRotationRight = aimAngle + 45 - 90;
         }
     }
 

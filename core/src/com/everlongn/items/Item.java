@@ -31,6 +31,24 @@ public class Item {
     public static Item log = new Item(Items.log, "Wood", 0, true, true,
             50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
 
+    public static Item omniEssence = new Item(Items.omniEssence, "Omni Essence", 1, true, true,
+            50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
+
+    public static Item omniCrystal = new Item(Items.omniCrystal, "Omni Crytsal", 2, false, true,
+            50, 50, 60, 60, 1,"doesn't look very healthy...", 0, 0, null);
+
+    public static Item demiEssence = new Item(Items.demiEssence, "Demi Essence", 3, true, true,
+            50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
+
+    public static Item demiCrystal = new Item(Items.demiCrystal, "Demi Crystal", 4, false, true,
+            50, 50, 60, 60, 1,"doesn't look very healthy...", 0, 0, null);
+
+    public static Item spiderLimb = new Item(Items.spiderLimb, "Spider Limb", 5, true, true,
+            50, 50, 60, 60, 16,"doesn't look very healthy...", 0, 0, null);
+
+    public static Item mossyFluid = new Item(Items.mossyFluid, "Mossy Fluid", 6, true, true,
+            50, 50, 60, 60, 4,"doesn't look very healthy...", 0, 0, null);
+
     //----------
     public float x, y;
     public int width, height, id, count, capacity, itemWidth, itemHeight, direction;
@@ -62,6 +80,7 @@ public class Item {
 
     // ranged weapon properties
     public float throwingDamage, throwSpeed;
+    public boolean hold;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {

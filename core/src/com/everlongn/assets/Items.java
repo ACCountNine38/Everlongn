@@ -6,22 +6,37 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
-    public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite, tristarSprite;
+    public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite,
+            demiEssenceSprite, demiCrystalSprite, tristarSprite, spiderLimbSprite, mossyFluidSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
-        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite;
+        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite, glowStickSprite;
     public static Texture shurikenSprite, daggerSprite, throwKnifeSprite;
 
-    public static TextureRegion log, stone, omniEssence, omniCrystal, tristar;
+    public static TextureRegion log, stone, omniEssence, omniCrystal, demiEssence, demiCrystal, tristar, spiderLimb, mossyFluid;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
             arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
             arcaneOblivionL, arcaneOblivionR;
-    public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR;
+    public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR, glowStickL, glowStickR;
     public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
         logSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         log = new TextureRegion(logSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
+
+        spiderLimbSprite = new Texture(Gdx.files.internal("items/spiderLimb.png"),true);
+        spiderLimbSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        spiderLimb = new TextureRegion(spiderLimbSprite, 0, 0, spiderLimbSprite.getWidth(), spiderLimbSprite.getHeight());
+
+        mossyFluidSprite = new Texture(Gdx.files.internal("items/mossyFluid.png"),true);
+        mossyFluidSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        mossyFluid = new TextureRegion(mossyFluidSprite, 0, 0, mossyFluidSprite.getWidth(), mossyFluidSprite.getHeight());
+
+        glowStickSprite = new Texture(Gdx.files.internal("items/glowStick.png"),true);
+        glowStickSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        glowStickR = new TextureRegion(glowStickSprite, 0, 0, glowStickSprite.getWidth(), glowStickSprite.getHeight());
+        glowStickL = new TextureRegion(glowStickSprite, 0, 0, glowStickSprite.getWidth(), glowStickSprite.getHeight());
+        glowStickL.flip(true, false);
 
         tristarSprite = new Texture(Gdx.files.internal("throwing/tristar.png"),true);
         tristarSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
@@ -54,6 +69,14 @@ public class Items {
         omniCrystalSprite = new Texture(Gdx.files.internal("items/OmniCrystal.png"), true);
         omniCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         omniCrystal = new TextureRegion(omniCrystalSprite, 0, 0, omniCrystalSprite.getWidth(), omniCrystalSprite.getHeight());
+
+        demiEssenceSprite = new Texture(Gdx.files.internal("items/DemiEssence.png"), true);
+        demiEssenceSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        demiEssence = new TextureRegion(demiEssenceSprite, 0, 0, demiEssenceSprite.getWidth(), demiEssenceSprite.getHeight());
+
+        demiCrystalSprite = new Texture(Gdx.files.internal("items/DemiCrystal.png"), true);
+        demiCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        demiCrystal = new TextureRegion(demiCrystalSprite, 0, 0, demiCrystalSprite.getWidth(), demiCrystalSprite.getHeight());
 
         arcaneCasterSprite = new Texture(Gdx.files.internal("arcane/arcaneCaster.png"), true);
         arcaneCasterSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

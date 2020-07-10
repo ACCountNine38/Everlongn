@@ -50,9 +50,9 @@ public class Dagger extends Projectile {
 
         if(!lifeOut) {
             if(direction == 0)
-                rotation += 10;
+                rotation += 20;
             else
-                rotation -= 10;
+                rotation -= 20;
         } else {
             //body.setLinearVelocity(0, body.getLinearVelocity().y);
             checkPickedUp();

@@ -50,9 +50,9 @@ public class ThrowKnife extends Projectile {
 
         if (!lifeOut) {
             if (direction == 0)
-                rotation += 10;
+                rotation += 20;
             else
-                rotation -= 10;
+                rotation -= 20;
         } else {
             checkPickedUp();
             if (!exploded) {

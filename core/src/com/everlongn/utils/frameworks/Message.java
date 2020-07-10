@@ -140,6 +140,12 @@ public class Message {
         } else if(text.equals("get item set")) {
             GameState.inventory.addItem(Item.log.createNew(Item.log.capacity));
             GameState.inventory.addItem(Throwing.stone.createNew(Throwing.stone.capacity));
+            GameState.inventory.addItem(Item.omniEssence.createNew(Item.omniEssence.capacity));
+            GameState.inventory.addItem(Item.omniCrystal.createNew(Item.omniCrystal.capacity));
+            GameState.inventory.addItem(Item.demiEssence.createNew(Item.demiEssence.capacity));
+            GameState.inventory.addItem(Item.demiCrystal.createNew(Item.demiCrystal.capacity));
+            GameState.inventory.addItem(Item.spiderLimb.createNew(Item.spiderLimb.capacity));
+            GameState.inventory.addItem(Item.mossyFluid.createNew(Item.mossyFluid.capacity));
 
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each material item", false, Color.YELLOW));
 
