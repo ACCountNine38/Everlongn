@@ -14,7 +14,7 @@ public class EntityManager {
 
     public static ArrayList<Entity> entities;
     public static ArrayList<Item> items;
-    public static ArrayList<Projectile> projectiles;
+    public static ArrayList<Throw> throwing;
     public static ArrayList<ParticleEffect> particles;
     public static Player player;
 
@@ -23,7 +23,7 @@ public class EntityManager {
 
         entities = new ArrayList<>();
         items = new ArrayList<>();
-        projectiles = new ArrayList<>();
+        throwing = new ArrayList<>();
         particles = new ArrayList<>();
 
         this.player = player;
@@ -48,13 +48,13 @@ public class EntityManager {
                 i--;
             }
         }
-        for(int i = 0; i < projectiles.size(); i++) {
-            projectiles.get(i).tick();
-            if(projectiles.get(i).throwBound.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
+        for(int i = 0; i < throwing.size(); i++) {
+            throwing.get(i).tick();
+            if(throwing.get(i).throwBound.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {
                 GameState.itemHover = true;
             }
-            if(projectiles.get(i).pickedUp || !projectiles.get(i).active) {
-                projectiles.remove(projectiles.get(i));
+            if(throwing.get(i).pickedUp || !throwing.get(i).active) {
+                throwing.remove(throwing.get(i));
                 i--;
             }
         }
@@ -75,8 +75,8 @@ public class EntityManager {
         for(int i = 0; i < items.size(); i++) {
             items.get(i).render(batch);
         }
-        for(int i = 0; i < projectiles.size(); i++) {
-            projectiles.get(i).render(batch);
+        for(int i = 0; i < throwing.size(); i++) {
+            throwing.get(i).render(batch);
         }
         for(int i = 0; i < particles.size(); i++) {
             batch.begin();

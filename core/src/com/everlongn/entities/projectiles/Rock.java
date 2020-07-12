@@ -6,22 +6,17 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
-public class Rock extends Projectile {
+public class Rock extends Throw {
     //public ParticleEffect explosion;
-    public int direction;
-    public float life, angle, rotation;
 
-    public Rock(float x, float y, float density, int direction, float angle, float damage) {
-        super(x, y, 5, 5, density);
+    public Rock(float x, float y, int direction, float angle, float damage) {
+        super(x, y, 5, 5, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;

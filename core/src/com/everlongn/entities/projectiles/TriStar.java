@@ -18,17 +18,11 @@ import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
-import java.util.ArrayList;
+public class TriStar extends Throw {
+    //public ParticleEffect explosion;
 
-public class TriStar extends Projectile {
-    public int direction;
-    public float life, angle, rotation;
-    public boolean despawn, collected;
-
-    public ArrayList<Entity> damaged = new ArrayList<>();
-
-    public TriStar(float x, float y, float density, int direction, float angle, float damage) {
-        super(x, y, 10, 10, density);
+    public TriStar(float x, float y, int direction, float angle, float damage) {
+        super(x, y, 10, 10, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
@@ -76,8 +70,10 @@ public class TriStar extends Projectile {
             else
                 rotation -= 15;
         } else {
-            if(!collected)
-                body.setLinearVelocity(0, 0);
+            if(!collected) {
+                if(locked != null && locked.body != null)
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+            }
             checkPickedUp();
         }
 

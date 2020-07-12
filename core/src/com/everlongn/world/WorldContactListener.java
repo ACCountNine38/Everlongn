@@ -49,25 +49,37 @@ public class WorldContactListener implements ContactListener {
                 if(a.getUserData() instanceof Item) {
                     return;
                 }
-                Projectile temp = (Projectile) a.getUserData();
-                if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection) {
-                        ArcaneReflection ar = (ArcaneReflection) a.getUserData();
-                        if(b.getUserData() instanceof Entity) {
-                            ar.numReflection = ar.maxReflection;
-                            ar.finish2(null, true);
-                        } else  {
-                            Tile tile = (Tile)b.getUserData();
-                            ar.finish2(tile, false);
-                        }
-                    } else {
-                        if(b.getUserData() instanceof Entity) {
-                            Entity entity = (Entity)(b.getUserData());
-                            if(entity.active) {
-                                temp.finish();
+                else if(a.getUserData() instanceof Throw) {
+                    Throw temp = (Throw) a.getUserData();
+                    if(b.getUserData() instanceof Tile && !temp.lifeOut) {
+                        temp.lockTile((Tile)b.getUserData());
+                        temp.finish();
+                    } else if(b.getUserData() instanceof Entity && !temp.lifeOut) {
+                        temp.lockEntity((Entity)b.getUserData());
+                        temp.finish();
+                    }
+                }
+                else {
+                    Projectile temp = (Projectile) a.getUserData();
+                    if (!temp.lifeOut) {
+                        if (temp instanceof ArcaneReflection) {
+                            ArcaneReflection ar = (ArcaneReflection) a.getUserData();
+                            if (b.getUserData() instanceof Entity) {
+                                ar.numReflection = ar.maxReflection;
+                                ar.finish2(null, true);
+                            } else {
+                                Tile tile = (Tile) b.getUserData();
+                                ar.finish2(tile, false);
                             }
                         } else {
-                            temp.finish();
+                            if (b.getUserData() instanceof Entity) {
+                                Entity entity = (Entity) (b.getUserData());
+                                if (entity.active) {
+                                    temp.finish();
+                                }
+                            } else {
+                                temp.finish();
+                            }
                         }
                     }
                 }
@@ -76,25 +88,37 @@ public class WorldContactListener implements ContactListener {
                 if(b.getUserData() instanceof Item) {
                     return;
                 }
-                Projectile temp = (Projectile) b.getUserData();
-                if(!temp.lifeOut) {
-                    if(temp instanceof ArcaneReflection) {
-                        ArcaneReflection ar = (ArcaneReflection) b.getUserData();
-                        if(a.getUserData() instanceof Entity) {
-                            ar.numReflection = ar.maxReflection;
-                            ar.finish2(null, false);
-                        } else  {
-                            Tile tile = (Tile)a.getUserData();
-                            ar.finish2(tile, false);
-                        }
-                    } else {
-                        if(a.getUserData() instanceof Entity) {
-                            Entity entity = (Entity)(a.getUserData());
-                            if(entity.active) {
-                                temp.finish();
+                else if(b.getUserData() instanceof Throw) {
+                    Throw temp = (Throw) b.getUserData();
+                    if(a.getUserData() instanceof Tile) {
+                        temp.lockTile((Tile)a.getUserData());
+                        temp.finish();
+                    } else if(a.getUserData() instanceof Entity) {
+                        temp.lockEntity((Entity)a.getUserData());
+                        temp.finish();
+                    }
+                }
+                else {
+                    Projectile temp = (Projectile) b.getUserData();
+                    if (!temp.lifeOut) {
+                        if (temp instanceof ArcaneReflection) {
+                            ArcaneReflection ar = (ArcaneReflection) b.getUserData();
+                            if (a.getUserData() instanceof Entity && !temp.lifeOut) {
+                                ar.numReflection = ar.maxReflection;
+                                ar.finish2(null, false);
+                            } else if(a.getUserData() instanceof Tile && !temp.lifeOut){
+                                Tile tile = (Tile) a.getUserData();
+                                ar.finish2(tile, false);
                             }
                         } else {
-                            temp.finish();
+                            if (a.getUserData() instanceof Entity) {
+                                Entity entity = (Entity) (a.getUserData());
+                                if (entity.active) {
+                                    temp.finish();
+                                }
+                            } else {
+                                temp.finish();
+                            }
                         }
                     }
                 }

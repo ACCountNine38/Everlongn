@@ -9,14 +9,16 @@ public class Items {
     public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite,
             demiEssenceSprite, demiCrystalSprite, tristarSprite, spiderLimbSprite, mossyFluidSprite;
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
-        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite, glowStickSprite;
+        arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite, glowStickSprite,
+        shortBladeSprite, metalSwordSprite;
     public static Texture shurikenSprite, daggerSprite, throwKnifeSprite;
 
     public static TextureRegion log, stone, omniEssence, omniCrystal, demiEssence, demiCrystal, tristar, spiderLimb, mossyFluid;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
             arcaneRicochetL, arcaneRicochetR, arcaneEscortL, arcaneEscortR, arcaneReflectionL, arcaneReflectionR,
             arcaneOblivionL, arcaneOblivionR;
-    public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR, glowStickL, glowStickR;
+    public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR, glowStickL, glowStickR,
+        shortBladeL, shortBladeR, metalSwordL, metalSwordR;
     public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR;
 
     public static void init() {
@@ -38,7 +40,7 @@ public class Items {
         glowStickL = new TextureRegion(glowStickSprite, 0, 0, glowStickSprite.getWidth(), glowStickSprite.getHeight());
         glowStickL.flip(true, false);
 
-        tristarSprite = new Texture(Gdx.files.internal("throwing/tristar.png"),true);
+        tristarSprite = new Texture(Gdx.files.internal("throwing/ninjaStar.png"),true);
         tristarSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         tristar = new TextureRegion(tristarSprite, 0, 0, tristarSprite.getWidth(), tristarSprite.getHeight());
 
@@ -137,15 +139,25 @@ public class Items {
         broadSwordSprite = new Texture(Gdx.files.internal("melee/broadSword.png"), true);
         broadSwordSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         broadSwordR = new TextureRegion(broadSwordSprite, 0, 0, broadSwordSprite.getWidth(), broadSwordSprite.getHeight());
-        temp = new TextureRegion(broadSwordSprite, 0, 0, broadSwordSprite.getWidth(), broadSwordSprite.getHeight());
-        temp.flip(true, false);
-        broadSwordL = temp;
+        broadSwordL = new TextureRegion(broadSwordSprite, 0, 0, broadSwordSprite.getWidth(), broadSwordSprite.getHeight());
+        broadSwordL.flip(true, false);
 
         dragonDanceSprite = new Texture(Gdx.files.internal("melee/dragonDance.png"), true);
         dragonDanceSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         dragonDanceR = new TextureRegion(dragonDanceSprite, 0, 0, dragonDanceSprite.getWidth(), dragonDanceSprite.getHeight());
-        temp = new TextureRegion(dragonDanceSprite, 0, 0, dragonDanceSprite.getWidth(), dragonDanceSprite.getHeight());
-        temp.flip(true, false);
-        dragonDanceL = temp;
+        dragonDanceL = new TextureRegion(dragonDanceSprite, 0, 0, dragonDanceSprite.getWidth(), dragonDanceSprite.getHeight());
+        dragonDanceL.flip(true, false);
+
+        shortBladeSprite = new Texture(Gdx.files.internal("melee/shortBlade.png"), true);
+        shortBladeSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        shortBladeR = new TextureRegion(shortBladeSprite, 0, 0, shortBladeSprite.getWidth(), shortBladeSprite.getHeight());
+        shortBladeL = new TextureRegion(shortBladeSprite, 0, 0, shortBladeSprite.getWidth(), shortBladeSprite.getHeight());
+        shortBladeL.flip(true, false);
+
+        metalSwordSprite = new Texture(Gdx.files.internal("melee/metalSword.png"), true);
+        metalSwordSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        metalSwordR = new TextureRegion(metalSwordSprite, 0, 0, metalSwordSprite.getWidth(), metalSwordSprite.getHeight());
+        metalSwordL = new TextureRegion(metalSwordSprite, 0, 0, metalSwordSprite.getWidth(), metalSwordSprite.getHeight());
+        metalSwordL.flip(true, false);
     }
 }

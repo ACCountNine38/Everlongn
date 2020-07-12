@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
 import com.everlongn.entities.creatures.Spiderling;
@@ -492,21 +491,18 @@ public class Player extends Creature {
                     findShootAngle(xAim, yAim);
 
                     for(int i = 0; i < amount; i++) {
-                        Projectile temp = null;
+                        Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                            temp = new Rock(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                             Sounds.playSound(Sounds.shurikenThrow);
-                            temp = new Shuriken(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
-                            temp = new ThrowKnife(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
-                        EntityManager.projectiles.add(temp);
+                        EntityManager.throwing.add(temp);
                     }
                 }
             } else {
@@ -605,21 +601,18 @@ public class Player extends Creature {
                     findShootAngle(xAim, yAim);
 
                     for(int i = 0; i < amount; i++) {
-                        Projectile temp = null;
+                        Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                            temp = new Rock(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                             Sounds.playSound(Sounds.shurikenThrow);
-                            temp = new Shuriken(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
-                            temp = new ThrowKnife(throwX, throwY,
-                                    1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
-                        EntityManager.projectiles.add(temp);
+                        EntityManager.throwing.add(temp);
                     }
                 }
             } else {
@@ -719,29 +712,15 @@ public class Player extends Creature {
                             findShootAngle(xAim, yAim);
 
                             for(int i = 0; i < amount; i++) {
-                                Projectile temp = null;
+                                Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                    temp = new TriStar(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                                    temp = new Rock(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                                     Sounds.playSound(Sounds.shurikenThrow);
-                                    temp = new Shuriken(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new TriStar(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
-                                    temp = new Dagger(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new Dagger(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
-                                    temp = new ThrowKnife(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                EntityManager.projectiles.add(temp);
+                                EntityManager.throwing.add(temp);
                             }
                         }
                     }
@@ -844,29 +823,15 @@ public class Player extends Creature {
                             findShootAngle(xAim, yAim);
 
                             for(int i = 0; i < amount; i++) {
-                                Projectile temp = null;
+                                Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                    temp = new TriStar(throwX, throwY,
-                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
-                                    temp = new Rock(throwX, throwY,
-                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                                     Sounds.playSound(Sounds.shurikenThrow);
-                                    temp = new Shuriken(throwX, throwY,
-                                            1, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new TriStar(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
-                                    temp = new Dagger(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new Dagger(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
-                                else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
-                                    temp = new ThrowKnife(throwX, throwY,
-                                            1, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
-                                }
-                                EntityManager.projectiles.add(temp);
+                                EntityManager.throwing.add(temp);
                             }
                         }
                     }

@@ -7,29 +7,18 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
-import com.everlongn.assets.Tiles;
 import com.everlongn.entities.*;
-import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
-import java.util.ArrayList;
-
-import static com.everlongn.utils.Constants.PPM;
-
-public class Shuriken extends Projectile {
+public class Shuriken extends Throw {
     //public ParticleEffect explosion;
-    public int direction;
-    public float life, angle, rotation;
-    public boolean despawn, collected;
 
-    public ArrayList<Entity> damaged = new ArrayList<>();
-
-    public Shuriken(float x, float y, float density, int direction, float angle, float damage) {
-        super(x, y, 30, 30, density);
+    public Shuriken(float x, float y, int direction, float angle, float damage) {
+        super(x, y, 30, 30, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
@@ -51,7 +40,7 @@ public class Shuriken extends Projectile {
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.shuriken.height/2 + height/2);
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2);
 
         if(!lifeOut) {
             for(Entity e: EntityManager.entities) {
@@ -83,8 +72,10 @@ public class Shuriken extends Projectile {
                 direction = 0;
             }
         } else {
-            if(!collected)
-                body.setLinearVelocity(0, 0);
+            if(!collected) {
+                if(locked != null && locked.body != null)
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+            }
             checkPickedUp();
         }
 
@@ -137,7 +128,7 @@ public class Shuriken extends Projectile {
         batch.begin();
         //batch.draw(Tiles.blackTile, throwBound.x, throwBound.y, throwBound.width, throwBound.height);
         if(body != null)
-            batch.draw(Items.shuriken, body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.shuriken.height/2 + height/2,
+            batch.draw(Items.shuriken, body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2,
                     Throwing.shuriken.width/2, Throwing.shuriken.height/2,
                     Throwing.shuriken.width, Throwing.shuriken.height, 1f, 1f, rotation);
 

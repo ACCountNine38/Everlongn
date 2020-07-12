@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
@@ -17,14 +14,11 @@ import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
-public class Dagger extends Projectile {
+public class Dagger extends Throw {
     //public ParticleEffect explosion;
-    public int direction;
-    public float life, angle, rotation;
-    public boolean despawn, collected;
 
-    public Dagger(float x, float y, float density, int direction, float angle, float damage) {
-        super(x, y, 5, 5, density);
+    public Dagger(float x, float y, int direction, float angle, float damage) {
+        super(x, y, 5, 5, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
@@ -54,8 +48,6 @@ public class Dagger extends Projectile {
             else
                 rotation -= 20;
         } else {
-            //body.setLinearVelocity(0, body.getLinearVelocity().y);
-            checkPickedUp();
             if(!exploded) {
                 explosionTimer += ControlCenter.delta;
                 if(explosionTimer > 0.01) {
@@ -63,6 +55,13 @@ public class Dagger extends Projectile {
                     exploded = true;
                 }
             }
+            if(!collected) {
+                if(locked != null && locked.body != null)
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                else if(attached != null && attached.body != null && attached.health > 0)
+                    body.setTransform(attached.body.getPosition().x + lockX, attached.body.getPosition().y + lockY, angle);
+            }
+            checkPickedUp();
         }
 
         if(lifeOut && despawn) {
@@ -159,7 +158,6 @@ public class Dagger extends Projectile {
         lifeOut = true;
 
         //explosion.start();
-        body.setLinearVelocity(0,0);
 
         if((int)(Math.random()*100) < 25) {
             despawn = true;

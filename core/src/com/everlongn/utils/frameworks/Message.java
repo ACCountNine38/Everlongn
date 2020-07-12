@@ -132,6 +132,8 @@ public class Message {
 
             return;
         } else if(text.equals("get melee set")) {
+            GameState.inventory.addItem(Melee.shortBlade.createNew(1));
+            GameState.inventory.addItem(Melee.metalSword.createNew(1));
             GameState.inventory.addItem(Melee.broadSword.createNew(1));
             GameState.inventory.addItem(Melee.dragondance.createNew(1));
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Melee Weapon", false, Color.YELLOW));

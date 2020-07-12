@@ -78,6 +78,13 @@ public class Spiderling extends Creature {
                 natural();
             } else {
                 if(paused) {
+                    if(target.body != null) {
+                        if (target.body.getPosition().x > body.getPosition().x) {
+                            direction = 1;
+                        } else if (target.body.getPosition().x < body.getPosition().x) {
+                            direction = 0;
+                        }
+                    }
                     stunned = true;
                     pausedTimer += Gdx.graphics.getDeltaTime();
                     body.setLinearVelocity(0, body.getLinearVelocity().y);
@@ -90,7 +97,7 @@ public class Spiderling extends Creature {
                 } else if(landed) {
                     body.setLinearVelocity(body.getLinearVelocity().x/1.08f, body.getLinearVelocity().y);
                     landTimer += Gdx.graphics.getDeltaTime();
-                    if(landTimer > 1f) {
+                    if(landTimer > Math.random()*0.4 + 0.6) {
                        landTimer = 0;
                        landed = false;
                        leaping = false;
