@@ -9,8 +9,8 @@ import com.everlongn.tiles.Tile;
 import java.util.ArrayList;
 
 public abstract class Throw extends Entity {
-    public float speedX, speedY, explosionTimer, damage, life, angle, rotation, lockX, lockY;
-    public boolean lifeOut, exploded, pickedUp, despawn, collected;
+    public float speedX, speedY, explosionTimer, damage, life, angle, rotation, lockX, lockY, alpha = 1f;
+    public boolean lifeOut, exploded, pickedUp, despawn, collected, deactivate;
     public int direction;
 
     public Rectangle throwBound;

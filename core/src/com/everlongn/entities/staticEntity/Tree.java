@@ -21,7 +21,7 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class Tree extends StaticEntity {
     public boolean leftShift, rightShift, reset, fallen, chopped;
-    public float currentAngle, fallSpeed = 0.05f, treeAlpha = 1f, impactForce;
+    public float currentAngle, fallSpeed = 0.005f, treeAlpha = 1f, impactForce;
     public int direction;
 
     public Tree(float x, float y, int height) {
@@ -57,8 +57,8 @@ public class Tree extends StaticEntity {
             }
         } else if(!chopped) {
             fallSpeed += 0.03;
-            if(fallSpeed > 1)
-                fallSpeed = 1;
+            if(fallSpeed > 2)
+                fallSpeed = 2;
             if(leftShift) {
                 currentAngle -= fallSpeed;
                 if (currentAngle <= -105) {
@@ -82,7 +82,7 @@ public class Tree extends StaticEntity {
                             j >= Player.currentChunkY - 2 && j <= Player.currentChunkY + 2) {
                             for (int x = i * GameState.chunkSize; x < i * GameState.chunkSize + GameState.chunkSize; x++) {
                                 for (int y = j * GameState.chunkSize; y < j * GameState.chunkSize + GameState.chunkSize; y++) {
-                                    if (GameState.tiles[x][y] != null && GameState.tiles[x][y].getBound().overlaps(getFallBound(direction))) {
+                                    if (GameState.tiles[x][y] != null && GameState.tiles[x][y].getBound().overlaps(getFallBound())) {
                                         for(int k = 0; k < Math.random()*5; k++)
                                             EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                                         chopped = true;
@@ -101,12 +101,12 @@ public class Tree extends StaticEntity {
         return new Rectangle(x * PPM - Tile.TILESIZE/4, y * PPM - Tile.TILESIZE*2, Tile.TILESIZE, height*Tile.TILESIZE);
     }
 
-    public Rectangle getFallBound(int direction) {
-        if(direction == 0) {
-            return new Rectangle(x * PPM - Tile.TILESIZE/4 - (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), y * PPM - Tile.TILESIZE*2 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3),
+    public Rectangle getFallBound() {
+        if(direction == 1) {
+            return new Rectangle(x * PPM - Tile.TILESIZE/4, y * PPM - Tile.TILESIZE*2 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3) + (height * Tile.TILESIZE * 1 / 3),
                     (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), Tile.TILESIZE/2);
         } else {
-            return new Rectangle(x * PPM - Tile.TILESIZE/4, y * PPM - Tile.TILESIZE*2 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3),
+            return new Rectangle(x * PPM - Tile.TILESIZE/4 - (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), y * PPM - Tile.TILESIZE*2 + (height * Tile.TILESIZE * 1 / 3) + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3),
                     (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), Tile.TILESIZE/2);
         }
     }
@@ -128,6 +128,7 @@ public class Tree extends StaticEntity {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
+        //batch.draw(Tiles.blackTile, getFallBound().x, getFallBound().y, getFallBound().width, getFallBound().height);
         if(!fallen) {
             batch.draw(Herbs.tree1,
                     x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
@@ -139,24 +140,39 @@ public class Tree extends StaticEntity {
             batch.draw(Herbs.treeRoots, x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2, 5 * Tile.TILESIZE, height * Tile.TILESIZE);
 
             if(!chopped) {
-                batch.draw(Herbs.treeStem,
-                        x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
-                        5 * Tile.TILESIZE / 2,
-                        height * Tile.TILESIZE * 1 / 3,
-                        5 * Tile.TILESIZE, height * Tile.TILESIZE,
-                        1f, 1f, currentAngle);
+                if(direction == 0)
+                    batch.draw(Herbs.treeStem,
+                            x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
+                            5 * Tile.TILESIZE / 2,
+                            height * Tile.TILESIZE * 1 / 3,
+                            5 * Tile.TILESIZE, height * Tile.TILESIZE,
+                            1f, 1f, currentAngle);
+                else
+                    batch.draw(Herbs.treeStem,
+                            x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
+                            5 * Tile.TILESIZE / 2 + Tile.TILESIZE / 2,
+                            height * Tile.TILESIZE * 1 / 3 - 3,
+                            5 * Tile.TILESIZE, height * Tile.TILESIZE,
+                            1f, 1f, currentAngle);
             } else if(treeAlpha > 0){
-                batch.draw(Tiles.blackTile, getFallBound(direction).x, getFallBound(direction).y, getFallBound(direction).width, getFallBound(direction).height);
-                treeAlpha -= 0.01;
+                treeAlpha -= 0.005;
                 if(treeAlpha <= 0)
                     treeAlpha = 0;
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, treeAlpha);
-                batch.draw(Herbs.treeStem,
-                        x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
-                        5 * Tile.TILESIZE / 2,
-                        height * Tile.TILESIZE * 1 / 3,
-                        5 * Tile.TILESIZE, height * Tile.TILESIZE,
-                        1f, 1f, currentAngle);
+                if(direction == 0)
+                    batch.draw(Herbs.treeStem,
+                            x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
+                            5 * Tile.TILESIZE / 2,
+                            height * Tile.TILESIZE * 1 / 3,
+                            5 * Tile.TILESIZE, height * Tile.TILESIZE,
+                            1f, 1f, currentAngle);
+                else
+                    batch.draw(Herbs.treeStem,
+                            x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2, y * PPM - Tile.TILESIZE * 2,
+                            5 * Tile.TILESIZE / 2 + Tile.TILESIZE / 2,
+                            height * Tile.TILESIZE * 1 / 3 - 3,
+                            5 * Tile.TILESIZE, height * Tile.TILESIZE,
+                            1f, 1f, currentAngle);
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
             }
         }

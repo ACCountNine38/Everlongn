@@ -2,6 +2,7 @@ package com.everlongn.entities.projectiles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,7 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class ThrowKnife extends Throw {
-    //public ParticleEffect explosion;
+    public ParticleEffect explosion;
 
     public ThrowKnife(float x, float y, int direction, float angle, float damage) {
         super(x, y, 20, 20, 1);
@@ -34,6 +35,10 @@ public class ThrowKnife extends Throw {
         } else {
             moveByForce(new Vector2(forceX, -forceY));
         }
+
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
 
         throwBound = new Rectangle(0, 0, Throwing.throwKnife.width, Throwing.throwKnife.height);
     }
@@ -60,13 +65,21 @@ public class ThrowKnife extends Throw {
                     body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
                 else if(attached != null && attached.body != null && attached.health > 0)
                     body.setTransform(attached.body.getPosition().x + lockX, attached.body.getPosition().y + lockY, angle);
+                else
+                    lifeOut = false;
             }
             checkPickedUp();
         }
 
-        if (lifeOut && despawn) {
+        if ((lifeOut && deactivate) || (despawn && explosion.isComplete())) {
             GameState.world.destroyBody(body);
+            explosion.dispose();
             active = false;
+        }
+
+        if(lifeOut && despawn) {
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
         }
     }
 
@@ -101,7 +114,7 @@ public class ThrowKnife extends Throw {
             if (throwBound.overlaps(Player.itemCollectBound)) {
                 GameState.inventory.addItem(Throwing.throwKnife.createNew(1));
                 pickedUp = true;
-                despawn = true;
+                deactivate = true;
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x / 1.04f, body.getLinearVelocity().y);
@@ -140,6 +153,10 @@ public class ThrowKnife extends Throw {
     public void render(SpriteBatch batch) {
         batch.begin();
         if (body != null) {
+            if(lifeOut && despawn) {
+                alpha -= 0.05;
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+            }
             if (direction == 1)
                 batch.draw(Items.throwKnifeR, body.getPosition().x * Constants.PPM - Throwing.throwKnife.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.throwKnife.height / 2 + height/2,
                         Throwing.throwKnife.width / 2, Throwing.throwKnife.height / 2,
@@ -148,6 +165,13 @@ public class ThrowKnife extends Throw {
                 batch.draw(Items.throwKnifeL, body.getPosition().x * Constants.PPM - Throwing.throwKnife.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.throwKnife.height / 2 + height/2,
                         Throwing.throwKnife.width / 2, Throwing.throwKnife.height / 2,
                         Throwing.throwKnife.width, Throwing.throwKnife.height, 1f, 1f, rotation);
+
+            if(lifeOut && despawn) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
+        }
+        if(lifeOut && despawn) {
+            explosion.draw(batch);
         }
         batch.end();
     }
@@ -158,6 +182,7 @@ public class ThrowKnife extends Throw {
 
         if ((int) (Math.random() * 100) < 25) {
             despawn = true;
+            explosion.start();
         } else {
             despawn = false;
         }

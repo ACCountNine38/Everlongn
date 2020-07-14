@@ -1,6 +1,7 @@
 package com.everlongn.entities.projectiles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -13,7 +14,7 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class Rock extends Throw {
-    //public ParticleEffect explosion;
+    public ParticleEffect explosion;
 
     public Rock(float x, float y, int direction, float angle, float damage) {
         super(x, y, 5, 5, 1);
@@ -34,9 +35,9 @@ public class Rock extends Throw {
         }
 
         throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
-//        explosion = new ParticleEffect();
-//        explosion.load(Gdx.files.internal("particles/bounceExplosion"), Gdx.files.internal(""));
-//        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
     }
 
     @Override
@@ -56,23 +57,16 @@ public class Rock extends Throw {
                 }
             }
         }
-
-        if(lifeOut) {
+        if(lifeOut && explosion.isComplete()) {
             GameState.world.destroyBody(body);
+            explosion.dispose();
             active = false;
         }
 
-//        if(lifeOut && explosion.isComplete() && currentRadius <= 0) {
-//            GameState.world.destroyBody(body);
-//            explosion.dispose();
-//            light.remove();
-//            active = false;
-//        }
-//
-//        if(lifeOut) {
-//            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-//            explosion.update(Gdx.graphics.getDeltaTime());
-//        }
+        if(lifeOut) {
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
+        }
     }
 
     public void explode() {
@@ -105,23 +99,27 @@ public class Rock extends Throw {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        if(body != null)
-            batch.draw(Items.stone, body.getPosition().x*Constants.PPM - Throwing.stone.width/2, body.getPosition().y*Constants.PPM - Throwing.stone.height/2, Throwing.stone.width/2, Throwing.stone.width/2,
+        if(body != null) {
+            if (lifeOut) {
+                alpha -= 0.1;
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+            }
+            batch.draw(Items.stone, body.getPosition().x * Constants.PPM - Throwing.stone.width / 2, body.getPosition().y * Constants.PPM - Throwing.stone.height / 2, Throwing.stone.width / 2, Throwing.stone.width / 2,
                     Throwing.stone.width, Throwing.stone.height, 1f, 1f, rotation);
-//        if (lifeOut) {
-//            explosion.draw(batch);
-//        }
-        batch.end();
-    }
 
-    public void destroy() {
-        lifeOut = true;
-        //explosion.start();
+            if(lifeOut) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
+        } if (lifeOut) {
+            explosion.draw(batch);
+        }
+        batch.end();
     }
 
     @Override
     public void finish() {
         lifeOut = true;
+        explosion.start();
         Sounds.playSound(Sounds.bounce);
     }
 }

@@ -29,7 +29,7 @@ public class Melee extends Weapon {
                 1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 16, 23, new TextureRegion[]{Items.metalSwordL, Items.metalSwordR}, new String[]{"steel"}, 30, 7.5f, 20, 0.2f, 400, false, Sounds.swordSwing4, false);
 
         longAxe = new Melee(Items.longAxeR, "Long Axe", 106, false, true, 100, 100, 64, 64,
-                1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 16, 23, new TextureRegion[]{Items.longAxeL, Items.longAxeR}, new String[]{"steel"}, 50, 7.5f, 20, 0.2f, 400, false, Sounds.swordSwing4, true);
+                1, "A heavy but powerful blade. Hold left while in midair to halt. Single Target", 16, 23, new TextureRegion[]{Items.longAxeL, Items.longAxeR}, new String[]{"steel"}, 150, 7.5f, 20, 0.2f, 400, false, Sounds.swordSwing4, true);
 
     }
 

@@ -19,7 +19,7 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class TriStar extends Throw {
-    //public ParticleEffect explosion;
+    public ParticleEffect explosion;
 
     public TriStar(float x, float y, int direction, float angle, float damage) {
         super(x, y, 10, 10, 1);
@@ -38,6 +38,10 @@ public class TriStar extends Throw {
         } else {
             moveByForce(new Vector2(forceX, -forceY));
         }
+
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
 
         throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
     }
@@ -73,13 +77,21 @@ public class TriStar extends Throw {
             if(!collected) {
                 if(locked != null && locked.body != null)
                     body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                else
+                    lifeOut = false;
             }
             checkPickedUp();
         }
 
-        if(lifeOut && despawn) {
+        if ((lifeOut && deactivate) || (despawn && explosion.isComplete())) {
             GameState.world.destroyBody(body);
+            explosion.dispose();
             active = false;
+        }
+
+        if(lifeOut && despawn) {
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
         }
     }
 
@@ -114,7 +126,7 @@ public class TriStar extends Throw {
             if(throwBound.overlaps(Player.itemCollectBound)) {
                 GameState.inventory.addItem(Throwing.triStar.createNew(1));
                 pickedUp = true;
-                despawn = true;
+                deactivate = true;
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/1.04f, body.getLinearVelocity().y);
@@ -124,10 +136,21 @@ public class TriStar extends Throw {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        if(body != null)
-            batch.draw(Items.tristar, body.getPosition().x*Constants.PPM - Throwing.triStar.width/2 + width/2, body.getPosition().y*Constants.PPM -Throwing.triStar.height/2 + height/2,
-                    Throwing.triStar.width/2, Throwing.triStar.height/2,
+        if(body != null) {
+            if(lifeOut && despawn) {
+                alpha -= 0.05;
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+            }
+            batch.draw(Items.tristar, body.getPosition().x * Constants.PPM - Throwing.triStar.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.triStar.height / 2 + height / 2,
+                    Throwing.triStar.width / 2, Throwing.triStar.height / 2,
                     Throwing.triStar.width, Throwing.triStar.height, 1f, 1f, rotation);
+            if(lifeOut && despawn) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
+        }
+        if(lifeOut && despawn) {
+            explosion.draw(batch);
+        }
         batch.end();
     }
 
@@ -139,6 +162,7 @@ public class TriStar extends Throw {
 
         if((int)(Math.random()*100) < 50) {
             despawn = true;
+            explosion.start();
         } else {
             despawn = false;
         }

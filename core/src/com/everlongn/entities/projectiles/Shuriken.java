@@ -2,6 +2,7 @@ package com.everlongn.entities.projectiles;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -15,7 +16,7 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class Shuriken extends Throw {
-    //public ParticleEffect explosion;
+    public ParticleEffect explosion;
 
     public Shuriken(float x, float y, int direction, float angle, float damage) {
         super(x, y, 30, 30, 1);
@@ -34,6 +35,10 @@ public class Shuriken extends Throw {
         } else {
             moveByForce(new Vector2(forceX, -forceY));
         }
+
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
 
         throwBound = new Rectangle(0, 0, Throwing.shuriken.width, Throwing.shuriken.height);
     }
@@ -67,13 +72,21 @@ public class Shuriken extends Throw {
             if(!collected) {
                 if(locked != null && locked.body != null)
                     body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                else
+                    lifeOut = false;
             }
             checkPickedUp();
         }
 
-        if(lifeOut && despawn) {
+        if ((lifeOut && deactivate) || (despawn && explosion.isComplete())) {
             GameState.world.destroyBody(body);
+            explosion.dispose();
             active = false;
+        }
+
+        if(lifeOut && despawn) {
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
         }
         throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2);
     }
@@ -109,7 +122,7 @@ public class Shuriken extends Throw {
             if(throwBound.overlaps(Player.itemCollectBound)) {
                 GameState.inventory.addItem(Throwing.shuriken.createNew(1));
                 pickedUp = true;
-                despawn = true;
+                deactivate = true;
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/1.04f, body.getLinearVelocity().y);
@@ -120,11 +133,21 @@ public class Shuriken extends Throw {
     public void render(SpriteBatch batch) {
         batch.begin();
         //batch.draw(Tiles.blackTile, throwBound.x, throwBound.y, throwBound.width, throwBound.height);
-        if(body != null)
-            batch.draw(Items.shuriken, body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2,
-                    Throwing.shuriken.width/2, Throwing.shuriken.height/2,
+        if(body != null) {
+            if(lifeOut && despawn) {
+                alpha -= 0.05;
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+            }
+            batch.draw(Items.shuriken, body.getPosition().x * Constants.PPM - Throwing.shuriken.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.shuriken.height / 2 + height / 2,
+                    Throwing.shuriken.width / 2, Throwing.shuriken.height / 2,
                     Throwing.shuriken.width, Throwing.shuriken.height, 1f, 1f, rotation);
-
+            if(lifeOut && despawn) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
+        }
+        if(lifeOut && despawn) {
+            explosion.draw(batch);
+        }
         batch.end();
     }
 

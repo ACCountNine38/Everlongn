@@ -124,7 +124,7 @@ public class Player extends Creature {
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM + 80);
 
-        itemCollectBound = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - height/2 - 10, 20, 20);
+        itemCollectBound = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM + 80, 20, 20);
         itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - height/2 - 50, 150, 100);
 
         team = 1;
@@ -181,7 +181,7 @@ public class Player extends Creature {
             yChangeTimer = 0;
         }
 
-        itemCollectBound.setPosition(body.getPosition().x*PPM, body.getPosition().y*PPM - itemCollectBound.height/2 - 10);
+        itemCollectBound.setPosition(body.getPosition().x*PPM, body.getPosition().y*PPM + 80);
         itemPickBound.setPosition(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - height/2 - 50);
 
         if(dashEffect != null && !dashEffect.isComplete()) {
@@ -962,9 +962,9 @@ public class Player extends Creature {
                                             if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
                                                 if(targeted == null) {
                                                     targeted = GameState.herbs[x][y];
-                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x - GameState.herbs[x][y].getBound().width/2);
+                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x);
                                                 } else {
-                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().y - GameState.herbs[x][y].getBound().width/2);
+                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x);
                                                     if(distance < shortestDistance) {
                                                         targeted = GameState.herbs[x][y];
                                                         shortestDistance = distance;
@@ -1122,9 +1122,9 @@ public class Player extends Creature {
                                             if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
                                                 if(targeted == null) {
                                                     targeted = GameState.herbs[x][y];
-                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x - GameState.herbs[x][y].getBound().width/2);
+                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x);
                                                 } else {
-                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().y - GameState.herbs[x][y].getBound().width/2);
+                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x);
                                                     if(distance < shortestDistance) {
                                                         targeted = GameState.herbs[x][y];
                                                         shortestDistance = distance;
