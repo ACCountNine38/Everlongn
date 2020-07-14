@@ -40,8 +40,6 @@ public class Shuriken extends Throw {
 
     @Override
     public void tick() {
-        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2);
-
         if(!lifeOut) {
             for(Entity e: EntityManager.entities) {
                 if(e.getBound().overlaps(throwBound) && !damaged.contains(e) && e.team != EntityManager.player.team) {
@@ -65,12 +63,6 @@ public class Shuriken extends Throw {
                 rotation += 15;
             else
                 rotation -= 15;
-
-            if(body.getLinearVelocity().x > 0) {
-                direction = 1;
-            } else {
-                direction = 0;
-            }
         } else {
             if(!collected) {
                 if(locked != null && locked.body != null)
@@ -83,6 +75,7 @@ public class Shuriken extends Throw {
             GameState.world.destroyBody(body);
             active = false;
         }
+        throwBound.setPosition(body.getPosition().x*Constants.PPM - Throwing.shuriken.width/2 + width/2, body.getPosition().y*Constants.PPM - Throwing.shuriken.height/2 + height/2);
     }
 
     public void checkPickedUp() {

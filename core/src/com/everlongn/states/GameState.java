@@ -275,6 +275,9 @@ public class GameState extends State {
             for (int x = xStart; x < xEnd; x++) {
                 if(herbs[x][y] != null) {
                     herbs[x][y].tick();
+                    if(herbs[x][y].health <= 0) {
+                        herbs[x][y] = null;
+                    }
                 }
             }
         }

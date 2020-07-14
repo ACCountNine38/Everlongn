@@ -11,7 +11,7 @@ public class Items {
     public static Texture shadowStaffSprite, darkBaneSprite, broadSwordSprite, dragonDanceSprite, arcaneCasterSprite, arcaneEruptionSprite,
         arcaneRicochetSprite, arcaneEscortSprite, arcaneReflectionSprite, arcaneOblivionSprite, glowStickSprite,
         shortBladeSprite, metalSwordSprite;
-    public static Texture shurikenSprite, daggerSprite, throwKnifeSprite;
+    public static Texture shurikenSprite, daggerSprite, throwKnifeSprite, longAxeSprite;
 
     public static TextureRegion log, stone, omniEssence, omniCrystal, demiEssence, demiCrystal, tristar, spiderLimb, mossyFluid;
     public static TextureRegion shadowStaffL, shadowStaffR, arcaneCasterL, arcaneCasterR, arcaneEruptionL, arcaneEruptionR,
@@ -20,11 +20,18 @@ public class Items {
     public static TextureRegion darkBaneL, darkBaneR, broadSwordL, broadSwordR, dragonDanceL, dragonDanceR, glowStickL, glowStickR,
         shortBladeL, shortBladeR, metalSwordL, metalSwordR;
     public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR;
+    public static TextureRegion longAxeL, longAxeR;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
         logSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         log = new TextureRegion(logSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
+
+        longAxeSprite = new Texture(Gdx.files.internal("tools/longAxe.png"),true);
+        longAxeSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        longAxeR = new TextureRegion(longAxeSprite, 0, 0, longAxeSprite.getWidth(), longAxeSprite.getHeight());
+        longAxeL = new TextureRegion(longAxeSprite, 0, 0, longAxeSprite.getWidth(), longAxeSprite.getHeight());
+        longAxeL.flip(true, false);
 
         spiderLimbSprite = new Texture(Gdx.files.internal("items/spiderLimb.png"),true);
         spiderLimbSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

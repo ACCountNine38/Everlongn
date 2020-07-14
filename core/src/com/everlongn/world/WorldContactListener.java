@@ -90,10 +90,10 @@ public class WorldContactListener implements ContactListener {
                 }
                 else if(b.getUserData() instanceof Throw) {
                     Throw temp = (Throw) b.getUserData();
-                    if(a.getUserData() instanceof Tile) {
+                    if(a.getUserData() instanceof Tile && !temp.lifeOut) {
                         temp.lockTile((Tile)a.getUserData());
                         temp.finish();
-                    } else if(a.getUserData() instanceof Entity) {
+                    } else if(a.getUserData() instanceof Entity && !temp.lifeOut) {
                         temp.lockEntity((Entity)a.getUserData());
                         temp.finish();
                     }

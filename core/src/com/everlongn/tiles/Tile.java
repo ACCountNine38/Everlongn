@@ -3,6 +3,7 @@ package com.everlongn.tiles;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Tool;
@@ -82,5 +83,9 @@ public abstract class Tile {
 
     public void setBody(Body body) {
         this.body = body;
+    }
+
+    public Rectangle getBound() {
+        return new Rectangle(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
     }
 }

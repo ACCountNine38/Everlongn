@@ -10,8 +10,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
+import com.everlongn.assets.Tiles;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.projectiles.*;
+import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.*;
 import com.everlongn.states.GameState;
@@ -122,8 +124,8 @@ public class Player extends Creature {
                 body.getPosition().x * Constants.PPM,
                 body.getPosition().y * Constants.PPM + 80);
 
-        itemCollectBound = new Rectangle(body.getPosition().x*PPM + 10, body.getPosition().y*PPM - height/2 + height/3, 10, 10);
-        itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50, 150, 100);
+        itemCollectBound = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - height/2 - 10, 20, 20);
+        itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - height/2 - 50, 150, 100);
 
         team = 1;
     }
@@ -179,8 +181,8 @@ public class Player extends Creature {
             yChangeTimer = 0;
         }
 
-        itemCollectBound.setPosition(body.getPosition().x*PPM + 10, body.getPosition().y*PPM + 80);
-        itemPickBound.setPosition(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - 50);
+        itemCollectBound.setPosition(body.getPosition().x*PPM, body.getPosition().y*PPM - itemCollectBound.height/2 - 10);
+        itemPickBound.setPosition(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - height/2 - 50);
 
         if(dashEffect != null && !dashEffect.isComplete()) {
             dashEffect.update(ControlCenter.delta);
@@ -923,12 +925,24 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
+                                if(Inventory.inventory[Inventory.selectedIndex].isAxe) {
+                                    for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                                        for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                                            if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
+                                                if(GameState.herbs[x][y] instanceof Tree) {
+                                                    Tree temp = (Tree)GameState.herbs[x][y];
+                                                    temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             } else {
                                 float shortestDistance = -1;
                                 Entity targeted = null;
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
                                     if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
-                                        if(EntityManager.entities.get(i) instanceof Creature && EntityManager.entities.get(i).health > 0) {
+                                        if((EntityManager.entities.get(i) instanceof Creature || (EntityManager.entities.get(i) instanceof Tree && Inventory.inventory[Inventory.selectedIndex].isAxe)) && EntityManager.entities.get(i).health > 0) {
                                             if(targeted == null) {
                                                 targeted = EntityManager.entities.get(i);
                                                 shortestDistance = Math.abs(body.getPosition().x*PPM - EntityManager.entities.get(i).body.getPosition().x*PPM);
@@ -942,14 +956,36 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
-
+                                if(Inventory.inventory[Inventory.selectedIndex].isAxe) {
+                                    for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                                        for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                                            if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
+                                                if(targeted == null) {
+                                                    targeted = GameState.herbs[x][y];
+                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x - GameState.herbs[x][y].getBound().width/2);
+                                                } else {
+                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().y - GameState.herbs[x][y].getBound().width/2);
+                                                    if(distance < shortestDistance) {
+                                                        targeted = GameState.herbs[x][y];
+                                                        shortestDistance = distance;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 if(targeted != null) {
-                                    Creature c = (Creature)targeted;
-                                    c.stunned = true;
-                                    float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
-                                    c.body.applyForceToCenter(
-                                            -force, 250, false);
-                                    c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                    if(targeted instanceof Tree) {
+                                        Tree temp = (Tree)targeted;
+                                        temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);
+                                    } else {
+                                        Creature c = (Creature) targeted;
+                                        c.stunned = true;
+                                        float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
+                                        c.body.applyForceToCenter(
+                                                -force, 250, false);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                    }
                                 }
                             }
                             haltForce = 0;
@@ -1033,7 +1069,7 @@ public class Player extends Creature {
                             if(Inventory.inventory[Inventory.selectedIndex].heavy) {
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
                                     if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
-                                        if(EntityManager.entities.get(i) instanceof Creature) {
+                                        if(EntityManager.entities.get(i) instanceof Creature || (EntityManager.entities.get(i) instanceof Tree && Inventory.inventory[Inventory.selectedIndex].isAxe)) {
                                             Creature c = (Creature)EntityManager.entities.get(i);
                                             c.stunned = true;
                                             float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4)
@@ -1044,12 +1080,24 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
+                                if(Inventory.inventory[Inventory.selectedIndex].isAxe) {
+                                    for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                                        for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                                            if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
+                                                if(GameState.herbs[x][y] instanceof Tree) {
+                                                    Tree temp = (Tree)GameState.herbs[x][y];
+                                                    temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             } else {
                                 float shortestDistance = -1;
                                 Entity targeted = null;
                                 for(int i = 0; i < EntityManager.entities.size(); i++) {
                                     if(EntityManager.entities.get(i).getBound().overlaps(attackRectangle) && EntityManager.entities.get(i) != this) {
-                                        if(EntityManager.entities.get(i) instanceof Creature && EntityManager.entities.get(i).health > 0) {
+                                        if((EntityManager.entities.get(i) instanceof Creature || (EntityManager.entities.get(i) instanceof Tree && Inventory.inventory[Inventory.selectedIndex].isAxe)) && EntityManager.entities.get(i).health > 0) {
                                             Creature c = (Creature)EntityManager.entities.get(i);
                                             c.stunned = true;
                                             float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
@@ -1068,14 +1116,37 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
+                                if(Inventory.inventory[Inventory.selectedIndex].isAxe) {
+                                    for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                                        for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                                            if(GameState.herbs[x][y] != null && GameState.herbs[x][y].getBound().overlaps(attackRectangle)) {
+                                                if(targeted == null) {
+                                                    targeted = GameState.herbs[x][y];
+                                                    shortestDistance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().x - GameState.herbs[x][y].getBound().width/2);
+                                                } else {
+                                                    float distance = Math.abs(body.getPosition().x*PPM - GameState.herbs[x][y].getBound().y - GameState.herbs[x][y].getBound().width/2);
+                                                    if(distance < shortestDistance) {
+                                                        targeted = GameState.herbs[x][y];
+                                                        shortestDistance = distance;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
 
                                 if(targeted != null) {
-                                    Creature c = (Creature)targeted;
-                                    c.stunned = true;
-                                    float force = Inventory.inventory[Inventory.selectedIndex].force + (float)(Math.random()*Inventory.inventory[Inventory.selectedIndex].force/4);
-                                    c.body.applyForceToCenter(
-                                            -force, 250, false);
-                                    c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                    if(targeted instanceof Tree) {
+                                        Tree temp = (Tree)targeted;
+                                        temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);
+                                    } else {
+                                        Creature c = (Creature) targeted;
+                                        c.stunned = true;
+                                        float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
+                                        c.body.applyForceToCenter(
+                                                -force, 250, false);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                    }
                                 }
                             }
                             haltForce = 0;
@@ -1831,7 +1902,7 @@ public class Player extends Creature {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-        //batch.draw(Tiles.blackTile, getBound().x, getBound().y, getBound().width, getBound().height);
+        //batch.draw(Tiles.blackTile, itemCollectBound.x, itemCollectBound.y, itemCollectBound.width, itemCollectBound.height);
         if(eruptionHold)
             eruptionCharge.draw(batch);
         else {
