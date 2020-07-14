@@ -332,6 +332,7 @@ public class Inventory {
 
                 // checks if an item is being picked out in the inventory
                 if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                    Player.inventoryHold = true;
                     checkPickItem(i);
                 }
 

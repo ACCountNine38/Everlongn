@@ -154,6 +154,19 @@ public class Shuriken extends Throw {
     @Override
     public void finish() {
         //explosion.start();
+        if(direction == 0) {
+            ParticleEffect land = new ParticleEffect();
+            land.load(Gdx.files.internal("particles/shredderLandLeft"), Gdx.files.internal(""));
+            land.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - height/2 + 10);
+            land.start();
+            EntityManager.particles.add(land);
+        } else {
+            ParticleEffect land = new ParticleEffect();
+            land.load(Gdx.files.internal("particles/shredderLandRight"), Gdx.files.internal(""));
+            land.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM + width, body.getPosition().y * Constants.PPM - height/2 + 10);
+            land.start();
+            EntityManager.particles.add(land);
+        }
         lifeOut = true;
         despawn = false;
         body.setLinearVelocity(0,0);

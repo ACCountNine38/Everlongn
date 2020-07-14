@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Items;
+import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
@@ -118,7 +119,7 @@ public class Item {
             }
         }
 
-        bounds.setPosition(body.getPosition().x*PPM - width/2, body.getPosition().y*PPM - height/2);
+        bounds.setPosition(body.getPosition().x * Constants.PPM - width / 2, body.getPosition().y * Constants.PPM - height / 2 - height / 5);
 
         if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) && bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y) && bounds.overlaps(Player.itemPickBound) && canPick) {
             collected = true;
@@ -192,8 +193,9 @@ public class Item {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-        if(body != null)
-            batch.draw(texture, body.getPosition().x*Constants.PPM - width/2, body.getPosition().y*Constants.PPM - height/2 - height/5, width, height);
+        if(body != null) {
+            batch.draw(texture, body.getPosition().x * Constants.PPM - width / 2, body.getPosition().y * Constants.PPM - height / 2 - height / 5, width, height);
+        }
         batch.end();
     }
 

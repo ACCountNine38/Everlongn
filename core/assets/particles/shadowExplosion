@@ -67,10 +67,14 @@ lowMax: 0.0
 highMin: 34.0
 highMax: 34.0
 relative: false
-scalingCount: 1
+scalingCount: 3
 scaling0: 1.0
-timelineCount: 1
+scaling1: 0.88235295
+scaling2: 0.0
+timelineCount: 3
 timeline0: 0.0
+timeline1: 0.6849315
+timeline2: 1.0
 - Y Scale - 
 active: false
 - Velocity - 
