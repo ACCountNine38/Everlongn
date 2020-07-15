@@ -52,11 +52,11 @@ public class WorldContactListener implements ContactListener {
                 else if(a.getUserData() instanceof Throw) {
                     Throw temp = (Throw) a.getUserData();
                     if(b.getUserData() instanceof Tile && !temp.lifeOut) {
+                        temp.finish();
                         temp.lockTile((Tile)b.getUserData());
-                        temp.finish();
                     } else if(b.getUserData() instanceof Entity && !temp.lifeOut) {
-                        temp.lockEntity((Entity)b.getUserData());
                         temp.finish();
+                        temp.lockEntity((Entity)b.getUserData());
                     }
                 }
                 else {
@@ -91,11 +91,11 @@ public class WorldContactListener implements ContactListener {
                 else if(b.getUserData() instanceof Throw) {
                     Throw temp = (Throw) b.getUserData();
                     if(a.getUserData() instanceof Tile && !temp.lifeOut) {
+                        temp.finish();
                         temp.lockTile((Tile)a.getUserData());
-                        temp.finish();
                     } else if(a.getUserData() instanceof Entity && !temp.lifeOut) {
-                        temp.lockEntity((Entity)a.getUserData());
                         temp.finish();
+                        temp.lockEntity((Entity)a.getUserData());
                     }
                 }
                 else {

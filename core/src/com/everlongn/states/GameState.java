@@ -316,6 +316,10 @@ public class GameState extends State {
                                         world.destroyBody(tiles[x][y].getBody());
                                         tiles[x][y].body = null;
                                     }
+                                    if(lightmap[x][y] != null) {
+                                        lightmap[x][y].remove();
+                                        lightmap[x][y] = null;
+                                    }
                                 } else {
                                     if(lightmap[x][y] != null) {
                                         lightmap[x][y].remove();

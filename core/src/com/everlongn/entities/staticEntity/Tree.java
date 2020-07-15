@@ -30,10 +30,12 @@ public class Tree extends StaticEntity {
 
         resetHealth(3000);
         resistance = 10;
+        baseRegenAmount = 0.2f;
     }
 
     @Override
     public void tick() {
+        regenerate();
         if(!fallen) {
             if (leftShift) {
                 currentAngle -= impactForce/4;
@@ -62,7 +64,7 @@ public class Tree extends StaticEntity {
                 fallSpeed = 2;
             if(leftShift) {
                 currentAngle -= fallSpeed;
-                if (currentAngle <= -105) {
+                if (currentAngle <= -180) {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     chopped = true;
@@ -70,7 +72,7 @@ public class Tree extends StaticEntity {
             } else if(rightShift) {
                 currentAngle += fallSpeed;
 
-                if (currentAngle >= 105) {
+                if (currentAngle >= 180) {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     chopped = true;
@@ -104,11 +106,11 @@ public class Tree extends StaticEntity {
 
     public Rectangle getFallBound() {
         if(direction == 1) {
-            return new Rectangle(x * PPM - Tile.TILESIZE/4, y * PPM - Tile.TILESIZE*2 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3) + (height * Tile.TILESIZE * 1 / 3),
-                    (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), Tile.TILESIZE/2);
+            return new Rectangle(x * PPM - Tile.TILESIZE/4, y * PPM - Tile.TILESIZE*2 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3 - Tile.TILESIZE*2) + (height * Tile.TILESIZE * 1 / 3 + Tile.TILESIZE),
+                    (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3 - Tile.TILESIZE*2), Tile.TILESIZE/2);
         } else {
-            return new Rectangle(x * PPM - Tile.TILESIZE/4 - (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), y * PPM - Tile.TILESIZE*2 + (height * Tile.TILESIZE * 1 / 3) + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3),
-                    (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3), Tile.TILESIZE/2);
+            return new Rectangle(x * PPM - Tile.TILESIZE/4 - (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3 - Tile.TILESIZE*2), y * PPM - Tile.TILESIZE*2 + (height * Tile.TILESIZE * 1 / 3 + Tile.TILESIZE) + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3 - Tile.TILESIZE*2),
+                    (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (height * Tile.TILESIZE * 2 / 3 - Tile.TILESIZE*2), Tile.TILESIZE/2);
         }
     }
 
@@ -131,6 +133,7 @@ public class Tree extends StaticEntity {
         if(health <= 2000 && !fallen && !chopped) {
             this.direction = direction;
             fallen = true;
+            resetHealth(2000);
             Sounds.playSound(Sounds.treeChop);
         }
     }

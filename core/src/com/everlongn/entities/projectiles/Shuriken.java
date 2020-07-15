@@ -71,7 +71,7 @@ public class Shuriken extends Throw {
         } else {
             if(!collected) {
                 if(locked != null && locked.body != null)
-                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, 0);
                 else
                     lifeOut = false;
             }
