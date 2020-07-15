@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Items;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -157,6 +158,8 @@ public class TriStar extends Throw {
     @Override
     public void finish() {
         lifeOut = true;
+
+        Sounds.playSound(Sounds.ninjaStarLand);
 
         body.setLinearVelocity(0,0);
 

@@ -153,7 +153,6 @@ public class Shuriken extends Throw {
 
     @Override
     public void finish() {
-        //explosion.start();
         if(direction == 0) {
             ParticleEffect land = new ParticleEffect();
             land.load(Gdx.files.internal("particles/shredderLandLeft"), Gdx.files.internal(""));

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -180,6 +181,7 @@ public class ThrowKnife extends Throw {
     public void finish() {
         lifeOut = true;
 
+        Sounds.playSound(Sounds.throwKnifeLand);
         if ((int) (Math.random() * 100) < 25) {
             despawn = true;
             explosion.start();

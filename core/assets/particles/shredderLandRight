@@ -83,9 +83,9 @@ highMin: 30.0
 highMax: 300.0
 relative: false
 scalingCount: 3
-scaling0: 0.84313726
-scaling1: 0.50980395
-scaling2: 0.0
+scaling0: 0.8
+scaling1: 0.6
+scaling2: 0.3
 timelineCount: 3
 timeline0: 0.0
 timeline1: 0.34931508

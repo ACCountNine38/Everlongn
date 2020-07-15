@@ -46,9 +46,21 @@ public class Sounds {
     public static Sound swordSwing4 = Gdx.audio.newSound(Gdx.files.internal("audio/melee/swordSwing4.mp3")); // basic sword
 
     // throwing sfx
-    public static Sound shurikenThrow = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenThrow.mp3")); // basic sword
-    public static Sound shurikenLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenLand.mp3")); // basic sword
-    public static Sound shurikenSlice = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/slice.mp3")); // basic sword
+    public static Sound shurikenThrow = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenThrow.mp3"));
+    public static Sound shurikenLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/shurikenLand.mp3"));
+    public static Sound shurikenSlice = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/slice.mp3"));
+    public static Sound ninjaStarThrow = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/ninjaStarThrow.mp3"));
+    public static Sound ninjaStarLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/ninjaStarLand.mp3"));
+    public static Sound throwWeapon = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/throwWeapon.mp3"));
+    public static Sound throwKnifeLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/throwKnifeLand.mp3"));
+    public static Sound daggerLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/daggerLand.mp3"));
+
+    // wood
+    public static Sound chop1 = Gdx.audio.newSound(Gdx.files.internal("audio/wood/chop1.mp3"));
+    public static Sound chop2 = Gdx.audio.newSound(Gdx.files.internal("audio/wood/chop2.mp3"));
+    public static Sound chop3 = Gdx.audio.newSound(Gdx.files.internal("audio/wood/chop3.mp3"));
+    public static Sound treeChop = Gdx.audio.newSound(Gdx.files.internal("audio/wood/treeChop.mp3"));
+    public static Sound treeFall = Gdx.audio.newSound(Gdx.files.internal("audio/wood/treeFall.mp3"));
 
     // utils
     public static Sound buttonHover = Gdx.audio.newSound(Gdx.files.internal("audio/util/hover.mp3"));

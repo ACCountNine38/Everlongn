@@ -352,16 +352,16 @@ public class Message {
 
                 if(ability.equals("dash")) {
                     Player.dash = true;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + ability, false, Color.YELLOW));
                 } else if(ability.equals("duo-toss")) {
                     Player.duoToss = true;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + ability, false, Color.YELLOW));
                 } else if(ability.equals("tri-toss")) {
                     Player.triToss = true;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You can now " + ability, false, Color.YELLOW));
                 } else if(ability.equals("Glaive Lord")) {
                     Player.glaiveLord = true;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have evolved to " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have evolved to " + ability, false, Color.YELLOW));
                 } else {
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
                 }
@@ -379,16 +379,16 @@ public class Message {
 
                 if(ability.equals("dash")) {
                     Player.dash = false;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + ability, false, Color.YELLOW));
                 } else if(ability.equals("duo-toss")) {
                     Player.duoToss = false;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + ability, false, Color.YELLOW));
                 } else if(ability.equals("tri-toss")) {
                     Player.triToss = false;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have forgotten " + ability, false, Color.YELLOW));
                 } else if(ability.equals("Glaive Lord")) {
                     Player.glaiveLord = false;
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have devolved to " + chars[1], false, Color.YELLOW));
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have devolved to " + ability, false, Color.YELLOW));
                 } else {
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown ability", false, Color.YELLOW));
                 }

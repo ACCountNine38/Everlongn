@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
+import com.everlongn.assets.Sounds;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -179,7 +180,7 @@ public class Dagger extends Throw {
     public void finish() {
         lifeOut = true;
 
-        //explosion.start();
+        Sounds.playSound(Sounds.daggerLand);
 
         if((int)(Math.random()*100) < 50) {
             despawn = true;

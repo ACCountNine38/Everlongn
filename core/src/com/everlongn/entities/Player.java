@@ -495,6 +495,7 @@ public class Player extends Creature {
                     for(int i = 0; i < amount; i++) {
                         Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                            Sounds.playSound(Sounds.throwWeapon);
                             temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
@@ -502,6 +503,7 @@ public class Player extends Creature {
                             temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                            Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         EntityManager.throwing.add(temp);
@@ -605,6 +607,7 @@ public class Player extends Creature {
                     for(int i = 0; i < amount; i++) {
                         Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
+                            Sounds.playSound(Sounds.throwWeapon);
                             temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
@@ -612,6 +615,7 @@ public class Player extends Creature {
                             temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
+                            Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
                         EntityManager.throwing.add(temp);
@@ -716,10 +720,11 @@ public class Player extends Creature {
                             for(int i = 0; i < amount; i++) {
                                 Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                    Sounds.playSound(Sounds.shurikenThrow);
+                                    Sounds.playSound(Sounds.ninjaStarThrow);
                                     temp = new TriStar(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
+                                    Sounds.playSound(Sounds.throwWeapon);
                                     temp = new Dagger(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 EntityManager.throwing.add(temp);
@@ -827,10 +832,11 @@ public class Player extends Creature {
                             for(int i = 0; i < amount; i++) {
                                 Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
-                                    Sounds.playSound(Sounds.shurikenThrow);
+                                    Sounds.playSound(Sounds.ninjaStarThrow);
                                     temp = new TriStar(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
+                                    Sounds.playSound(Sounds.throwWeapon);
                                     temp = new Dagger(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                                 }
                                 EntityManager.throwing.add(temp);

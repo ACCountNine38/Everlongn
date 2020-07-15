@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.everlongn.assets.Herbs;
+import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -119,9 +120,18 @@ public class Tree extends StaticEntity {
         } else {
             leftShift = true;
         }
+        int chopSound = (int)(Math.random()*3);
+        if(chopSound == 0) {
+            Sounds.playSound(Sounds.chop1);
+        } else if(chopSound == 1) {
+            Sounds.playSound(Sounds.chop2);
+        } else if(chopSound == 2) {
+            Sounds.playSound(Sounds.chop3);
+        }
         if(health <= 2000 && !fallen && !chopped) {
             this.direction = direction;
             fallen = true;
+            Sounds.playSound(Sounds.treeChop);
         }
     }
 
