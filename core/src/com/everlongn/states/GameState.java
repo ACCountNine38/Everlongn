@@ -547,7 +547,7 @@ public class GameState extends State {
                     }
                 }
 
-                if(tiles[x][y] != null && tiles[x][y].health <= 0) {
+                if(tiles[x][y] != null && tiles[x][y].alpha <= 0) {
                     if(tiles[x][y].body != null)
                         world.destroyBody(tiles[x][y].body);
                     tiles[x][y] = null;

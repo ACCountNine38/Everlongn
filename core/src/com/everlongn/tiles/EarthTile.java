@@ -205,14 +205,24 @@ public class EarthTile extends Tile {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        if(currentTexture != null)
-            batch.draw(currentTexture, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
+        if(digged) {
+            alpha -= 0.05;
+            if(alpha <= 0)
+                alpha = 0;
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+        }
+        if(currentTexture != null) {
+            batch.draw(currentTexture, x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, TILESIZE, TILESIZE);
+        }
 
         if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && numAdjacent == 3) {
             if(rotate)
                 batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
             else
                 batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
+        }
+        if(digged) {
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
         }
         batch.end();
     }

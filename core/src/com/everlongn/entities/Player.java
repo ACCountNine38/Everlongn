@@ -944,11 +944,13 @@ public class Player extends Creature {
                                     }
                                 }
                                 if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width - width + 25, body.getPosition().y*PPM - 10,
+                                            Inventory.inventory[Inventory.selectedIndex].width + width - 25, Inventory.inventory[Inventory.selectedIndex].height + 10);
                                     int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
                                     int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
-
                                     if(GameState.tiles[tileX][tileY] != null
-                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileX < GameState.worldHeight) {
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
+                                            && GameState.tiles[tileX][tileY].getBound().overlaps(attackRectangle)) {
                                         GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
                                     }
                                 }
@@ -991,11 +993,13 @@ public class Player extends Creature {
                                 }
                                 boolean breakTile = false;
                                 if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    attackRectangle = new Rectangle(body.getPosition().x*PPM - Inventory.inventory[Inventory.selectedIndex].width - width + 25, body.getPosition().y*PPM - 10,
+                                            Inventory.inventory[Inventory.selectedIndex].width + width - 25, Inventory.inventory[Inventory.selectedIndex].height + 10);
                                     int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
                                     int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
-
                                     if(GameState.tiles[tileX][tileY] != null
-                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight) {
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
+                                            && GameState.tiles[tileX][tileY].getBound().overlaps(attackRectangle)) {
                                         GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
                                         breakTile = true;
                                     }
@@ -1120,11 +1124,13 @@ public class Player extends Creature {
                                     }
                                 }
                                 if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - 10,
+                                            Inventory.inventory[Inventory.selectedIndex].width + width - 25, Inventory.inventory[Inventory.selectedIndex].height + 10);
                                     int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
                                     int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
-
                                     if(GameState.tiles[tileX][tileY] != null
-                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileX < GameState.worldHeight) {
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
+                                            && GameState.tiles[tileX][tileY].getBound().overlaps(attackRectangle)) {
                                         GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
                                     }
                                 }
@@ -1173,11 +1179,13 @@ public class Player extends Creature {
 
                                 boolean breakTile = false;
                                 if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - 10,
+                                            Inventory.inventory[Inventory.selectedIndex].width + width - 25, Inventory.inventory[Inventory.selectedIndex].height + 10);
                                     int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
                                     int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
-
                                     if(GameState.tiles[tileX][tileY] != null
-                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight) {
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
+                                            && GameState.tiles[tileX][tileY].getBound().overlaps(attackRectangle)) {
                                         GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
                                         breakTile = true;
                                     }

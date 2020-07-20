@@ -445,26 +445,26 @@ public class WorldGenerationState extends State {
         if(vegetation.get(i) == 0) {
             // nothing happens
         } else if(vegetation.get(i) < 4) {
-            int treeSize = r.nextInt(5) + 10;
+            int treeSize = r.nextInt(4) + 11;
             if(r.nextInt(15) < 1 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
                 previousTreeX = i * chunkSize + j;
 
                 herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) <= 7) {
-            int treeSize = r.nextInt(5) + 10;
+            int treeSize = r.nextInt(4) + 11;
             if(r.nextInt(10) < 2 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
                 previousTreeX = i * chunkSize + j;
                 herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) == 8) {
-            int treeSize = r.nextInt(5) + 10;
+            int treeSize = r.nextInt(4) + 11;
             if(r.nextInt(10) < 4 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
                 previousTreeX = i * chunkSize + j;
                 herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);
             }
         } else if(vegetation.get(i) == 9) {
-            int treeSize = r.nextInt(5) + 10;
+            int treeSize = r.nextInt(4) + 13;
             if(r.nextInt(10) < 6 && currentElevation-treeSize > 0 && previousTreeX != i * chunkSize + j-1) {
                 previousTreeX = i * chunkSize + j;
                 herbData.add("Tree " + (i * chunkSize + j) + " " + currentElevation + " " + treeSize);

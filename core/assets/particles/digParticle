@@ -2,8 +2,8 @@ Untitled
 - Delay -
 active: false
 - Duration - 
-lowMin: 200.0
-lowMax: 200.0
+lowMin: 250.0
+lowMax: 250.0
 - Count - 
 min: 0
 max: 200
@@ -26,7 +26,7 @@ relative: false
 scalingCount: 3
 scaling0: 1.0
 scaling1: 1.0
-scaling2: 0.3
+scaling2: 0.33333334
 timelineCount: 3
 timeline0: 0.0
 timeline1: 0.66
@@ -64,16 +64,16 @@ timeline0: 0.0
 - X Scale - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 32.0
-highMax: 32.0
+highMin: 64.0
+highMax: 64.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
-scaling1: 0.80898875
+scaling1: 0.7647059
 scaling2: 0.0
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.5939279
+timeline1: 0.6849315
 timeline2: 1.0
 - Y Scale - 
 active: false
@@ -84,10 +84,14 @@ lowMax: 0.0
 highMin: 30.0
 highMax: 300.0
 relative: false
-scalingCount: 1
+scalingCount: 3
 scaling0: 1.0
-timelineCount: 1
+scaling1: 0.7254902
+scaling2: 0.39215687
+timelineCount: 3
 timeline0: 0.0
+timeline1: 0.67808217
+timeline2: 1.0
 - Angle - 
 active: true
 lowMin: 90.0
@@ -96,12 +100,12 @@ highMin: 45.0
 highMax: 135.0
 relative: false
 scalingCount: 3
-scaling0: 1.0
-scaling1: 0.0
+scaling0: 0.7058824
+scaling1: 0.33333334
 scaling2: 0.0
 timelineCount: 3
 timeline0: 0.0
-timeline1: 0.5
+timeline1: 0.5205479
 timeline2: 1.0
 - Rotation - 
 active: false

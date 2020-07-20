@@ -65,6 +65,7 @@ public abstract class UIComponent {
         active = true;
         currentSpeed = speed;
         defaultSpeed = speed;
+        upshift = false;
         this.reboundSpeed = reboundSpeed;
     }
 

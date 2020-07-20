@@ -1,5 +1,7 @@
 package com.everlongn.entities.staticEntity;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -7,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.everlongn.assets.Herbs;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
+import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.StaticEntity;
@@ -67,11 +70,20 @@ public class Tree extends StaticEntity {
                 if (currentAngle <= -180) {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
-                    chopped = true;
-                } else {
-                    if(!landed) {
-                        landed = true;
+                    if(!chopped) {
                         Sounds.playSound(Sounds.treeFall);
+                    }
+                    chopped = true;
+                    for(int k = 2; k < (height-6)*2; k++) {
+                        float dx = x * PPM + (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (Tile.TILESIZE*k/2);
+                        float dy = y * PPM + Tile.TILESIZE*3 - Tile.TILESIZE/4 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * ((float)Tile.TILESIZE*k/2);
+                        ParticleEffect explosion = new ParticleEffect();
+                        explosion.load(Gdx.files.internal("particles/treeFall"), Gdx.files.internal(""));
+                        explosion.getEmitters().first().setPosition(dx, dy);
+                        explosion.start();
+                        EntityManager.particles.add(explosion);
+                        if((int)(Math.random()*2) == 0)
+                            EntityManager.items.add(Item.log.createNew(dx, dy, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     }
                 }
             } else if(rightShift) {
@@ -80,11 +92,20 @@ public class Tree extends StaticEntity {
                 if (currentAngle >= 180) {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
-                    chopped = true;
-                } else {
-                    if(!landed) {
-                        landed = true;
+                    if(!chopped) {
                         Sounds.playSound(Sounds.treeFall);
+                    }
+                    chopped = true;
+                    for(int k = 2; k < (height-6)*2; k++) {
+                        float dx = x * PPM + (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (Tile.TILESIZE*k/2);
+                        float dy = y * PPM - Tile.TILESIZE/4 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle + 180))) * ((float)Tile.TILESIZE*k/2);
+                        ParticleEffect explosion = new ParticleEffect();
+                        explosion.load(Gdx.files.internal("particles/treeFall"), Gdx.files.internal(""));
+                        explosion.getEmitters().first().setPosition(dx, dy);
+                        explosion.start();
+                        EntityManager.particles.add(explosion);
+                        if((int)(Math.random()*2) == 0)
+                            EntityManager.items.add(Item.log.createNew(dx, dy, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     }
                 }
             }
@@ -96,12 +117,34 @@ public class Tree extends StaticEntity {
                             for (int x = i * GameState.chunkSize; x < i * GameState.chunkSize + GameState.chunkSize; x++) {
                                 for (int y = j * GameState.chunkSize; y < j * GameState.chunkSize + GameState.chunkSize; y++) {
                                     if (GameState.tiles[x][y] != null && GameState.tiles[x][y].getBound().overlaps(getFallBound())) {
-                                        for(int k = 0; k < Math.random()*5; k++)
-                                            EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                                         chopped = true;
                                         if(!landed) {
                                             landed = true;
                                             Sounds.playSound(Sounds.treeFall);
+                                            if(direction == 1)
+                                                for(int k = 2; k < (height-6)*2; k++) {
+                                                    float dx = x * PPM + (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (Tile.TILESIZE*k/2);
+                                                    float dy = y * PPM + Tile.TILESIZE*3 - Tile.TILESIZE/4 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle))) * ((float)Tile.TILESIZE*k/2);
+                                                    ParticleEffect explosion = new ParticleEffect();
+                                                    explosion.load(Gdx.files.internal("particles/treeFall"), Gdx.files.internal(""));
+                                                    explosion.getEmitters().first().setPosition(dx, dy);
+                                                    explosion.start();
+                                                    EntityManager.particles.add(explosion);
+                                                    if((int)(Math.random()*2) == 0)
+                                                        EntityManager.items.add(Item.log.createNew(dx, dy, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
+                                                }
+                                            else
+                                                for(int k = 2; k < (height-6)*2; k++) {
+                                                    float dx = x * PPM + (float)Math.sin(Math.toRadians(Math.abs(currentAngle))) * (Tile.TILESIZE*k/2);
+                                                    float dy = y * PPM - Tile.TILESIZE/4 + (float)Math.cos(Math.toRadians(Math.abs(currentAngle + 180))) * ((float)Tile.TILESIZE*k/2);
+                                                    ParticleEffect explosion = new ParticleEffect();
+                                                    explosion.load(Gdx.files.internal("particles/treeFall"), Gdx.files.internal(""));
+                                                    explosion.getEmitters().first().setPosition(dx, dy);
+                                                    explosion.start();
+                                                    EntityManager.particles.add(explosion);
+                                                    if((int)(Math.random()*2) == 0)
+                                                        EntityManager.items.add(Item.log.createNew(dx, dy, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
+                                                }
                                         }
                                     }
                                 }
@@ -182,7 +225,7 @@ public class Tree extends StaticEntity {
                             5 * Tile.TILESIZE, height * Tile.TILESIZE,
                             1f, 1f, currentAngle);
             } else if(treeAlpha > 0){
-                treeAlpha -= 0.005;
+                treeAlpha -= 0.02;
                 if(treeAlpha <= 0)
                     treeAlpha = 0;
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, treeAlpha);
