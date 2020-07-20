@@ -21,7 +21,7 @@ import com.everlongn.utils.Tool;
 import static com.everlongn.utils.Constants.PPM;
 
 public class Tree extends StaticEntity {
-    public boolean leftShift, rightShift, reset, fallen, chopped;
+    public boolean leftShift, rightShift, reset, fallen, chopped, landed;
     public float currentAngle, fallSpeed = 0.005f, treeAlpha = 1f, impactForce;
     public int direction;
 
@@ -66,6 +66,11 @@ public class Tree extends StaticEntity {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     chopped = true;
+                } else {
+                    if(!landed) {
+                        landed = true;
+                        Sounds.playSound(Sounds.treeFall);
+                    }
                 }
             } else if(rightShift) {
                 currentAngle += fallSpeed;
@@ -74,6 +79,11 @@ public class Tree extends StaticEntity {
                     for(int i = 0; i < Math.random()*5; i++)
                         EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                     chopped = true;
+                } else {
+                    if(!landed) {
+                        landed = true;
+                        Sounds.playSound(Sounds.treeFall);
+                    }
                 }
             }
 
@@ -87,6 +97,10 @@ public class Tree extends StaticEntity {
                                         for(int k = 0; k < Math.random()*5; k++)
                                             EntityManager.items.add(Item.log.createNew((int)(Math.random()*(x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2)), y * PPM - Tile.TILESIZE * 2 + 100, 1, (float) Math.random() * 300 - 150, (float) Math.random() * 50 + 100));
                                         chopped = true;
+                                        if(!landed) {
+                                            landed = true;
+                                            Sounds.playSound(Sounds.treeFall);
+                                        }
                                     }
                                 }
                             }
@@ -114,7 +128,7 @@ public class Tree extends StaticEntity {
 
     public void impact(int damage, int direction) {
         hurt(damage, GameState.difficulty);
-        impactForce = damage/50;
+        impactForce = Math.max(damage/50, 1);
         if(direction == 0) {
             rightShift = true;
         } else {

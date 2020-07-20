@@ -340,7 +340,7 @@ public class Player extends Creature {
             }
             boolean found = false;
             for(int i = 0; i < EntityManager.entities.size(); i++) {
-                if(EntityManager.entities.get(i) instanceof Creature &&
+                if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player) &&
                         EntityManager.entities.get(i).getBound().contains(
                                 EntityManager.player.mouseWorldPos().x, EntityManager.player.mouseWorldPos().y)) {
                     found = true;
@@ -943,6 +943,15 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
+                                if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+                                    int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+
+                                    if(GameState.tiles[tileX][tileY] != null
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileX < GameState.worldHeight) {
+                                        GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
+                                    }
+                                }
                             } else {
                                 float shortestDistance = -1;
                                 Entity targeted = null;
@@ -980,7 +989,19 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
-                                if(targeted != null) {
+                                boolean breakTile = false;
+                                if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+                                    int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+
+                                    if(GameState.tiles[tileX][tileY] != null
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight) {
+                                        GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
+                                        breakTile = true;
+                                    }
+                                }
+
+                                if(targeted != null && !breakTile) {
                                     if(targeted instanceof Tree) {
                                         Tree temp = (Tree)targeted;
                                         temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);
@@ -1098,6 +1119,15 @@ public class Player extends Creature {
                                         }
                                     }
                                 }
+                                if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+                                    int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+
+                                    if(GameState.tiles[tileX][tileY] != null
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileX < GameState.worldHeight) {
+                                        GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
+                                    }
+                                }
                             } else {
                                 float shortestDistance = -1;
                                 Entity targeted = null;
@@ -1141,7 +1171,19 @@ public class Player extends Creature {
                                     }
                                 }
 
-                                if(targeted != null) {
+                                boolean breakTile = false;
+                                if(Inventory.inventory[Inventory.selectedIndex].isPick) {
+                                    int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+                                    int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+
+                                    if(GameState.tiles[tileX][tileY] != null
+                                            && tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight) {
+                                        GameState.tiles[tileX][tileY].damage(Inventory.inventory[Inventory.selectedIndex].damage);
+                                        breakTile = true;
+                                    }
+                                }
+
+                                if(targeted != null && !breakTile) {
                                     if(targeted instanceof Tree) {
                                         Tree temp = (Tree)targeted;
                                         temp.impact(Inventory.inventory[Inventory.selectedIndex].damage, direction);

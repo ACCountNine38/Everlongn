@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
+import com.everlongn.assets.ThrowWeapons;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -142,7 +143,7 @@ public class TriStar extends Throw {
                 alpha -= 0.05;
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
             }
-            batch.draw(Items.tristar, body.getPosition().x * Constants.PPM - Throwing.triStar.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.triStar.height / 2 + height / 2,
+            batch.draw(ThrowWeapons.tristar, body.getPosition().x * Constants.PPM - Throwing.triStar.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.triStar.height / 2 + height / 2,
                     Throwing.triStar.width / 2, Throwing.triStar.height / 2,
                     Throwing.triStar.width, Throwing.triStar.height, 1f, 1f, rotation);
             if(lifeOut && despawn) {

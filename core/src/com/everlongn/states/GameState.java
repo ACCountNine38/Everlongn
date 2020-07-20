@@ -466,7 +466,7 @@ public class GameState extends State {
             TextManager.analogDraw("Velocity X: " + Math.round(EntityManager.player.getBody().getLinearVelocity().x) + "   " +
                             "Velocity Y: " + Math.round(EntityManager.player.getBody().getLinearVelocity().y),
                     ControlCenter.width - 15, 80, Color.WHITE);
-            TextManager.analogDraw("Mouse Location: " + Gdx.input.getX() + ", " + Gdx.input.getY(),
+            TextManager.analogDraw("Mouse World Location: " + (int)(Player.mouseWorldPos().x/Tile.TILESIZE) + ", " + (int)(worldHeight - (Player.mouseWorldPos().y/Tile.TILESIZE)),
                     ControlCenter.width - 15, 100, Color.WHITE);
             TextManager.analogDraw("Chunk Location: " + Player.currentChunkX + ", " + Player.currentChunkY,
                     ControlCenter.width - 15, 120, Color.WHITE);
@@ -540,6 +540,24 @@ public class GameState extends State {
                         lightmap[x][y] = new PointLight(rayHandler, 100, Color.BLACK, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
                     } else if(walls[x][y].numAdjacent != 4) {
                         lightmap[x][y] = new PointLight(rayHandler, 100, Color.BLACK, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
+                    }
+                }
+
+                if(tiles[x][y] != null && tiles[x][y].health <= 0) {
+                    if(tiles[x][y].body != null)
+                        world.destroyBody(tiles[x][y].body);
+                    tiles[x][y] = null;
+                    if(tiles[x+1][y] != null && x + 1 < worldWidth) {
+                        tiles[x+1][y].tick();
+                    }
+                    if(tiles[x-1][y] != null && x - 1 >= 0) {
+                        tiles[x-1][y].tick();
+                    }
+                    if(tiles[x][y+1] != null && y + 1 < worldHeight) {
+                        tiles[x][y+1].tick();
+                    }
+                    if(tiles[x][y-1] != null && y - 1 >= 0) {
+                        tiles[x][y-1].tick();
                     }
                 }
             }

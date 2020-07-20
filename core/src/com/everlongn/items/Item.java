@@ -69,7 +69,7 @@ public class Item {
     // melee weapon properties
     public int damage, force;
     public float critChance;
-    public boolean heavy, isAxe;
+    public boolean heavy, isAxe, isPick;
     public float drawSpeed, swingSpeed;
     public Sound swingSound;
 
@@ -82,9 +82,6 @@ public class Item {
     // ranged weapon properties
     public float throwingDamage, throwSpeed;
     public boolean hold;
-
-    // axe
-    public float axePower;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {

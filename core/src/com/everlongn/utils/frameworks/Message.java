@@ -139,6 +139,15 @@ public class Message {
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Melee Weapon", false, Color.YELLOW));
 
             return;
+        } else if(text.equals("get axe set")) {
+            GameState.inventory.addItem(Melee.stoneAxe.createNew(1));
+            GameState.inventory.addItem(Melee.shortAxe.createNew(1));
+            GameState.inventory.addItem(Melee.longAxe.createNew(1));
+            GameState.inventory.addItem(Melee.nightmane.createNew(1));
+            GameState.inventory.addItem(Melee.jawBreaker.createNew(1));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Axe", false, Color.YELLOW));
+
+            return;
         } else if(text.equals("get item set")) {
             GameState.inventory.addItem(Item.log.createNew(Item.log.capacity));
             GameState.inventory.addItem(Throwing.stone.createNew(Throwing.stone.capacity));

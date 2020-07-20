@@ -15,6 +15,7 @@ public abstract class Tile {
     public TextureRegion texture;
     public int id;
     public boolean solid, soft;
+    public double health;
 
     public Body body;
 
@@ -30,6 +31,8 @@ public abstract class Tile {
         this.y = y;
         this.solid = solid;
         this.soft = soft;
+
+        health = 100;
     }
 
     public static Tile createNew(int x, int y, int id) {
@@ -41,6 +44,10 @@ public abstract class Tile {
 
     public void tick() {
 
+    }
+
+    public void damage(float damage) {
+        health -= damage;
     }
 
     public void render(SpriteBatch batch) {

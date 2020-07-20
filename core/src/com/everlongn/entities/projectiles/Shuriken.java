@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
+import com.everlongn.assets.ThrowWeapons;
 import com.everlongn.entities.*;
 import com.everlongn.items.Item;
 import com.everlongn.items.Throwing;
@@ -138,7 +139,7 @@ public class Shuriken extends Throw {
                 alpha -= 0.05;
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
             }
-            batch.draw(Items.shuriken, body.getPosition().x * Constants.PPM - Throwing.shuriken.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.shuriken.height / 2 + height / 2,
+            batch.draw(ThrowWeapons.shuriken, body.getPosition().x * Constants.PPM - Throwing.shuriken.width / 2 + width / 2, body.getPosition().y * Constants.PPM - Throwing.shuriken.height / 2 + height / 2,
                     Throwing.shuriken.width / 2, Throwing.shuriken.height / 2,
                     Throwing.shuriken.width, Throwing.shuriken.height, 1f, 1f, rotation);
             if(lifeOut && despawn) {

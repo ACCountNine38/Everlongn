@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Items;
 import com.everlongn.assets.Sounds;
+import com.everlongn.assets.ThrowWeapons;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Item;
@@ -159,11 +160,11 @@ public class Dagger extends Throw {
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
             }
             if(direction == 1)
-                batch.draw(Items.daggerR, body.getPosition().x * Constants.PPM - Throwing.dagger.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.dagger.height / 2 + height/2,
+                batch.draw(ThrowWeapons.daggerR, body.getPosition().x * Constants.PPM - Throwing.dagger.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.dagger.height / 2 + height/2,
                         Throwing.dagger.width / 2, Throwing.dagger.height / 2,
                         Throwing.dagger.width, Throwing.dagger.height, 1f, 1f, rotation);
             else
-                batch.draw(Items.daggerL, body.getPosition().x * Constants.PPM - Throwing.dagger.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.dagger.height / 2 + height/2,
+                batch.draw(ThrowWeapons.daggerL, body.getPosition().x * Constants.PPM - Throwing.dagger.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.dagger.height / 2 + height/2,
                         Throwing.dagger.width / 2, Throwing.dagger.height / 2,
                         Throwing.dagger.width, Throwing.dagger.height, 1f, 1f, rotation);
             if(lifeOut && despawn) {
