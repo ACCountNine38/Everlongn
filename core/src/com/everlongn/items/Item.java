@@ -15,6 +15,7 @@ import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
+import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
@@ -82,6 +83,9 @@ public class Item {
     // ranged weapon properties
     public float throwingDamage, throwSpeed;
     public boolean hold;
+
+    // tiles
+    public Tile tile;
 
     public Item(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable,
                 int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {

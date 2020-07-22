@@ -198,6 +198,10 @@ public class WorldLoadingState extends State {
                 int treeHeight = Integer.parseInt(object[3]);
                 // System.out.println((GameState.worldHeight - 1 - treeY) + " " + GameState.worldHeight);
                 GameState.herbs[treeX][GameState.worldHeight - 1 - treeY] = new Tree(treeX, (GameState.worldHeight - 1 - treeY), treeHeight);
+                for(int j = 0; j < treeHeight; j++) {
+                    if(GameState.worldHeight - 1 - treeY + j < GameState.worldHeight)
+                        GameState.occupied[treeX][GameState.worldHeight - 1 - treeY + j] = true;
+                }
             }
         }
     }

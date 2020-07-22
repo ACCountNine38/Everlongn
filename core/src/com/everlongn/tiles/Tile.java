@@ -9,9 +9,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.EntityManager;
+import com.everlongn.items.Item;
+import com.everlongn.items.TileItem;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
+
+import static com.everlongn.utils.Constants.PPM;
 
 public abstract class Tile {
     public static int TILESIZE = 50;

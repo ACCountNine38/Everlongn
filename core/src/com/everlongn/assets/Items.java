@@ -6,15 +6,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Items {
     public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite,
-            demiEssenceSprite, demiCrystalSprite, spiderLimbSprite, mossyFluidSprite, glowStickSprite;
+            demiEssenceSprite, demiCrystalSprite, spiderLimbSprite, mossyFluidSprite, glowStickSprite,
+            earthItemSprite;
 
     public static TextureRegion log, stone, omniEssence, omniCrystal, demiEssence, demiCrystal, spiderLimb, mossyFluid,
-        glowStickL, glowStickR;
+        glowStickL, glowStickR, earthItem;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
         logSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         log = new TextureRegion(logSprite, 0, 0, logSprite.getWidth(), logSprite.getHeight());
+
+        earthItemSprite = new Texture(Gdx.files.internal("items/earthItem.png"),true);
+        earthItemSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        earthItem = new TextureRegion(earthItemSprite, 0, 0, earthItemSprite.getWidth(), earthItemSprite.getHeight());
 
         spiderLimbSprite = new Texture(Gdx.files.internal("items/spiderLimb.png"),true);
         spiderLimbSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);

@@ -74,7 +74,7 @@ public class GameState extends State {
     ///////////////////
 
     // Cursor Selections //
-    public static boolean attackHover, defaultCursor, aiming, charging, itemHover;
+    public static boolean attackHover, defaultCursor, aiming, charging, itemHover, empty;
     ///////////////////
 
     // debug //
@@ -243,6 +243,8 @@ public class GameState extends State {
             Tool.changeCursor(3);
         } else if(aiming) {
             Tool.changeCursor(2);
+        } else if(empty) {
+            Tool.changeCursor(1);
         } else  {
             Player.forceCharge = 0;
             Tool.changeCursor(0);
@@ -551,16 +553,16 @@ public class GameState extends State {
                     if(tiles[x][y].body != null)
                         world.destroyBody(tiles[x][y].body);
                     tiles[x][y] = null;
-                    if(tiles[x+1][y] != null && x + 1 < worldWidth) {
+                    if(x + 1 < worldWidth && tiles[x+1][y] != null) {
                         tiles[x+1][y].tick();
                     }
-                    if(tiles[x-1][y] != null && x - 1 >= 0) {
+                    if(x - 1 >= 0 && tiles[x-1][y] != null) {
                         tiles[x-1][y].tick();
                     }
-                    if(tiles[x][y+1] != null && y + 1 < worldHeight) {
+                    if(y + 1 < worldHeight && tiles[x][y+1] != null) {
                         tiles[x][y+1].tick();
                     }
-                    if(tiles[x][y-1] != null && y - 1 >= 0) {
+                    if(y - 1 >= 0 && tiles[x][y-1] != null) {
                         tiles[x][y-1].tick();
                     }
                 }

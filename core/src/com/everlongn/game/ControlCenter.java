@@ -16,6 +16,7 @@ import com.everlongn.assets.Sounds;
 import com.everlongn.items.Arcane;
 import com.everlongn.items.Melee;
 import com.everlongn.items.Throwing;
+import com.everlongn.items.TileItem;
 import com.everlongn.states.StateManager;
 import com.everlongn.utils.TextManager;
 
@@ -55,6 +56,7 @@ public class ControlCenter extends ApplicationAdapter {
 		Arcane.init();
 		Melee.init();
 		Throwing.init();
+		TileItem.init();
 
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();

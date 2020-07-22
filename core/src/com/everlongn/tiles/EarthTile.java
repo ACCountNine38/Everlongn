@@ -6,13 +6,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.Herbs;
 import com.everlongn.assets.Tiles;
+import com.everlongn.entities.EntityManager;
+import com.everlongn.items.TileItem;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
     private Sprite grass = new Sprite(Herbs.grass1);
-    private boolean rotate = false;
+    private boolean rotate = false, dropped;
 
     private int slantType = 0;
 
@@ -207,8 +209,13 @@ public class EarthTile extends Tile {
         batch.begin();
         if(digged) {
             alpha -= 0.05;
-            if(alpha <= 0)
+            if(alpha <= 0) {
                 alpha = 0;
+                if(!dropped) {
+                    dropped = true;
+                    EntityManager.items.add(TileItem.earth.createNew(body.getPosition().x * Constants.PPM + TILESIZE / 2, body.getPosition().y * Constants.PPM + TILESIZE / 2, 1, 0, 100));
+                }
+            }
             batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
         }
         if(currentTexture != null) {
