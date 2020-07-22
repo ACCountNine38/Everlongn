@@ -442,6 +442,26 @@ public class Player extends Creature {
         int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
         int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
         Rectangle tileRectangle = new Rectangle(tileX*PPM - Tile.TILESIZE/2, tileY*PPM - Tile.TILESIZE/2, Tile.TILESIZE, Tile.TILESIZE);
+        boolean overlap = false;
+        for(int i = 0; i < EntityManager.entities.size(); i++) {
+            if(EntityManager.entities.get(i).getBound().overlaps(tileRectangle)) {
+                overlap = true;
+                break;
+            }
+        }
+        if(!overlap)
+            for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                    if(x < GameState.worldWidth && x >= 0 && y < GameState.worldHeight && y >= 0 && GameState.herbs[x][y] != null) {
+                        if(GameState.herbs[x][y].getBound().overlaps(tileRectangle)) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                }
+                if(overlap)
+                    break;
+            }
         int numAdjacent = 0;
         if(tileX-1 >= 0 && GameState.tiles[tileX-1][tileY] != null) {
             numAdjacent++;
@@ -456,8 +476,8 @@ public class Player extends Creature {
             numAdjacent++;
         }
         if(tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
-                && GameState.tiles[tileX][tileY] == null && !GameState.occupied[tileX][tileY] && (numAdjacent > 0 || GameState.walls[tileX][tileY] != null) &&
-                attackRectangle.overlaps(tileRectangle)) {
+                && GameState.tiles[tileX][tileY] == null && (numAdjacent > 0 || GameState.walls[tileX][tileY] != null) &&
+                attackRectangle.overlaps(tileRectangle) && !overlap) {
             if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 if (Inventory.inventory[Inventory.selectedIndex].name.equals("Earth")) {
                     GameState.tiles[tileX][tileY] = new EarthTile(tileX, tileY);
