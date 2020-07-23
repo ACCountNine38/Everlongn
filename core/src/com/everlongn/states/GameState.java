@@ -7,9 +7,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.everlongn.assets.Entities;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
@@ -29,9 +29,7 @@ import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
 import com.everlongn.world.WorldContactListener;
 
-import java.security.Key;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -71,6 +69,10 @@ public class GameState extends State {
     boolean layerFlash;
     public static Inventory inventory;
     public static Telepathy telepathy;
+    ///////////////////
+
+    // game camera //
+    public static ArrayList<ScreenShake> shakeForce = new ArrayList<ScreenShake>();
     ///////////////////
 
     // Cursor Selections //
@@ -114,6 +116,20 @@ public class GameState extends State {
         rayHandler.update();
         updateStaticEntity();
         entityManager.tick();
+        if(shakeForce.size() > 0) {
+            int forceSum = 0;
+            for(int i = 0; i < shakeForce.size(); i++) {
+                forceSum = shakeForce.get(i).force;
+                shakeForce.get(i).duration -= ControlCenter.delta;
+                if(shakeForce.get(i).duration <= 0) {
+                    shakeForce.remove(i);
+                    i--;
+                }
+            }
+            camera.translate(-forceSum / 2 + (float) (Math.random() * forceSum),
+                    -forceSum / 2 + (float) (Math.random() * forceSum));
+            camera.update();
+        }
         inventory.tick();
         options.tick();
         telepathy.tick();
@@ -442,6 +458,7 @@ public class GameState extends State {
         renderWalls(batch);
         renderStaticEntity(batch);
         entityManager.render(batch);
+
         renderTiles(batch);
 
         if(lightsOn)

@@ -1,0 +1,179 @@
+package com.everlongn.entities.projectiles;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.everlongn.assets.Sounds;
+import com.everlongn.assets.ThrowWeapons;
+import com.everlongn.entities.Creature;
+import com.everlongn.entities.EntityManager;
+import com.everlongn.entities.Player;
+import com.everlongn.entities.Throw;
+import com.everlongn.game.ControlCenter;
+import com.everlongn.items.Throwing;
+import com.everlongn.states.GameState;
+import com.everlongn.utils.Constants;
+import com.everlongn.utils.ScreenShake;
+import com.everlongn.utils.Tool;
+
+public class Bomb extends Throw {
+    public ParticleEffect explosion;
+    public float tickTimer;
+    public boolean explode;
+
+    public Bomb(float x, float y, int direction, float angle, float damage) {
+        super(x, y, 5, 5, 10);
+        this.direction = direction;
+        this.angle = angle;
+        this.damage = damage;
+
+        body = Tool.createBall((int) (x), (int) (y), Throwing.bomb.width/2 - 10, 10f,
+                (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
+
+        body.getFixtureList().first().setRestitution(0.25f);
+
+        float forceX = (float)(Math.abs(Math.sin(angle)*1500));
+        float forceY = (float)(Math.cos(angle)*1500);
+
+        if(direction == 0) {
+            moveByForce(new Vector2(-forceX, -forceY));
+        } else {
+            moveByForce(new Vector2(forceX, -forceY));
+        }
+
+        throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
+        explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
+        explosion.getEmitters().first().scaleSize(5);
+        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+    }
+
+    @Override
+    public void tick() {
+        if(!lifeOut) {
+            if(direction == 0)
+                rotation += 3;
+            else
+                rotation -= 3;
+        } else {
+            if(direction == 0)
+                rotation += 10;
+            else
+                rotation -= 10;
+            body.setLinearVelocity(body.getLinearVelocity().x/1.06f, body.getLinearVelocity().y);
+            tickTimer += ControlCenter.delta;
+            if(tickTimer > 0.45f) {
+                explode = true;
+            }
+        }
+        if(explode) {
+            if(!exploded) {
+                Sounds.playSound(Sounds.bomb);
+                explosionTimer += Gdx.graphics.getDeltaTime();
+                if(explosionTimer > 0.01) {
+                    explode();
+                    explosion.start();
+                    exploded = true;
+                }
+            }
+
+            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+            explosion.update(Gdx.graphics.getDeltaTime());
+
+            if (lifeOut && explosion.isComplete()) {
+                GameState.world.destroyBody(body);
+                explosion.dispose();
+                active = false;
+            }
+        }
+    }
+
+    public void explode() {
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 300, body.getPosition().y*Constants.PPM+2 - 300,
+                600, 600);
+
+        GameState.shakeForce.add(new ScreenShake(15, 0.5f));
+        for(int i = 0; i < EntityManager.entities.size(); i++) {
+            if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
+                if(EntityManager.entities.get(i) instanceof Creature) {
+                    Creature c = (Creature)EntityManager.entities.get(i);
+
+                    c.stunned = true;
+
+                    float angle = (float)(Math.random()*(Math.PI/6) + Math.PI/8);
+                    float dx = Math.abs(c.getBody().getPosition().x*Constants.PPM - body.getPosition().x*Constants.PPM);
+
+                    int thrust = 0;
+                    int force = 0;
+                    if(dx < 100) {
+                        c.hurt((float) 500, GameState.difficulty);
+                        thrust = 40;
+                        force = 1500;
+                    } else if(dx < 175) {
+                        c.hurt((float) 200, GameState.difficulty);
+                        thrust = 30;
+                        force = 1250;
+                    } else if(dx < 250) {
+                        c.hurt((float) 100, GameState.difficulty);
+                        thrust = 20;
+                        force = 1000;
+                    } else {
+                        c.hurt((float) 50, GameState.difficulty);
+                        thrust = 15;
+                        force = 800;
+                    }
+
+                    if(c instanceof Player) {
+                        if (body.getPosition().x < c.body.getPosition().x) {
+                            c.xThrust = (float) Math.cos(angle) * ((float) thrust);
+                        } else {
+                            c.xThrust = -(float) Math.cos(angle) * ((float) thrust);
+                        }
+                    } else {
+                        if (body.getPosition().x < c.body.getPosition().x) {
+                            c.body.applyForceToCenter(
+                                    (float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
+                        } else {
+                            c.body.applyForceToCenter(
+                                    -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        batch.begin();
+        if(body != null) {
+            if (exploded) {
+                alpha -= 0.1;
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+            }
+            if(direction == 1)
+                batch.draw(ThrowWeapons.bombR, body.getPosition().x * Constants.PPM - Throwing.bomb.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.bomb.height / 2 + height/2,
+                        Throwing.bomb.width / 2, Throwing.bomb.height / 2,
+                        Throwing.bomb.width, Throwing.dagger.height, 1f, 1f, rotation);
+            else
+                batch.draw(ThrowWeapons.bombL, body.getPosition().x * Constants.PPM - Throwing.bomb.width / 2 + width/2, body.getPosition().y * Constants.PPM - Throwing.bomb.height / 2 + height/2,
+                        Throwing.bomb.width / 2, Throwing.bomb.height / 2,
+                        Throwing.bomb.width, Throwing.bomb.height, 1f, 1f, rotation);
+            if(exploded) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
+        }
+
+        if (exploded) {
+            explosion.draw(batch);
+        }
+        batch.end();
+    }
+
+    @Override
+    public void finish() {
+        lifeOut = true;
+    }
+}

@@ -8,7 +8,7 @@ import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
 public class Throwing extends Weapon {
-    public static Throwing stone, triStar, shuriken, dagger, throwKnife;
+    public static Throwing stone, triStar, shuriken, dagger, throwKnife, bomb;
 
     public static void init() {
         stone = new Throwing(Items.stone, "Rock", 300, true, true,
@@ -18,9 +18,11 @@ public class Throwing extends Weapon {
         shuriken = new Throwing(ThrowWeapons.shuriken, "Shredder", 302, true, false,
                 64, 64, 60, 60, 2, "sharp", 19, 26, new TextureRegion[]{ThrowWeapons.shuriken, ThrowWeapons.shuriken}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 90, true);
         dagger = new Throwing(ThrowWeapons.daggerR, "Dagger", 303, true, false,
-                46, 46, 46, 46, 64, "sharp", 5, 12, new TextureRegion[]{ThrowWeapons.daggerL, ThrowWeapons.daggerR}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 35, false);
+                46, 46, 46, 46, 64, "sharp", 5, 12, new TextureRegion[]{ThrowWeapons.daggerL, ThrowWeapons.daggerR}, new String[]{"Throwing"}, 10f, 20f, 35, false);
         throwKnife = new Throwing(ThrowWeapons.throwKnifeR, "Throw Knife", 304, true, false,
-                54, 54, 54, 54, 16, "sharp", 7, 14, new TextureRegion[]{ThrowWeapons.throwKnifeL, ThrowWeapons.throwKnifeR}, new String[]{"Throwing", "Shadow"}, 10f, 20f, 50, true);
+                54, 54, 54, 54, 16, "sharp", 7, 14, new TextureRegion[]{ThrowWeapons.throwKnifeL, ThrowWeapons.throwKnifeR}, new String[]{"Throwing"}, 10f, 20f, 50, true);
+        bomb = new Throwing(ThrowWeapons.bombR, "Bomb", 305, true, false,
+                40, 40, 40, 40, 16, "sharp", 7, 14, new TextureRegion[]{ThrowWeapons.bombL, ThrowWeapons.bombR}, new String[]{"Throwing", "Doom"}, 10f, 20f, 50, true);
     }
 
     public Throwing(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display, String[] elemental,

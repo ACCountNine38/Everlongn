@@ -12,6 +12,7 @@ import com.everlongn.items.*;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
+import com.everlongn.utils.ScreenShake;
 import com.everlongn.utils.TextManager;
 import com.everlongn.utils.Tool;
 
@@ -255,6 +256,16 @@ public class Message {
                 if(EntityManager.player.speed < 0)
                     EntityManager.player.speed = 0;
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Decreased speed by: " + Integer.parseInt(chars[1]), false, Color.YELLOW));
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
+            }
+            return;
+        } else if(chars[0].equals("shake")) {
+            try {
+                int force = Integer.parseInt(chars[1]);
+                int duration = Integer.parseInt(chars[2]);
+                GameState.shakeForce.add(new ScreenShake(force, duration/1000));
+                Telepathy.messages.add(new Message((int)x, (int)y , height, "Screen shake with magnitude " + Integer.parseInt(chars[1]) + " for " + Integer.parseInt(chars[2]) + " ms", false, Color.YELLOW));
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
             }

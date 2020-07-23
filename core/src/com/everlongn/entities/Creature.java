@@ -16,7 +16,8 @@ import java.util.ArrayList;
 
 public abstract class Creature extends Entity {
     public float speed, currentSpeed, knockbackResistance, previousVelY, fadeAlpha = 1f, jumpForce,
-        jumpCondition, naturalRotation = (int)(Math.random()*4) + 2, sightHeight, sightWidth;
+        jumpCondition, naturalRotation = (int)(Math.random()*4) + 2, sightHeight, sightWidth,
+        xThrust, yThrust, velYBeforeThrust;
     public int direction, damage, bonusDamage, destroyedDirection, naturalStatus = (int)(Math.random()*3);
     public boolean canJump = true, jump, fall, airborn, alive = true, jumpable;
     public String status = "";
@@ -60,7 +61,7 @@ public abstract class Creature extends Entity {
             }
         } else {
             body.setLinearVelocity(body.getLinearVelocity().x/knockbackResistance, body.getLinearVelocity().y);
-            if(body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
+            if(Math.abs(body.getLinearVelocity().x) <= 0.15 && Math.abs(body.getLinearVelocity().y) <= 0.15) {
                 stunned = false;
             }
         }
@@ -77,6 +78,32 @@ public abstract class Creature extends Entity {
         if(Math.abs(body.getLinearVelocity().x) < jumpCondition && canJump) {
             body.applyForceToCenter(0, jumpForce,false);
             canJump = false;
+        }
+    }
+
+    public void updateThrust() {
+        if(xThrust > 0) {
+            xThrust -= 0.5 - knockbackResistance;
+            if(xThrust < 0) {
+                xThrust = 0;
+            }
+        } else if(xThrust < 0) {
+            xThrust += 0.5 + knockbackResistance;
+            if(xThrust > 0) {
+                xThrust = 0;
+            }
+        }
+
+        if(yThrust > 0) {
+            yThrust -= 1 - knockbackResistance;
+            if(yThrust < 0) {
+                yThrust = 0;
+            }
+        } else if(yThrust < 0) {
+            yThrust += 1 + knockbackResistance;
+            if(yThrust > 0) {
+                yThrust = 0;
+            }
         }
     }
 

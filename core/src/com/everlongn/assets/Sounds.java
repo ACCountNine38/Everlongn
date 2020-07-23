@@ -54,6 +54,7 @@ public class Sounds {
     public static Sound throwWeapon = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/throwWeapon.mp3"));
     public static Sound throwKnifeLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/throwKnifeLand.mp3"));
     public static Sound daggerLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/daggerLand.mp3"));
+    public static Sound bomb = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/bomb.mp3"));
 
     // wood
     public static Sound chop1 = Gdx.audio.newSound(Gdx.files.internal("audio/wood/chop1.mp3"));

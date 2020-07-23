@@ -39,10 +39,34 @@ public class WorldContactListener implements ContactListener {
             if (a.getFilterData().categoryBits == Constants.BIT_ENEMY) {
                 Creature temp = (Creature) a.getUserData();
                 temp.stunned = false;
+                if(temp.xThrust != 0) {
+                    temp.xThrust /= 1.1;
+                    if(Math.abs(temp.xThrust) < 0.1) {
+                        temp.xThrust = 0;
+                    }
+                }
+                if(temp.yThrust != 0) {
+                    temp.yThrust /= 1.1;
+                    if(Math.abs(temp.yThrust) < 0.1) {
+                        temp.yThrust = 0;
+                    }
+                }
             }
             else {
                 Creature temp = (Creature) b.getUserData();
                 temp.stunned = false;
+                if(temp.xThrust != 0) {
+                    temp.xThrust /= 1.03;
+                    if(Math.abs(temp.xThrust) < 0.1) {
+                        temp.xThrust = 0;
+                    }
+                }
+                if(temp.yThrust != 0) {
+                    temp.yThrust /= 1.03;
+                    if(Math.abs(temp.yThrust) < 0.1) {
+                        temp.yThrust = 0;
+                    }
+                }
             }
         } else if(cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_TILE) || cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_ENEMY)) {
             if (a.getFilterData().categoryBits == Constants.BIT_PROJECTILE) {

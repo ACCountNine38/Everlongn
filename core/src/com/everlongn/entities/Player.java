@@ -97,6 +97,7 @@ public class Player extends Creature {
         type.add("player");
         boundWidth = 16;
         boundHeight = 100;
+        knockbackResistance = 0;
 
         legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
         legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
@@ -114,7 +115,7 @@ public class Player extends Creature {
         headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
-                Constants.BIT_PLAYER, (short)(Constants.BIT_ENEMY | Constants.BIT_TILE), (short)0, this);
+                Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
 
         // particle effects
         eruptionCharge = new ParticleEffect();
@@ -161,6 +162,8 @@ public class Player extends Creature {
                 airborn = false;
             }
         }
+
+        updateThrust();
 
         // check fall damage
         if(Math.abs(previousVelY - body.getLinearVelocity().y) > 15 && !dash) {
@@ -228,8 +231,9 @@ public class Player extends Creature {
 
         cameraUpdate();
         horizontalForce = 0;
-        if(!GameState.telepathy.focused)
+        if(!GameState.telepathy.focused) {
             inputUpdate();
+        }
         checkMovement();
         animationUpdate();
 
@@ -241,11 +245,11 @@ public class Player extends Creature {
         }
 
         if(body.getLinearVelocity().y < -50) {
-            body.setLinearVelocity(body.getLinearVelocity().x, -50);
+            body.setLinearVelocity(body.getLinearVelocity().x + xThrust, -50);
         }
 
         if(jump && !Gdx.input.isKeyPressed(Input.Keys.W) && body.getLinearVelocity().y > 0) {
-            body.setLinearVelocity(body.getLinearVelocity().x, body.getLinearVelocity().y/1.15f);
+            body.setLinearVelocity(body.getLinearVelocity().x + xThrust, body.getLinearVelocity().y/1.15f);
         }
 
         checkItemOnHold();
@@ -606,6 +610,10 @@ public class Player extends Creature {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Bomb")) {
+                            Sounds.playSound(Sounds.throwWeapon);
+                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
+                        }
                         EntityManager.throwing.add(temp);
                     }
                 }
@@ -717,6 +725,10 @@ public class Player extends Creature {
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                        }
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Bomb")) {
+                            Sounds.playSound(Sounds.throwWeapon);
+                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
                         }
                         EntityManager.throwing.add(temp);
                     }
@@ -1884,6 +1896,7 @@ public class Player extends Creature {
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Spiderling(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
         }
+
         if(dash) {
             if(canDash) {
                 dashResetTimer += ControlCenter.delta;
@@ -1994,9 +2007,9 @@ public class Player extends Creature {
     public void checkMovement() {
         if(body.getLinearVelocity().x != 0 && !cameraXStopped) {
             movingHorizontal = true;
-            BackgroundManager.layers[0].x -= body.getLinearVelocity().x/4f;
-            BackgroundManager.layers[1].x -= body.getLinearVelocity().x/5.5f;
-            BackgroundManager.layers[2].x -= body.getLinearVelocity().x/7f;
+            BackgroundManager.layers[0].x -= body.getLinearVelocity().x/2f;
+            BackgroundManager.layers[1].x -= body.getLinearVelocity().x/2.75f;
+            BackgroundManager.layers[2].x -= body.getLinearVelocity().x/3.5f;
         } else {
             movingHorizontal = false;
         }
@@ -2010,10 +2023,14 @@ public class Player extends Creature {
         if(dashing)
             return;
 
+        if(yThrust != 0) {
+            body.setLinearVelocity(body.getLinearVelocity().x, velYBeforeThrust);
+            velYBeforeThrust = body.getLinearVelocity().y;
+        }
         if(direction == 0)
-            body.setLinearVelocity(-currentSpeed, body.getLinearVelocity().y);
+            body.setLinearVelocity(-currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
         else {
-            body.setLinearVelocity(currentSpeed, body.getLinearVelocity().y);
+            body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y);
         }
     }
 

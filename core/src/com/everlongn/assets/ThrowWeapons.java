@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class ThrowWeapons {
-    public static Texture shurikenSprite, daggerSprite, throwKnifeSprite, tristarSprite;
+    public static Texture shurikenSprite, daggerSprite, throwKnifeSprite, tristarSprite, bombSprite;
 
-    public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR, tristar;
+    public static TextureRegion shuriken, daggerL, daggerR, throwKnifeL, throwKnifeR, tristar, bombL, bombR;
 
     public static void init() {
         tristarSprite = new Texture(Gdx.files.internal("throwing/ninjaStar.png"),true);
@@ -29,5 +29,11 @@ public class ThrowWeapons {
         throwKnifeR = new TextureRegion(throwKnifeSprite, 0, 0, throwKnifeSprite.getWidth(), throwKnifeSprite.getHeight());
         throwKnifeL = new TextureRegion(throwKnifeSprite, 0, 0, throwKnifeSprite.getWidth(), throwKnifeSprite.getHeight());
         throwKnifeL.flip(true, false);
+
+        bombSprite = new Texture(Gdx.files.internal("throwing/bomb.png"),true);
+        bombSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        bombR = new TextureRegion(bombSprite, 0, 0, bombSprite.getWidth(), bombSprite.getHeight());
+        bombL = new TextureRegion(bombSprite, 0, 0, bombSprite.getWidth(), bombSprite.getHeight());
+        bombL.flip(true, false);
     }
 }
