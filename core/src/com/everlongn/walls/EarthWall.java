@@ -2,6 +2,8 @@ package com.everlongn.walls;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.Tiles;
+import com.everlongn.entities.EntityManager;
+import com.everlongn.items.TileItem;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
@@ -60,8 +62,27 @@ public class EarthWall extends Wall {
     public void render(SpriteBatch batch) {
         checkAdjacent();
         batch.begin();
+        if(digged) {
+            alpha -= 0.05;
+            if(alpha <= 0) {
+                alpha = 0;
+                if(!dropped) {
+//                    if(exploded) {
+//                        if((int)(Math.random()*3) == 0)
+//                            EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+//                    } else {
+//                        EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+//                    }
+                    dropped = true;
+                }
+            }
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+        }
         if(currentTexture != null)
             batch.draw(currentTexture, x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, TILESIZE, TILESIZE);
+        if(digged) {
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+        }
         batch.end();
     }
 }

@@ -611,6 +611,21 @@ public class GameState extends State {
             for (int x = xStart; x < xEnd; x++) {
                 if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && walls[x][y] != null) {
                     walls[x][y].render(batch);
+                    if(walls[x][y].dropped) {
+                        walls[x][y] = null;
+                        if(x + 1 < worldWidth && walls[x+1][y] != null) {
+                            walls[x+1][y].tick();
+                        }
+                        if(x - 1 >= 0 && walls[x-1][y] != null) {
+                            walls[x-1][y].tick();
+                        }
+                        if(y + 1 < worldHeight && walls[x][y+1] != null) {
+                            walls[x][y+1].tick();
+                        }
+                        if(y - 1 >= 0 && walls[x][y-1] != null) {
+                            walls[x][y-1].tick();
+                        }
+                    }
                 }
             }
         }

@@ -1,10 +1,13 @@
 package com.everlongn.walls;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.everlongn.entities.EntityManager;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
@@ -14,7 +17,8 @@ public class Wall {
 
     public int x, y, id;
     public TextureRegion texture;
-    public boolean solid;
+    public boolean solid, digged, dropped, exploded;
+    public float health, alpha = 1f;
 
     public Rectangle bounds;
 
@@ -42,9 +46,36 @@ public class Wall {
 
     }
 
+    public void damage(float damage) {
+        health -= damage;
+        ParticleEffect explosion = new ParticleEffect();
+        explosion.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
+        explosion.getEmitters().first().setPosition(x*Tile.TILESIZE, y*Tile.TILESIZE - TILESIZE/2);
+        explosion.start();
+        EntityManager.particles.add(explosion);
+        if(health <= 0) {
+            ParticleEffect explosion2 = new ParticleEffect();
+            explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
+            explosion2.getEmitters().first().scaleSize(2);
+            explosion2.getEmitters().first().setPosition(x*Tile.TILESIZE, y*Tile.TILESIZE - TILESIZE/2);
+            explosion2.start();
+            EntityManager.particles.add(explosion2);
+            digged = true;
+        }
+    }
+
     public void render(SpriteBatch batch) {
         batch.begin();
+        if(digged) {
+            alpha -= 0.05;
+            if(alpha <= 0)
+                alpha = 0;
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+        }
         batch.draw(texture, x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, Tile.TILESIZE, Tile.TILESIZE);
+        if(digged) {
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+        }
         batch.end();
     }
 
@@ -71,5 +102,8 @@ public class Wall {
             up = true;
             numAdjacent++;
         }
+    }
+    public Rectangle getBound() {
+        return new Rectangle(x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2, TILESIZE, TILESIZE);
     }
 }

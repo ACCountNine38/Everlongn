@@ -48,10 +48,6 @@ public class Bomb extends Throw {
         }
 
         throwBound = new Rectangle(0, 0, Throwing.triStar.width, Throwing.triStar.height);
-        explosion = new ParticleEffect();
-        explosion.load(Gdx.files.internal("particles/throwExplosion"), Gdx.files.internal(""));
-        explosion.getEmitters().first().scaleSize(5);
-        explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
     }
 
     @Override
@@ -78,17 +74,12 @@ public class Bomb extends Throw {
                 explosionTimer += Gdx.graphics.getDeltaTime();
                 if(explosionTimer > 0.01) {
                     explode();
-                    explosion.start();
                     exploded = true;
                 }
             }
 
-            explosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-            explosion.update(Gdx.graphics.getDeltaTime());
-
-            if (lifeOut && explosion.isComplete()) {
+            if (lifeOut) {
                 GameState.world.destroyBody(body);
-                explosion.dispose();
                 active = false;
             }
         }
@@ -163,6 +154,11 @@ public class Bomb extends Throw {
                                 GameState.tiles[x][y].exploded = true;
                                 GameState.tiles[x][y].damage(10000);
                             }
+                            if(GameState.walls[x][y] != null && GameState.walls[x][y].numAdjacent < 4 &&
+                                    Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
+                                GameState.walls[x][y].exploded = true;
+                                GameState.walls[x][y].damage(10000);
+                            }
                             if(GameState.herbs[x][y] != null &&
                                     Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
                                 GameState.herbs[x][y].exploded = true;
@@ -173,6 +169,11 @@ public class Bomb extends Throw {
                 }
             }
         }
+        ParticleEffect bombExplosion = new ParticleEffect();
+        bombExplosion.load(Gdx.files.internal("particles/bombParticles"), Gdx.files.internal(""));
+        bombExplosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+        bombExplosion.start();
+        EntityManager.particles.add(bombExplosion);
     }
 
     @Override
@@ -196,9 +197,6 @@ public class Bomb extends Throw {
             }
         }
 
-        if (exploded) {
-            explosion.draw(batch);
-        }
         batch.end();
     }
 
