@@ -23,7 +23,7 @@ public abstract class Tile {
     public int x, y;
     public TextureRegion texture;
     public int id;
-    public boolean solid, soft, digged;
+    public boolean solid, soft, digged, dropped, exploded;
     public float health, alpha = 1f;
 
     public Body body;

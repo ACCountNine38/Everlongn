@@ -24,7 +24,7 @@ import com.everlongn.utils.Tool;
 import static com.everlongn.utils.Constants.PPM;
 
 public class Tree extends StaticEntity {
-    public boolean leftShift, rightShift, reset, fallen, chopped, landed;
+    public boolean leftShift, rightShift, reset, fallen, chopped, landed, fade;
     public float currentAngle, fallSpeed = 0.005f, treeAlpha = 1f, impactForce;
     public int direction;
 
@@ -39,7 +39,21 @@ public class Tree extends StaticEntity {
     @Override
     public void tick() {
         regenerate();
-        if(!fallen) {
+        if(exploded) {
+//            for(int k = 2; k < (height-6)*2; k++) {
+//                ParticleEffect explosion = new ParticleEffect();
+//                explosion.load(Gdx.files.internal("particles/treeFall"), Gdx.files.internal(""));
+//                explosion.getEmitters().first().setPosition(x * PPM, y+4*PPM);
+//                explosion.start();
+//                EntityManager.particles.add(explosion);
+//                if((int)(Math.random()*4) == 0)
+//                    EntityManager.items.add(Item.log.createNew(x * PPM, y+4*PPM, 1, 0, (float) Math.random() * 50 + 100));
+//            }
+            fade = true;
+            if(treeAlpha <= 0) {
+                destroyed = true;
+            }
+        } else if(!fallen) {
             if (leftShift) {
                 currentAngle -= impactForce/4;
                 if (currentAngle <= -impactForce) {
@@ -195,9 +209,20 @@ public class Tree extends StaticEntity {
         }
     }
 
+    public void explode() {
+        hurt(10000, GameState.difficulty);
+        exploded = true;
+    }
+
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
+        if(fade) {
+            treeAlpha -= 0.05;
+            if(treeAlpha <= 0)
+                treeAlpha = 0;
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, treeAlpha);
+        }
         //batch.draw(Tiles.blackTile, getFallBound().x, getFallBound().y, getFallBound().width, getFallBound().height);
         if(!fallen) {
             batch.draw(Herbs.tree1,
@@ -246,6 +271,9 @@ public class Tree extends StaticEntity {
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
             }
         }
+        if(fade)
+            batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1f);
+
         batch.end();
     }
 

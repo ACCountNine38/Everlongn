@@ -293,7 +293,7 @@ public class GameState extends State {
             for (int x = xStart; x < xEnd; x++) {
                 if(herbs[x][y] != null) {
                     herbs[x][y].tick();
-                    if(herbs[x][y].health <= 0) {
+                    if(herbs[x][y].destroyed) {
                         herbs[x][y] = null;
                     }
                 }
@@ -566,7 +566,7 @@ public class GameState extends State {
                     }
                 }
 
-                if(tiles[x][y] != null && tiles[x][y].alpha <= 0) {
+                if(tiles[x][y] != null && tiles[x][y].dropped) {
                     if(tiles[x][y].body != null)
                         world.destroyBody(tiles[x][y].body);
                     tiles[x][y] = null;

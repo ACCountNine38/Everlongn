@@ -14,7 +14,7 @@ import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
     private Sprite grass = new Sprite(Herbs.grass1);
-    private boolean rotate = false, dropped;
+    private boolean rotate = false;
 
     private int slantType = 0;
 
@@ -212,8 +212,13 @@ public class EarthTile extends Tile {
             if(alpha <= 0) {
                 alpha = 0;
                 if(!dropped) {
+                    if(exploded) {
+                        if((int)(Math.random()*3) == 0)
+                            EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+                    } else {
+                        EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+                    }
                     dropped = true;
-                    EntityManager.items.add(TileItem.earth.createNew(body.getPosition().x * Constants.PPM + TILESIZE / 2, body.getPosition().y * Constants.PPM + TILESIZE / 2, 1, 0, 100));
                 }
             }
             batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);

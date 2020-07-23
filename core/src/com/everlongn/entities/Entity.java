@@ -16,7 +16,7 @@ public abstract class Entity {
     public int width, height, team, boundWidth, boundHeight;
     public String name;
     public ArrayList<String> type = new ArrayList<String>();
-    public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane;
+    public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane, exploded, destroyed;
 
     // timers
     public float regenTimer;

@@ -12,6 +12,7 @@ import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
+import com.everlongn.utils.ScreenShake;
 import com.everlongn.utils.Tool;
 
 public class ArcaneEruption extends Projectile {
@@ -129,7 +130,7 @@ public class ArcaneEruption extends Projectile {
     public void explode() {
         Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 125, body.getPosition().y*Constants.PPM+2 - 125,
                 250, 250);
-
+        GameState.shakeForce.add(new ScreenShake(10, 0.25f));
         for(int i = 0; i < EntityManager.entities.size(); i++) {
             if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {

@@ -3,8 +3,11 @@ package com.everlongn.entities.projectiles;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.ThrowWeapons;
 import com.everlongn.entities.Creature;
@@ -14,6 +17,7 @@ import com.everlongn.entities.Throw;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
+import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.ScreenShake;
 import com.everlongn.utils.Tool;
@@ -91,8 +95,10 @@ public class Bomb extends Throw {
     }
 
     public void explode() {
-        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM+2 - 300, body.getPosition().y*Constants.PPM+2 - 300,
+        Rectangle explosionRectangle = new Rectangle(body.getPosition().x*Constants.PPM - 300, body.getPosition().y*Constants.PPM - 300,
                 600, 600);
+
+        Circle explosionCircle = new Circle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, 150);
 
         GameState.shakeForce.add(new ScreenShake(15, 0.5f));
         for(int i = 0; i < EntityManager.entities.size(); i++) {
@@ -111,18 +117,22 @@ public class Bomb extends Throw {
                         c.hurt((float) 500, GameState.difficulty);
                         thrust = 40;
                         force = 1500;
-                    } else if(dx < 175) {
+                    } else if(dx < 150) {
                         c.hurt((float) 200, GameState.difficulty);
                         thrust = 30;
                         force = 1250;
-                    } else if(dx < 250) {
+                    } else if(dx < 225) {
                         c.hurt((float) 100, GameState.difficulty);
                         thrust = 20;
-                        force = 1000;
-                    } else {
+                        force = 1050;
+                    } else if(dx < 275) {
                         c.hurt((float) 50, GameState.difficulty);
                         thrust = 15;
-                        force = 800;
+                        force = 950;
+                    } else {
+                        c.hurt((float) 20, GameState.difficulty);
+                        thrust = 10;
+                        force = 850;
                     }
 
                     if(c instanceof Player) {
@@ -138,6 +148,26 @@ public class Bomb extends Throw {
                         } else {
                             c.body.applyForceToCenter(
                                     -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
+                        }
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < GameState.chunks.length; i++) {
+            for (int j = 0; j < GameState.chunks[i].length; j++) {
+                if(GameState.chunks[i][j].active) {
+                    for(int x = i*GameState.chunkSize; x < i*GameState.chunkSize + GameState.chunkSize; x++) {
+                        for(int y = j*GameState.chunkSize; y < j*GameState.chunkSize + GameState.chunkSize; y++) {
+                            if(GameState.tiles[x][y] != null &&
+                                    Intersector.overlaps(explosionCircle, GameState.tiles[x][y].getBound())) {
+                                GameState.tiles[x][y].exploded = true;
+                                GameState.tiles[x][y].damage(10000);
+                            }
+                            if(GameState.herbs[x][y] != null &&
+                                    Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
+                                GameState.herbs[x][y].exploded = true;
+                                GameState.herbs[x][y].hurt(10000, GameState.difficulty);
+                            }
                         }
                     }
                 }
