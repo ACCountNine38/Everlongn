@@ -610,7 +610,7 @@ public class Player extends Creature {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
-                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Bomb")) {
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Condensed Energy")) {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
                         }
@@ -726,7 +726,7 @@ public class Player extends Creature {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
                         }
-                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Bomb")) {
+                        else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Condensed Energy")) {
                             Sounds.playSound(Sounds.throwWeapon);
                             temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
                         }

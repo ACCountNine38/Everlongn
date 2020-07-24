@@ -21,7 +21,7 @@ public class Throwing extends Weapon {
                 46, 46, 46, 46, 64, "sharp", 5, 12, new TextureRegion[]{ThrowWeapons.daggerL, ThrowWeapons.daggerR}, new String[]{"Throwing"}, 10f, 20f, 35, false);
         throwKnife = new Throwing(ThrowWeapons.throwKnifeR, "Throw Knife", 304, true, false,
                 54, 54, 54, 54, 16, "sharp", 7, 14, new TextureRegion[]{ThrowWeapons.throwKnifeL, ThrowWeapons.throwKnifeR}, new String[]{"Throwing"}, 10f, 20f, 50, true);
-        bomb = new Throwing(ThrowWeapons.bombR, "Bomb", 305, true, false,
+        bomb = new Throwing(ThrowWeapons.bombR, "Condensed Energy", 305, true, false,
                 40, 40, 40, 40, 16, "sharp", 7, 14, new TextureRegion[]{ThrowWeapons.bombL, ThrowWeapons.bombR}, new String[]{"Throwing", "Doom"}, 10f, 20f, 50, true);
     }
 

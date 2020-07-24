@@ -144,31 +144,34 @@ public class Bomb extends Throw {
                 }
             }
         }
-        for(int i = 0; i < GameState.chunks.length; i++) {
-            for (int j = 0; j < GameState.chunks[i].length; j++) {
-                if(GameState.chunks[i][j].active) {
-                    for(int x = i*GameState.chunkSize; x < i*GameState.chunkSize + GameState.chunkSize; x++) {
-                        for(int y = j*GameState.chunkSize; y < j*GameState.chunkSize + GameState.chunkSize; y++) {
-                            if(GameState.tiles[x][y] != null &&
-                                    Intersector.overlaps(explosionCircle, GameState.tiles[x][y].getBound())) {
-                                GameState.tiles[x][y].exploded = true;
-                                GameState.tiles[x][y].damage(10000);
-                            }
-                            if(GameState.walls[x][y] != null && GameState.walls[x][y].numAdjacent < 4 &&
-                                    Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
-                                GameState.walls[x][y].exploded = true;
-                                GameState.walls[x][y].damage(10000);
-                            }
-                            if(GameState.herbs[x][y] != null &&
-                                    Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
-                                GameState.herbs[x][y].exploded = true;
-                                GameState.herbs[x][y].hurt(10000, GameState.difficulty);
-                            }
-                        }
-                    }
+        int currentX = (int)body.getPosition().x;
+        int currentY = (int)body.getPosition().y;
+
+        int sx = Math.max(0, currentX - 4);
+        int sy = Math.max(0, currentY - 4);
+        int ex = Math.min(GameState.worldWidth, currentX + 4);
+        int ey = Math.min(GameState.worldHeight, currentY + 4);
+
+        for(int x = sx; x <= ex; x++) {
+            for(int y = sy; y <= ey; y++) {
+                if(GameState.tiles[x][y] != null &&
+                        Intersector.overlaps(explosionCircle, GameState.tiles[x][y].getBound())) {
+                    GameState.tiles[x][y].exploded = true;
+                    GameState.tiles[x][y].damage(10000);
+                }
+                if(GameState.walls[x][y] != null && GameState.walls[x][y].numAdjacent < 4 &&
+                        Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
+                    GameState.walls[x][y].exploded = true;
+                    GameState.walls[x][y].damage(10000);
+                }
+                if(GameState.herbs[x][y] != null &&
+                        Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
+                    GameState.herbs[x][y].exploded = true;
+                    GameState.herbs[x][y].hurt(10000, GameState.difficulty);
                 }
             }
         }
+
         ParticleEffect bombExplosion = new ParticleEffect();
         bombExplosion.load(Gdx.files.internal("particles/bombParticles"), Gdx.files.internal(""));
         bombExplosion.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
