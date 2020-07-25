@@ -6,6 +6,7 @@ public class UI {
     public static Texture inventorySlot, hotbarSlot, selectedSlot, stain1, stain2, stain3, stain4, stain5;
     public static Texture worldSelect, worldSelected, worldSelectPanel, worldSelectBoarder, hardcore, normal,
         chargeCursor, chargeOrb, percentageBar;
+    public static Texture shockwave1, shockwave2, shockwave3;
 
     public static void init() {
         inventorySlot = new Texture(Gdx.files.internal("UI/inventorySlot.png"));
@@ -39,6 +40,13 @@ public class UI {
         stain4.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         stain5 = new Texture(Gdx.files.internal("UI/stain5.png"), true);
         stain5.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        shockwave1 = new Texture(Gdx.files.internal("effect/shockwave1.png"), true);
+        shockwave1.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        shockwave2 = new Texture(Gdx.files.internal("effect/shockwave2.png"), true);
+        shockwave2.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        shockwave3 = new Texture(Gdx.files.internal("effect/shockwave3.png"), true);
+        shockwave3.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
     }
 }
 

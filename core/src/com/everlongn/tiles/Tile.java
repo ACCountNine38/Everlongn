@@ -60,20 +60,22 @@ public abstract class Tile {
 
         if(health <= 0) {
             ParticleEffect explosion2 = new ParticleEffect();
-            if(!exploded) {
+            //if(!exploded) {
                 explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
                 explosion2.getEmitters().first().scaleSize(2);
                 explosion2.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
                 explosion2.start();
                 EntityManager.particles.add(explosion2);
-            }
+            //}
             digged = true;
         } else {
-            ParticleEffect explosion = new ParticleEffect();
-            explosion.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
-            explosion.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
-            explosion.start();
-            EntityManager.particles.add(explosion);
+            if(!exploded) {
+                ParticleEffect explosion = new ParticleEffect();
+                explosion.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
+                explosion.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
+                explosion.start();
+                EntityManager.particles.add(explosion);
+            }
         }
     }
 

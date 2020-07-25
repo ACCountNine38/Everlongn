@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.ThrowWeapons;
+import com.everlongn.assets.UI;
 import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -17,14 +17,13 @@ import com.everlongn.entities.Throw;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
-import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.ScreenShake;
 import com.everlongn.utils.Tool;
 
 public class Bomb extends Throw {
     public ParticleEffect explosion;
-    public float tickTimer;
+    public float tickTimer, chargeRadius = 100f;
     public boolean explode;
 
     public Bomb(float x, float y, int direction, float angle, float damage) {
@@ -54,19 +53,27 @@ public class Bomb extends Throw {
     public void tick() {
         if(!lifeOut) {
             if(direction == 0)
-                rotation += 3;
+                rotation += body.getLinearVelocity().x;
             else
-                rotation -= 3;
+                rotation -= body.getLinearVelocity().x;
         } else {
             if(direction == 0)
-                rotation += 10;
+                rotation += body.getLinearVelocity().x;
             else
-                rotation -= 10;
+                rotation -= body.getLinearVelocity().x;
             body.setLinearVelocity(body.getLinearVelocity().x/1.06f, body.getLinearVelocity().y);
-            tickTimer += ControlCenter.delta;
-            if(tickTimer > 0.45f) {
+            if(chargeRadius > 0) {
+                chargeRadius -= 1.5f;
+                if(chargeRadius < 0) {
+                    chargeRadius = 0;
+                }
+            } else {
                 explode = true;
             }
+//            tickTimer += ControlCenter.delta;
+//            if(tickTimer > 0.45f) {
+//
+//            }
         }
         if(explode) {
             if(!exploded) {
@@ -159,10 +166,13 @@ public class Bomb extends Throw {
                     GameState.tiles[x][y].exploded = true;
                     GameState.tiles[x][y].damage(10000);
                 }
-                if(GameState.walls[x][y] != null && GameState.walls[x][y].numAdjacent < 4 &&
-                        Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
-                    GameState.walls[x][y].exploded = true;
-                    GameState.walls[x][y].damage(10000);
+                if(GameState.walls[x][y] != null){
+                    GameState.walls[x][y].tick();
+                    if(GameState.walls[x][y].numAdjacent < 4 &&
+                            Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
+                        GameState.walls[x][y].exploded = true;
+                        GameState.walls[x][y].damage(10000);
+                    }
                 }
                 if(GameState.herbs[x][y] != null &&
                         Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
@@ -198,6 +208,13 @@ public class Bomb extends Throw {
             if(exploded) {
                 batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
             }
+
+            if(lifeOut && chargeRadius > 0) {
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1-chargeRadius/100);
+                batch.draw(UI.shockwave1, body.getPosition().x * Constants.PPM - chargeRadius, body.getPosition().y * Constants.PPM - chargeRadius, chargeRadius*2, chargeRadius*2);
+                batch.draw(UI.shockwave2, body.getPosition().x * Constants.PPM - chargeRadius, body.getPosition().y * Constants.PPM - chargeRadius, chargeRadius*2, chargeRadius*2);
+                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+            }
         }
 
         batch.end();
@@ -205,6 +222,9 @@ public class Bomb extends Throw {
 
     @Override
     public void finish() {
+        if(!lifeOut) {
+            Sounds.playSound(Sounds.bombCharge);
+        }
         lifeOut = true;
     }
 }
