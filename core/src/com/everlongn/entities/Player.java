@@ -15,6 +15,7 @@ import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.projectiles.*;
+import com.everlongn.entities.staticEntity.CondensedDarkEnergy;
 import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.*;
@@ -415,6 +416,16 @@ public class Player extends Creature {
             GameState.empty = true;
             checkTilePlacement();
         }
+        else if(Inventory.inventory[Inventory.selectedIndex] instanceof ObjectItem) {
+            heavySoundPlayed = false;
+            onhold = false;
+            meleeAttack = false;
+            throwAttack = false;
+            thrown = false;
+            tilePlacing = true;
+            GameState.empty = true;
+            checkObjectPlacement();
+        }
         else {
             GameState.defaultCursor = true;
             heavySoundPlayed = false;
@@ -431,6 +442,88 @@ public class Player extends Creature {
                 shadowHold = false;
             forceCharge = 0;
             cdr = 0;
+        }
+    }
+
+    public void checkObjectPlacement() {
+        Rectangle attackRectangle;
+        if(direction == 0) {
+            attackRectangle = new Rectangle(body.getPosition().x*PPM - Tile.TILESIZE*2 + width - Tile.TILESIZE/2, body.getPosition().y*PPM - Tile.TILESIZE,
+                    Tile.TILESIZE*2 + Tile.TILESIZE/2, height + Tile.TILESIZE * 2);
+        } else {
+            attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - Tile.TILESIZE,
+                    Tile.TILESIZE*2 + Tile.TILESIZE/2, height + Tile.TILESIZE * 2);
+        }
+        int tileX = (int)((mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+        int tileY = (int)((mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+        Rectangle tileRectangle = new Rectangle(tileX*PPM - Tile.TILESIZE/2, tileY*PPM - Tile.TILESIZE/2, Tile.TILESIZE, Tile.TILESIZE);
+        boolean overlap = false;
+        for(int i = 0; i < EntityManager.entities.size(); i++) {
+            if(EntityManager.entities.get(i).getBound().overlaps(tileRectangle)) {
+                overlap = true;
+                break;
+            }
+        }
+        if(!overlap)
+            for (int y = GameState.yStart; y < GameState.yEnd; y++) {
+                for (int x = GameState.xStart; x < GameState.xEnd; x++) {
+                    if(x < GameState.worldWidth && x >= 0 && y < GameState.worldHeight && y >= 0 && GameState.herbs[x][y] != null) {
+                        if(GameState.herbs[x][y].getBound().overlaps(tileRectangle)) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                }
+                if(overlap)
+                    break;
+            }
+        int numAdjacent = 0;
+        if(tileX-1 >= 0 && GameState.tiles[tileX-1][tileY] != null) {
+            numAdjacent++;
+        }
+        if(tileX+1 < GameState.worldWidth && GameState.tiles[tileX+1][tileY] != null) {
+            numAdjacent++;
+        }
+        if(tileY-1 >= 0 && GameState.tiles[tileX][tileY-1] != null) {
+            numAdjacent++;
+        }
+        if(tileY+1 < GameState.worldHeight && GameState.tiles[tileX][tileY+1] != null) {
+            numAdjacent++;
+        }
+        if(!Inventory.inventory[Inventory.selectedIndex].stick) {
+            if(tileY-1 >= 0 && GameState.tiles[tileX][tileY-1] != null) {
+                GameState.tiles[tileX][tileY-1].checkAdjacent();
+                if(GameState.tiles[tileX][tileY-1].numAdjacent <= 1) {
+                    canPlace = false;
+                    return;
+                }
+                if(GameState.tiles[tileX][tileY-1].numAdjacent == 2 && !(GameState.tiles[tileX][tileY-1].up && GameState.tiles[tileX][tileY-1].down)) {
+                    canPlace = false;
+                    return;
+                }
+            } else {
+                canPlace = false;
+                return;
+            }
+        }
+        if(tileX >= 0 && tileX < GameState.worldWidth && tileY >= 0 && tileY < GameState.worldHeight
+                && GameState.tiles[tileX][tileY] == null && (numAdjacent > 0 || GameState.walls[tileX][tileY] != null) &&
+                attackRectangle.overlaps(tileRectangle) && !overlap) {
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                if (Inventory.inventory[Inventory.selectedIndex].name.equals("Condensed Dark Energy")) {
+                    GameState.herbs[tileX][tileY] = new CondensedDarkEnergy(tileX, tileY);
+                    Inventory.inventory[Inventory.selectedIndex].count--;
+                    ParticleEffect explosion = new ParticleEffect();
+                    explosion.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
+                    explosion.getEmitters().first().scaleSize(2);
+                    explosion.getEmitters().first().setPosition(tileX * Tile.TILESIZE, tileY * Tile.TILESIZE - Tile.TILESIZE / 2);
+                    explosion.start();
+                    EntityManager.particles.add(explosion);
+                }
+            }
+            canPlace = true;
+        } else {
+            canPlace = false;
         }
     }
 

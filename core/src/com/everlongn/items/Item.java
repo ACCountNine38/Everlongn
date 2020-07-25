@@ -84,6 +84,9 @@ public class Item {
     public float throwingDamage, throwSpeed;
     public boolean hold;
 
+    // placable item properties
+    public boolean canHold, wallPlace, stick;
+
     // tiles
     public Tile tile;
 

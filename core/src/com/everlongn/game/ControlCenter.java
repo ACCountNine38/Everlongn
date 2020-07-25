@@ -13,10 +13,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.everlongn.assets.Images;
 import com.everlongn.assets.Sounds;
-import com.everlongn.items.Arcane;
-import com.everlongn.items.Melee;
-import com.everlongn.items.Throwing;
-import com.everlongn.items.TileItem;
+import com.everlongn.assets.StaticObjects;
+import com.everlongn.items.*;
 import com.everlongn.states.StateManager;
 import com.everlongn.utils.TextManager;
 
@@ -57,6 +55,7 @@ public class ControlCenter extends ApplicationAdapter {
 		Melee.init();
 		Throwing.init();
 		TileItem.init();
+		ObjectItem.init();
 
 		float width = Gdx.graphics.getWidth();
 		float height = Gdx.graphics.getHeight();

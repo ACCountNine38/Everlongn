@@ -8,5 +8,6 @@ public class Images {
         UI.init();
         Items.init();
         Entities.init();
+        StaticObjects.init();
     }
 }

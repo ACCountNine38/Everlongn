@@ -16,6 +16,7 @@ public class TileItem extends Item {
 
     public TileItem(TextureRegion texture, String name, int id, boolean stackable, boolean degeneratable, int width, int height, int itemWidth, int itemHeight, int capacity, String description, float holdX, float holdY, TextureRegion[] display) {
         super(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display);
+        this.canHold = canHold;
     }
 
     public TileItem createNew(float x, float y, int amount, float forceX, float forceY) {
