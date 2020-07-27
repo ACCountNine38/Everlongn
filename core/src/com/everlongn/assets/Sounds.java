@@ -12,6 +12,7 @@ public class Sounds {
 
     // player sfx
     public static Sound[] steps = new Sound[3];
+    public static Sound[] mine = new Sound[3];
 
     public static Sound jump = Gdx.audio.newSound(Gdx.files.internal("audio/player/land.mp3"));
     public static Sound land = Gdx.audio.newSound(Gdx.files.internal("audio/player/land.mp3"));
@@ -56,6 +57,9 @@ public class Sounds {
     public static Sound daggerLand = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/daggerLand.mp3"));
     public static Sound bomb = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/bomb.mp3"));
     public static Sound bombCharge = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/bombCharge.mp3"));
+    public static Sound darkEnergyCharge = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/neutrinoCharge.mp3"));
+    public static Sound darkEnergyExplode = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/neutrinoExplosion.mp3"));
+    public static Sound ring = Gdx.audio.newSound(Gdx.files.internal("audio/throwing/ring.mp3"));
 
     // wood
     public static Sound chop1 = Gdx.audio.newSound(Gdx.files.internal("audio/wood/chop1.mp3"));
@@ -72,6 +76,10 @@ public class Sounds {
         steps[0] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step1.mp3"));
         steps[1] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step2.mp3"));
         steps[2] = Gdx.audio.newSound(Gdx.files.internal("audio/player/step3.mp3"));
+
+        mine[0] = Gdx.audio.newSound(Gdx.files.internal("audio/player/mine1.mp3"));
+        mine[1] = Gdx.audio.newSound(Gdx.files.internal("audio/player/mine2.mp3"));
+        mine[2] = Gdx.audio.newSound(Gdx.files.internal("audio/player/mine3.mp3"));
 
         spider[0] = Gdx.audio.newSound(Gdx.files.internal("audio/entities/spider1.mp3"));
         spider[1] = Gdx.audio.newSound(Gdx.files.internal("audio/entities/spider2.mp3"));

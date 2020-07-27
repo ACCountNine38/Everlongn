@@ -7,7 +7,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Sounds;
@@ -51,6 +50,7 @@ public class GameState extends State {
     public static Entity[][] herbs;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
+    public static ArrayList<Entity> constantUpdateEntities;
     public static String mode, name;
     public static boolean[][] occupied;
     public static boolean exiting;
@@ -99,6 +99,7 @@ public class GameState extends State {
         background = new BackgroundManager();
         options = new IngameOptions();
         world.setContactListener(new WorldContactListener());
+        constantUpdateEntities = new ArrayList<>();
         exiting = false;
     }
 
@@ -119,11 +120,19 @@ public class GameState extends State {
         if(shakeForce.size() > 0) {
             int forceSum = 0;
             for(int i = 0; i < shakeForce.size(); i++) {
-                forceSum = shakeForce.get(i).force;
+                forceSum += shakeForce.get(i).force;
                 shakeForce.get(i).duration -= ControlCenter.delta;
                 if(shakeForce.get(i).duration <= 0) {
-                    shakeForce.remove(i);
-                    i--;
+                    if(shakeForce.get(i).fade){
+                        shakeForce.get(i).force -= 0.0001f;
+                        if(shakeForce.get(i).force <= 0) {
+                            shakeForce.remove(i);
+                            i--;
+                        }
+                    } else {
+                        shakeForce.remove(i);
+                        i--;
+                    }
                 }
             }
             camera.translate(-forceSum / 2 + (float) (Math.random() * forceSum),
@@ -271,11 +280,11 @@ public class GameState extends State {
         // update the tiles within 5 chunk range
         updateChunks();
         // render limits, render tiles that users can see
-        xStart = (int) (Math.max(0, (camera.position.x - ControlCenter.width/2) / Tile.TILESIZE));
+        xStart = (int) (Math.max(0, (camera.position.x - ControlCenter.width/2) / Tile.TILESIZE - 1));
         // worldWidth is actually worldWidth*TileSize/PPM, but TileSize = PPM so value used is worldWidth
-        xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 2);
-        yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE));
-        yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 2);
+        xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 3);
+        yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE - 1));
+        yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 3);
     }
 
     public void updateWalls() {
@@ -298,6 +307,9 @@ public class GameState extends State {
                     }
                 }
             }
+        }
+        for(int i = 0; i < constantUpdateEntities.size(); i++) {
+            constantUpdateEntities.get(i).tick();
         }
     }
 
@@ -458,6 +470,9 @@ public class GameState extends State {
         renderWalls(batch);
         renderStaticEntity(batch);
         entityManager.render(batch);
+        for(int i = 0; i < constantUpdateEntities.size(); i++) {
+            constantUpdateEntities.get(i).render(batch);
+        }
 
         renderTiles(batch);
 

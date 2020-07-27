@@ -213,8 +213,8 @@ public class EarthTile extends Tile {
                 alpha = 0;
                 if(!dropped) {
                     if(exploded) {
-                        if((int)(Math.random()*3) == 0)
-                            EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+                        //if((int)(Math.random()*3) == 0)
+                        //   EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
                     } else {
                         EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
                     }

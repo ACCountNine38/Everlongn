@@ -38,6 +38,7 @@ public class EntityManager {
                 i--;
             }
         }
+
         for(int i = 0; i < items.size(); i++) {
             items.get(i).tick();
             if(items.get(i).bounds.contains(Player.mouseWorldPos().x, Player.mouseWorldPos().y)) {

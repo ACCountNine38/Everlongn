@@ -11,7 +11,7 @@ import com.everlongn.utils.Tool;
 import java.util.ArrayList;
 
 public abstract class Entity {
-    public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount, alpha;
+    public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount, alpha = 1;
     public float x, y, density; //protected allow extended class to have access to them
     public int width, height, team, boundWidth, boundHeight;
     public String name;

@@ -23,7 +23,7 @@ import com.everlongn.utils.Tool;
 
 public class Bomb extends Throw {
     public ParticleEffect explosion;
-    public float tickTimer, chargeRadius = 100f;
+    public float chargeRadius = 100f;
     public boolean explode;
 
     public Bomb(float x, float y, int direction, float angle, float damage) {
@@ -70,10 +70,6 @@ public class Bomb extends Throw {
             } else {
                 explode = true;
             }
-//            tickTimer += ControlCenter.delta;
-//            if(tickTimer > 0.45f) {
-//
-//            }
         }
         if(explode) {
             if(!exploded) {
@@ -98,7 +94,7 @@ public class Bomb extends Throw {
 
         Circle explosionCircle = new Circle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, 150);
 
-        GameState.shakeForce.add(new ScreenShake(15, 0.5f));
+        GameState.shakeForce.add(new ScreenShake(15, 0.5f, true));
         for(int i = 0; i < EntityManager.entities.size(); i++) {
             if(EntityManager.entities.get(i).getBound().overlaps(explosionRectangle) && EntityManager.entities.get(i) != this) {
                 if(EntityManager.entities.get(i) instanceof Creature) {
@@ -154,8 +150,8 @@ public class Bomb extends Throw {
         int currentX = (int)body.getPosition().x;
         int currentY = (int)body.getPosition().y;
 
-        int sx = Math.max(0, currentX - 4);
-        int sy = Math.max(0, currentY - 4);
+        int sx = Math.max(0, currentX - 5);
+        int sy = Math.max(0, currentY - 3);
         int ex = Math.min(GameState.worldWidth, currentX + 4);
         int ey = Math.min(GameState.worldHeight, currentY + 4);
 
