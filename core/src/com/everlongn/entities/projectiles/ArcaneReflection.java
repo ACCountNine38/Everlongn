@@ -139,19 +139,23 @@ public class ArcaneReflection extends Projectile {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
 
-                    c.stunned = true;
+                    //c.stunned = true;
 
                     float force = 375 + (float)Math.random()*50;
                     float angle = (float)(Math.random()*(Math.PI/4));
+
+                    float thrust = 10 + (float)Math.random()*5;
                     if(direction == 0) {
                         c.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     } else {
+                        c.xThrust += (float)Math.cos(angle)*thrust;
+                        c.yThrust += (float)Math.sin(angle)*thrust;
                         c.body.applyForceToCenter(
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
-                    c.hurt(damage, GameState.difficulty);
+                    c.hurt(damage);
 
                     break;
                 }

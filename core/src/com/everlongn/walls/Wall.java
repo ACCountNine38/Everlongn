@@ -47,17 +47,35 @@ public class Wall {
     }
 
     public void damage(float damage) {
+        if(digged)
+            return;
         health -= damage;
         if(health <= 0) {
-            if(!exploded) {
+            //if(!exploded) {
                 ParticleEffect explosion2 = new ParticleEffect();
                 explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
                 explosion2.getEmitters().first().scaleSize(2);
                 explosion2.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
                 explosion2.start();
                 EntityManager.particles.add(explosion2);
-            }
+            //}
             digged = true;
+            if(exploded) {
+                GameState.walls[x][y] = null;
+
+                if(x + 1 < GameState.worldWidth && GameState.walls[x+1][y] != null) {
+                    GameState.walls[x+1][y].tick();
+                }
+                if(x - 1 >= 0 && GameState.walls[x-1][y] != null) {
+                    GameState.walls[x-1][y].tick();
+                }
+                if(y + 1 < GameState.worldHeight && GameState.walls[x][y+1] != null) {
+                    GameState.walls[x][y+1].tick();
+                }
+                if(y - 1 >= 0 && GameState.walls[x][y-1] != null) {
+                    GameState.walls[x][y-1].tick();
+                }
+            }
         } else {
             if(!exploded) {
                 ParticleEffect explosion = new ParticleEffect();

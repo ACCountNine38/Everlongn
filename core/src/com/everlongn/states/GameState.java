@@ -3,6 +3,7 @@ package com.everlongn.states;
 import box2dLight.PointLight;
 import box2dLight.RayHandler;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -22,6 +23,7 @@ import com.everlongn.popups.IngameOptions;
 import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.*;
+import com.everlongn.utils.components.ImageButton;
 import com.everlongn.utils.frameworks.Telepathy;
 import com.everlongn.walls.EarthWall;
 import com.everlongn.walls.Wall;
@@ -59,6 +61,7 @@ public class GameState extends State {
 
     // UI //
     public static IngameOptions options;
+    public static ImageButton inventoryButton, fusionButton, memoryButton, questButton;
     ///////////////////
 
     // Player Related Fields //
@@ -101,6 +104,11 @@ public class GameState extends State {
         world.setContactListener(new WorldContactListener());
         constantUpdateEntities = new ArrayList<>();
         exiting = false;
+
+        inventoryButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 100, 75, 75, true, UI.capsult);
+        fusionButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 200, 75, 75, true, UI.fusion);
+        memoryButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 300, 75, 75, true, UI.memory);
+        questButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 400, 75, 75, true, UI.quest);
     }
 
     public void tick(float delta) {
@@ -143,6 +151,7 @@ public class GameState extends State {
         options.tick();
         telepathy.tick();
         updateCursor();
+        updateUI();
         batch.setProjectionMatrix(camera.combined);
         // Shader.instance.update();
         rayHandler.setCombinedMatrix(camera);
@@ -196,6 +205,17 @@ public class GameState extends State {
 
                 exiting = false;
             }
+        }
+    }
+
+    public void updateUI() {
+        inventoryButton.tick();
+        fusionButton.tick();
+        memoryButton.tick();
+
+        if(inventoryButton.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
+            Inventory.extended = !Inventory.extended;
         }
     }
 
@@ -260,10 +280,10 @@ public class GameState extends State {
     public void updateCursor() {
         if(options.active) {
             Tool.changeCursor(0);
-        } else if(charging) {
-            Tool.changeCursor(1);
         } else if(itemHover) {
             Tool.changeCursor(4);
+        } else if(charging) {
+            Tool.changeCursor(1);
         } else if(attackHover) {
             Tool.changeCursor(3);
         } else if(aiming) {
@@ -280,11 +300,11 @@ public class GameState extends State {
         // update the tiles within 5 chunk range
         updateChunks();
         // render limits, render tiles that users can see
-        xStart = (int) (Math.max(0, (camera.position.x - ControlCenter.width/2) / Tile.TILESIZE - 1));
+        xStart = (int) (Math.max(0, (camera.position.x - ControlCenter.width/2) / Tile.TILESIZE));
         // worldWidth is actually worldWidth*TileSize/PPM, but TileSize = PPM so value used is worldWidth
-        xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 3);
-        yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE - 1));
-        yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 3);
+        xEnd = (int) Math.min(worldWidth, (camera.position.x + ControlCenter.width/2) / Tile.TILESIZE + 2);
+        yStart = (int) (Math.max(0, (camera.position.y - ControlCenter.height/2) / Tile.TILESIZE));
+        yEnd = (int) Math.min(worldHeight, (camera.position.y + ControlCenter.height/2) / Tile.TILESIZE + 2);
     }
 
     public void updateWalls() {
@@ -485,6 +505,10 @@ public class GameState extends State {
         options.render(batch);
 
         batch.begin();
+
+        inventoryButton.render(batch);
+        fusionButton.render(batch);
+        memoryButton.render(batch);
 
         if(ControlCenter.DEBUG) {
             TextManager.analogDraw("Ticks: " + Math.round(ControlCenter.delta*1000) + "ms   FPS: " + Gdx.graphics.getFramesPerSecond(),

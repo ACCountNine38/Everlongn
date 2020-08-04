@@ -67,6 +67,22 @@ public abstract class Creature extends Entity {
         }
     }
 
+//    public void move() {
+//        if(!stunned) {
+//            //testBasicJump();
+//            if (direction == 0)
+//                body.setLinearVelocity(-speed + xThrust, body.getLinearVelocity().y + yThrust);
+//            else {
+//                body.setLinearVelocity(speed + xThrust, body.getLinearVelocity().y + yThrust);
+//            }
+//        } else {
+//            body.setLinearVelocity(xThrust/knockbackResistance, yThrust);
+//            if(Math.abs(xThrust) <= 0.15 && Math.abs(yThrust) <= 0.15) {
+//                stunned = false;
+//            }
+//        }
+//    }
+
     public void testBasicJump() {
         if(previousVelY == body.getLinearVelocity().y) {
             canJump = true;

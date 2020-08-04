@@ -6,7 +6,8 @@ public class UI {
     public static Texture inventorySlot, hotbarSlot, selectedSlot, stain1, stain2, stain3, stain4, stain5;
     public static Texture worldSelect, worldSelected, worldSelectPanel, worldSelectBoarder, hardcore, normal,
         chargeCursor, chargeOrb, percentageBar;
-    public static Texture shockwave1, shockwave2, shockwave3;
+    public static Texture shockwave1, shockwave2, shockwave3,
+        capsult[], fusion[], memory[], quest[];
 
     public static void init() {
         inventorySlot = new Texture(Gdx.files.internal("UI/inventorySlot.png"));
@@ -47,6 +48,29 @@ public class UI {
         shockwave2.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         shockwave3 = new Texture(Gdx.files.internal("effect/shockwave3.png"), true);
         shockwave3.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        capsult = new Texture[2];
+        fusion = new Texture[2];
+        memory = new Texture[2];
+        quest = new Texture[2];
+
+        capsult[0] = new Texture(Gdx.files.internal("UI/capsult1.png"), true);
+        capsult[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        fusion[0] = new Texture(Gdx.files.internal("UI/fusion1.png"), true);
+        fusion[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        memory[0] = new Texture(Gdx.files.internal("UI/memory1.png"), true);
+        memory[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        quest[0] = new Texture(Gdx.files.internal("UI/quest1.png"), true);
+        quest[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        capsult[1] = new Texture(Gdx.files.internal("UI/capsult2.png"), true);
+        capsult[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        fusion[1] = new Texture(Gdx.files.internal("UI/fusion2.png"), true);
+        fusion[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        memory[1] = new Texture(Gdx.files.internal("UI/memory2.png"), true);
+        memory[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        quest[1] = new Texture(Gdx.files.internal("UI/quest2.png"), true);
+        quest[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
     }
 }
 

@@ -56,9 +56,12 @@ public abstract class Tile {
     }
 
     public void damage(float damage) {
+        if(digged)
+            return;
+
         health -= damage;
 
-        if(health <= 0) {
+        if(health <= 0 && !digged) {
             //if(!exploded) {
                 ParticleEffect explosion2 = new ParticleEffect();
                 explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
@@ -67,7 +70,27 @@ public abstract class Tile {
                 explosion2.start();
                 EntityManager.particles.add(explosion2);
             //}
+
             digged = true;
+
+            if(exploded) {
+                GameState.tiles[x][y] = null;
+                if(body != null)
+                    GameState.world.destroyBody(body);
+
+                if(x + 1 < GameState.worldWidth && GameState.tiles[x+1][y] != null) {
+                    GameState.tiles[x+1][y].tick();
+                }
+                if(x - 1 >= 0 && GameState.tiles[x-1][y] != null) {
+                    GameState.tiles[x-1][y].tick();
+                }
+                if(y + 1 < GameState.worldHeight && GameState.tiles[x][y+1] != null) {
+                    GameState.tiles[x][y+1].tick();
+                }
+                if(y - 1 >= 0 && GameState.tiles[x][y-1] != null) {
+                    GameState.tiles[x][y-1].tick();
+                }
+            }
         } else {
             if(!exploded) {
                 ParticleEffect explosion = new ParticleEffect();

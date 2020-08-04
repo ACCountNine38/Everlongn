@@ -143,7 +143,7 @@ public class Dagger extends Throw {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
-                    c.hurt(damage, GameState.difficulty);
+                    c.hurt(damage);
 
                     break;
                 }

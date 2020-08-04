@@ -90,7 +90,7 @@ public class Rock extends Throw {
                         c.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     }
-                    c.hurt(damage, GameState.difficulty);
+                    c.hurt(damage);
                 }
             }
         }

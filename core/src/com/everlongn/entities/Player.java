@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
+import com.everlongn.entities.creatures.Hydra;
 import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.entities.staticEntity.CondensedDarkEnergy;
@@ -320,7 +321,7 @@ public class Player extends Creature {
     public void checkItemOnHold() {
         GameState.aiming = false;
         GameState.charging = false;
-        GameState.empty = false;
+        GameState.itemHover = false;
         if(Inventory.inventory[Inventory.selectedIndex] == null) {
             onhold = false;
             return;
@@ -413,7 +414,7 @@ public class Player extends Creature {
             throwAttack = false;
             thrown = false;
             tilePlacing = true;
-            GameState.empty = true;
+            GameState.itemHover = true;
             checkTilePlacement();
         }
         else if(Inventory.inventory[Inventory.selectedIndex] instanceof ObjectItem) {
@@ -423,7 +424,7 @@ public class Player extends Creature {
             throwAttack = false;
             thrown = false;
             tilePlacing = true;
-            GameState.empty = true;
+            GameState.itemHover = true;
             checkObjectPlacement();
         }
         else {
@@ -1133,7 +1134,7 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     -force, 250, false);
-                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
                                         }
                                     }
                                 }
@@ -1223,7 +1224,7 @@ public class Player extends Creature {
                                         float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
                                         c.body.applyForceToCenter(
                                                 -force, 250, false);
-                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
                                     }
                                 }
                             }
@@ -1315,7 +1316,7 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     force, 250, false);
-                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
                                         }
                                     }
                                 }
@@ -1411,7 +1412,7 @@ public class Player extends Creature {
                                         float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
                                         c.body.applyForceToCenter(
                                                 -force, 250, false);
-                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, GameState.difficulty);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
                                     }
                                 }
                             }
@@ -1993,6 +1994,9 @@ public class Player extends Creature {
     public void inputUpdate() {
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Spiderling(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            EntityManager.entities.add(new Hydra(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50) + 150));
         }
 
         if(dash) {

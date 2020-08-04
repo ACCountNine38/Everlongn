@@ -142,14 +142,18 @@ public class ArcaneEruption extends Projectile {
                     float angle = (float)(Math.random()*(Math.PI/6) + Math.PI/8);
                     // c.body.getPosition().x*Constants.PPM + c.width/2 < body.getPosition().x*Constants.PPM + 2
                     if(direction == 0) {
+//                        c.xThrust -= (float)Math.cos(angle)*thrust;
+//                        c.yThrust += (float)Math.sin(angle)*thrust;
                         c.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(800+actionForce), false);
                     } else {
+//                        c.xThrust += (float)Math.cos(angle)*thrust;
+//                        c.yThrust += (float)Math.sin(angle)*thrust;
                         c.body.applyForceToCenter(
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*(800+actionForce), false);
                     }
 
-                    c.hurt(damage, GameState.difficulty);
+                    c.hurt(damage);
                 }
             }
         }

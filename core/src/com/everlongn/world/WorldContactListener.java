@@ -2,6 +2,7 @@ package com.everlongn.world;
 
 import com.badlogic.gdx.physics.box2d.*;
 import com.everlongn.entities.*;
+import com.everlongn.entities.creatures.Hydra;
 import com.everlongn.entities.projectiles.ArcaneEruption;
 import com.everlongn.entities.projectiles.ArcaneRebound;
 import com.everlongn.entities.projectiles.ArcaneReflection;
@@ -38,34 +39,95 @@ public class WorldContactListener implements ContactListener {
         if(cDef == (short)(Constants.BIT_ENEMY | Constants.BIT_TILE)) {
             if (a.getFilterData().categoryBits == Constants.BIT_ENEMY) {
                 Creature temp = (Creature) a.getUserData();
-                temp.stunned = false;
-                if(temp.xThrust != 0) {
-                    temp.xThrust /= 1.1;
-                    if(Math.abs(temp.xThrust) < 0.1) {
-                        temp.xThrust = 0;
+
+                // special creature tests
+                if(temp instanceof Player) {
+                    if (temp.xThrust != 0) {
+                        temp.xThrust /= 1.1;
+                        if (Math.abs(temp.xThrust) < 0.1) {
+                            temp.xThrust = 0;
+                        }
                     }
-                }
-                if(temp.yThrust != 0) {
-                    temp.yThrust /= 1.1;
-                    if(Math.abs(temp.yThrust) < 0.1) {
-                        temp.yThrust = 0;
+                    if (temp.yThrust != 0) {
+                        temp.yThrust /= 1.1;
+                        if (Math.abs(temp.yThrust) < 0.1) {
+                            temp.yThrust = 0;
+                        }
                     }
+                } else if(temp instanceof Hydra && temp.status.equals("natural")) {
+                    Tile tile = (Tile)(b.getUserData());
+                    Hydra hydra = (Hydra)(temp);
+                    if(tile.numAdjacent == 2) {
+                        if (tile.left && tile.right && !tile.up && !tile.down) {
+                            hydra.currentVelY *= -1;
+                        }
+                        if (!tile.left && !tile.right && tile.up && tile.down) {
+                            hydra.currentVelX *= -1;
+                        } else {
+                            if (tile.down) {
+                                hydra.currentVelX *= -1;
+                                hydra.currentVelY *= Math.abs(hydra.currentVelY);
+                            } else {
+                                hydra.currentVelX *= -1;
+                                hydra.currentVelY *= -Math.abs(hydra.currentVelY);
+                            }
+                        }
+                    } else {
+                        if(tile.left && tile.right) {
+                            hydra.currentVelY *= -1;
+                        } else if(tile.up && tile.down) {
+                            hydra.currentVelX *= -1;
+                        }
+                    }
+                } else {
+                    temp.stunned = false;
                 }
             }
             else {
                 Creature temp = (Creature) b.getUserData();
-                temp.stunned = false;
-                if(temp.xThrust != 0) {
-                    temp.xThrust /= 1.03;
-                    if(Math.abs(temp.xThrust) < 0.1) {
-                        temp.xThrust = 0;
+
+                // special creature tests
+                if(temp instanceof Player) {
+                    if (temp.xThrust != 0) {
+                        temp.xThrust /= 1.03;
+                        if (Math.abs(temp.xThrust) < 0.1) {
+                            temp.xThrust = 0;
+                        }
+                    }
+                    if (temp.yThrust != 0) {
+                        temp.yThrust /= 1.03;
+                        if (Math.abs(temp.yThrust) < 0.1) {
+                            temp.yThrust = 0;
+                        }
                     }
                 }
-                if(temp.yThrust != 0) {
-                    temp.yThrust /= 1.03;
-                    if(Math.abs(temp.yThrust) < 0.1) {
-                        temp.yThrust = 0;
+                else if(temp instanceof Hydra && temp.status.equals("natural")) {
+                    Tile tile = (Tile)(a.getUserData());
+                    Hydra hydra = (Hydra)(temp);
+                    if(tile.numAdjacent == 2) {
+                        if (tile.left && tile.right && !tile.up && !tile.down) {
+                            hydra.currentVelY *= -1;
+                        }
+                        if (!tile.left && !tile.right && tile.up && tile.down) {
+                            hydra.currentVelX *= -1;
+                        } else {
+                            if (tile.down) {
+                                hydra.currentVelX *= -1;
+                                hydra.currentVelY *= Math.abs(hydra.currentVelY);
+                            } else {
+                                hydra.currentVelX *= -1;
+                                hydra.currentVelY *= -Math.abs(hydra.currentVelY);
+                            }
+                        }
+                    } else {
+                        if(tile.left && tile.right) {
+                            hydra.currentVelY *= -1;
+                        } else if(tile.up && tile.down) {
+                            hydra.currentVelX *= -1;
+                        }
                     }
+                } else {
+                    temp.stunned = false;
                 }
             }
         } else if(cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_TILE) || cDef == (short)(Constants.BIT_PROJECTILE | Constants.BIT_ENEMY)) {

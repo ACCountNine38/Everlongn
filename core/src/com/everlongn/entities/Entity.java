@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.everlongn.game.ControlCenter;
+import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
@@ -87,9 +88,9 @@ public abstract class Entity {
     }
 
     // method that calculates damage to player and enemies by difficulty
-    public void hurt(float damage, int difficulty) {
+    public void hurt(float damage) {
         if(name.equals("player")) {
-            if (difficulty == 2) { // insane difficulty
+            if (GameState.difficulty == 2) { // insane difficulty
                 if (damage*1.5 - resistance > 0) {
                     health -= damage*1.5 - resistance;
                 } else {
@@ -103,7 +104,7 @@ public abstract class Entity {
                 }
             }
         } else {
-            if (difficulty == 0) { // standard difficulty
+            if (GameState.difficulty == 0) { // standard difficulty
                 if (damage - resistance * 0.5 > 0) {
                     health -= damage - resistance * 0.5;
                 } else {

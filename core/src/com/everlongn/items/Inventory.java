@@ -417,7 +417,7 @@ public class Inventory {
         } else {
             if(draggedItem != null) {
                 dragTimer += Gdx.graphics.getDeltaTime();
-                if (dragTimer > 0.2) {
+                if (dragTimer > 0.35) {
                     draggedItem = null;
                     dragTimer = 0;
                 }

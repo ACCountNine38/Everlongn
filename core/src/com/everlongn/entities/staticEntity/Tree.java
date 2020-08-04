@@ -39,6 +39,12 @@ public class Tree extends StaticEntity {
     @Override
     public void tick() {
         regenerate();
+
+        if(GameState.tiles[(int)x][(int)y-1] == null) {
+            exploded = true;
+            health = 0;
+        }
+
         if(exploded) {
 //            for(int k = 2; k < (height-6)*2; k++) {
 //                ParticleEffect explosion = new ParticleEffect();
@@ -186,7 +192,7 @@ public class Tree extends StaticEntity {
     }
 
     public void impact(int damage, int direction) {
-        hurt(damage, GameState.difficulty);
+        hurt(damage);
         impactForce = Math.max(damage/50, 1);
         if(direction == 0) {
             rightShift = true;
@@ -210,7 +216,7 @@ public class Tree extends StaticEntity {
     }
 
     public void explode() {
-        hurt(10000, GameState.difficulty);
+        hurt(10000);
         exploded = true;
     }
 

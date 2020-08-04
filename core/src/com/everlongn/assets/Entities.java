@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Entities {
     // creatures
-    public static TextureRegion[][] spiderRun;
-    public static TextureRegion[] spiderLeap;
-    public static Texture spiderRunSprite, spiderLeapSprite;
+    public static TextureRegion[][] spiderRun, hydraFly;
+    public static TextureRegion[] spiderLeap, hydraBody, hydraHead;
+    public static Texture spiderRunSprite, spiderLeapSprite, hydraWing1, hydraWing2, hydraHeadSprite, hydraBodySprite;
 
     // player
     public static TextureRegion[][] legRun, armRun, chestRun, headRun, legJump;
@@ -19,6 +19,7 @@ public class Entities {
 
     public static void init() {
         // creatures
+        // spider
         spiderRunSprite = new Texture(Gdx.files.internal("creatures/dungonousSpawnling.png"),true);
         spiderRunSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         spiderRun = new TextureRegion[2][30];
@@ -41,6 +42,37 @@ public class Entities {
                 }
             }
         }
+
+        // hydra
+        hydraWing1 = new Texture(Gdx.files.internal("creatures/hydraWing1.png"),true);
+        hydraWing2 = new Texture(Gdx.files.internal("creatures/hydraWing2.png"),true);
+        hydraWing1.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        hydraWing2.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        hydraHeadSprite = new Texture(Gdx.files.internal("creatures/hydraHead.png"),true);
+        hydraBodySprite = new Texture(Gdx.files.internal("creatures/hydraBody.png"),true);
+        hydraHeadSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        hydraBodySprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+
+        hydraHead = new TextureRegion[2];
+        hydraBody = new TextureRegion[2];
+
+        hydraHead[0] = new TextureRegion(hydraHeadSprite, 0, 0, 500, 500);
+        hydraHead[1] = new TextureRegion(hydraHeadSprite, 0, 0, 500, 500);
+        hydraHead[1].flip(true, false);
+
+        hydraBody[0] = new TextureRegion(hydraBodySprite, 0, 0, 500, 500);
+        hydraBody[1] = new TextureRegion(hydraBodySprite, 0, 0, 500, 500);
+        hydraBody[1].flip(true, false);
+
+        hydraFly = new TextureRegion[2][2];
+
+        hydraFly[0][0] = new TextureRegion(hydraWing1, 0, 0, 500, 500);
+        hydraFly[1][0] = new TextureRegion(hydraWing1, 0, 0, 500, 500);
+        hydraFly[1][0].flip(true, false);
+        hydraFly[0][1] = new TextureRegion(hydraWing2, 0, 0, 500, 500);
+        hydraFly[1][1] = new TextureRegion(hydraWing2, 0, 0, 500, 500);
+        hydraFly[1][1].flip(true, false);
 
         // player
         legRunSprite = new Texture(Gdx.files.internal("player/legsRun.png"),true);

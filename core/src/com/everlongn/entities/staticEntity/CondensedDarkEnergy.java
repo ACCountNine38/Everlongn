@@ -13,16 +13,24 @@ import com.everlongn.entities.Creature;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.StaticEntity;
+import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.ScreenShake;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 import static com.everlongn.utils.Constants.PPM;
 
 public class CondensedDarkEnergy extends StaticEntity {
     public boolean activate = false;
-    public float chargeRadius = 450f;
+    public float chargeRadius = 450f, explosionTimer;
+    public int xOffset = 0;
+
+    private Queue<Integer> heights;
 
     public CondensedDarkEnergy(float x, float y) {
         super(x, y, 80, 80, 50);
@@ -30,10 +38,33 @@ public class CondensedDarkEnergy extends StaticEntity {
         resetHealth(1);
         resistance = 0;
         baseRegenAmount = 0f;
+
+        heights = new LinkedList<>();
+
+        for(int i = 0; i < 9; i++) {
+            heights.add(5);
+        }
+        for(int i = 0; i < 6; i++) {
+            heights.add(4);
+        }
+        for(int i = 0; i < 5; i++) {
+            heights.add(3);
+        }
+        for(int i = 0; i < 4; i++) {
+            heights.add(2);
+        }
+        for(int i = 0; i < 3; i++) {
+            heights.add(1);
+        }
     }
 
     @Override
     public void tick() {
+        if(GameState.tiles[(int)x][(int)y-1] == null) {
+            exploded = true;
+            health = 0;
+        }
+
         if(!activate) {
             if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) && getBound().contains(new Vector2(Player.mouseWorldPos().x, Player.mouseWorldPos().y))) {
                 activate = true;
@@ -59,7 +90,79 @@ public class CondensedDarkEnergy extends StaticEntity {
 
         if(exploded) {
             chargeRadius += 15f;
-            if(chargeRadius > 1250) {
+            explosionTimer += ControlCenter.delta;
+            if(explosionTimer >= 0.1f && !heights.isEmpty()) {
+                explosionTimer = 0;
+                int height = heights.poll();
+                for(int i = 0; i <= height; i++) {
+                    if((int)x-xOffset >= 0 && (int)y-i >= 0) {
+                        if(GameState.tiles[(int)x-xOffset][(int)y-i] != null) {
+                            GameState.tiles[(int) x - xOffset][(int) y - i].exploded = true;
+                            GameState.tiles[(int) x - xOffset][(int) y - i].damage(10000);
+                        }
+
+                        if(GameState.walls[(int)x-xOffset][(int)y-i] != null) {
+                            GameState.walls[(int) x - xOffset][(int) y - i].exploded = true;
+                            GameState.walls[(int) x - xOffset][(int) y - i].damage(10000);
+                        }
+
+                        if(GameState.herbs[(int)x-xOffset][(int)y-i] != null) {
+                            GameState.herbs[(int) x - xOffset][(int) y - i].exploded = true;
+                            GameState.herbs[(int) x - xOffset][(int) y - i].hurt(10000);
+                        }
+                    }
+                    if((int)x-xOffset >= 0 && (int)y+i < GameState.worldHeight) {
+                        if(GameState.tiles[(int)x-xOffset][(int)y+i] != null) {
+                            GameState.tiles[(int) x - xOffset][(int) y + i].exploded = true;
+                            GameState.tiles[(int) x - xOffset][(int) y + i].damage(10000);
+                        }
+
+                        if(GameState.walls[(int)x-xOffset][(int)y+i] != null) {
+                            GameState.walls[(int) x - xOffset][(int) y + i].exploded = true;
+                            GameState.walls[(int) x - xOffset][(int) y + i].damage(10000);
+                        }
+
+                        if(GameState.herbs[(int)x-xOffset][(int)y+i] != null) {
+                            GameState.herbs[(int)x-xOffset][(int)y+i].exploded = true;
+                            GameState.herbs[(int)x-xOffset][(int)y+i].hurt(10000);
+                        }
+                    }
+                    if((int)x+xOffset < GameState.worldWidth && (int)y-i >= 0) {
+                        if(GameState.tiles[(int)x+xOffset][(int)y-i] != null) {
+                            GameState.tiles[(int) x + xOffset][(int) y - i].exploded = true;
+                            GameState.tiles[(int) x + xOffset][(int) y - i].damage(10000);
+                        }
+
+                        if(GameState.walls[(int)x+xOffset][(int)y-i] != null) {
+                            GameState.walls[(int) x + xOffset][(int) y - i].exploded = true;
+                            GameState.walls[(int) x + xOffset][(int) y - i].damage(10000);
+                        }
+
+                        if(GameState.herbs[(int)x+xOffset][(int)y-i] != null) {
+                            GameState.herbs[(int)x+xOffset][(int)y-i].exploded = true;
+                            GameState.herbs[(int)x+xOffset][(int)y-i].hurt(10000);
+                        }
+                    }
+                    if((int)x+xOffset < GameState.worldWidth && (int)y+i < GameState.worldHeight && GameState.tiles[(int)x+xOffset][(int)y+i] != null) {
+                        if(GameState.tiles[(int)x+xOffset][(int)y+i] != null) {
+                            GameState.tiles[(int) x + xOffset][(int) y + i].exploded = true;
+                            GameState.tiles[(int) x + xOffset][(int) y + i].damage(10000);
+                        }
+
+                        if(GameState.walls[(int)x+xOffset][(int)y+i] != null) {
+                            GameState.walls[(int) x + xOffset][(int) y + i].exploded = true;
+                            GameState.walls[(int) x + xOffset][(int) y + i].damage(10000);
+                        }
+
+                        if(GameState.herbs[(int)x+xOffset][(int)y+i] != null) {
+                            GameState.herbs[(int)x+xOffset][(int)y+i].exploded = true;
+                            GameState.herbs[(int)x+xOffset][(int)y+i].hurt(10000);
+                        }
+                    }
+                }
+                xOffset++;
+            }
+            if(chargeRadius > 1250 && heights.isEmpty()) {
                 GameState.constantUpdateEntities.remove(this);
                 destroyed = true;
             }
@@ -69,7 +172,6 @@ public class CondensedDarkEnergy extends StaticEntity {
     private void explode() {
         float xLoc = x*Constants.PPM;
         float yLoc = y*Constants.PPM;
-        Ellipse exp = new Ellipse();
         Circle explosionCircle = new Circle(xLoc, yLoc, 1250);
         for(int i = 0; i < EntityManager.entities.size(); i++) {
             if(Intersector.overlaps(explosionCircle, EntityManager.entities.get(i).getBound())
@@ -85,16 +187,16 @@ public class CondensedDarkEnergy extends StaticEntity {
                     int thrust = 0;
                     int force = 0;
                     if(dx < 250) {
-                        c.hurt((float) 2000, GameState.difficulty);
-                        thrust = 70;
+                        c.hurt((float) 2000);
+                        thrust = 30;
                         force = 1800;
                     } else if(dx < 750) {
-                        c.hurt((float) 1000, GameState.difficulty);
-                        thrust = 50;
+                        c.hurt((float) 1000);
+                        thrust = 20;
                         force = 1500;
                     } else {
-                        c.hurt((float) 50, GameState.difficulty);
-                        thrust = 35;
+                        c.hurt((float) 50);
+                        thrust = 10;
                         force = 1200;
                     }
 
@@ -113,31 +215,6 @@ public class CondensedDarkEnergy extends StaticEntity {
                                     -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                         }
                     }
-                }
-            }
-        }
-        int sx = Math.max(0, (int)x - 20);
-        int sy = Math.max(0, (int)y - 4);
-        int ex = Math.min(GameState.worldWidth, (int)x + 20);
-        int ey = Math.min(GameState.worldHeight, (int)y + 20);
-
-        for(int x = sx; x <= ex; x++) {
-            for(int y = sy; y <= ey; y++) {
-                if(GameState.tiles[x][y] != null &&
-                        Intersector.overlaps(explosionCircle, GameState.tiles[x][y].getBound())) {
-                    GameState.tiles[x][y].exploded = true;
-                    GameState.tiles[x][y].damage(10000);
-                }
-                if(GameState.walls[x][y] != null &&
-                            Intersector.overlaps(explosionCircle, GameState.walls[x][y].getBound())) {
-                    GameState.walls[x][y].exploded = true;
-                    GameState.walls[x][y].damage(10000);
-                }
-
-                if(GameState.herbs[x][y] != null &&
-                        Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
-                    GameState.herbs[x][y].exploded = true;
-                    GameState.herbs[x][y].hurt(10000, GameState.difficulty);
                 }
             }
         }

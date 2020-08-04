@@ -62,7 +62,7 @@ public class Shuriken extends Throw {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
-                    e.hurt(damage, GameState.difficulty);
+                    e.hurt(damage);
                 }
             }
             if(direction == 0)
