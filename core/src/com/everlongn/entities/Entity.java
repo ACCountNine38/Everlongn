@@ -15,7 +15,7 @@ public abstract class Entity {
     public float health, maxHealth, bonusHealth, resistance, maxResistance, bonusResistance, baseRegenAmount, bonusRegenAmount, alpha = 1;
     public float x, y, density; //protected allow extended class to have access to them
     public int width, height, team, boundWidth, boundHeight;
-    public String name;
+    public String name, form;
     public ArrayList<String> type = new ArrayList<String>();
     public boolean active = true, canRegen = true, stunned, knockbackResistant, vulnerableToArcane, exploded, destroyed;
 

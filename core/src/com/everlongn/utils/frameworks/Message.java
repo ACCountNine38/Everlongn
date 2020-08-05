@@ -424,13 +424,13 @@ public class Message {
                 }
                 entity = entity.substring(0, entity.length() - 1);
                 if (entity.equals("Spider") || entity.equals("spider")) {
-                    Player.form = "spider";
+                    EntityManager.player.form = "spider";
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 } else if (entity.equals("Human") || entity.equals("human")) {
-                    Player.form = "human";
+                    EntityManager.player.form = "human";
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 } else if (entity.equals("Hydra") || entity.equals("hydra")) {
-                    Player.form = "hydra";
+                    EntityManager.player.form = "hydra";
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
                 else {

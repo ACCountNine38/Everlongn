@@ -41,6 +41,9 @@ public class Spiderling extends Creature {
         setMaxResistance(5);
 
         enemyList.add("player");
+        enemyList.add("hydra");
+        form = "spider";
+        type.add("spider");
 
         damage = size/6;
 
@@ -69,7 +72,7 @@ public class Spiderling extends Creature {
                 sightHeight = 450;
             } else {
                 sightWidth = 800;
-                sightHeight = 300;
+                sightHeight = 500;
             }
             sightBound.setPosition(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2);
             sightBound.setSize(sightWidth, sightHeight);
@@ -127,11 +130,15 @@ public class Spiderling extends Creature {
                         else
                             target.body.applyForceToCenter(550, 120, false);
                         target.hurt(damage);
+                        if(target instanceof Creature) {
+                            Creature c = (Creature) target;
+                            c.target = this;
+                        }
                     }
                 }
             }
 
-            if(target != null && !target.getBound().overlaps(sightBound)) {
+            if(target != null && (!target.getBound().overlaps(sightBound) || target.health <= 0)) {
                 target = null;
             }
 

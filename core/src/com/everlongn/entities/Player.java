@@ -41,9 +41,9 @@ public class Player extends Creature {
     private boolean cameraXStopped, armSwingUp = true;
 
     // global item related variables
-    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset, heavySoundPlayed, thrown;
+    public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset, heavySoundPlayed, thrown, flying;
     public static Rectangle itemCollectBound, itemPickBound;
-    public static String previousItem = "", form = "human";
+    public static String previousItem = "";
     public static float bonusArcanePercentage = 1, bonusMeleePercentage = 1, bonusThrowingPercentage = 1, bonusRangedPercentage = 1;
 
     // special item related variables
@@ -62,11 +62,11 @@ public class Player extends Creature {
     private Animation[] headRun = new Animation[2];
     private Animation[] chestRun = new Animation[2];
 
-    private float currentSpeed, targetAngle;
+    private float currentSpeed, currentSpeedY, targetAngle;
     public static float aimAngle, haltForce, shootAngle, cdr, camX, camY;
     public static float armRotationRight, armRotationLeft = 15;
 
-    public static int currentChunkX, currentChunkY, currentTileX, currentTileY, horizontalForce;
+    public static int currentChunkX, currentChunkY, currentTileX, currentTileY, horizontalForce, verticalForce;
 
     private ParticleEffect smoke, eruptionCharge, shadowCharge, shadowExplosion;
     public static float forceCharge, forceMax, airbornTimer, particleTimer, landSoundTimer;
@@ -83,7 +83,8 @@ public class Player extends Creature {
 
     // Transformations
     public boolean spiderLeap;
-    private Animation[] spiderRun = new Animation[2];
+    private Animation[] spiderRun = new Animation[2],
+            hydraChase = new Animation[2];
 
     // Others
 
@@ -101,6 +102,7 @@ public class Player extends Creature {
 
         baseRegenAmount = 0.1f;
         type.add("player");
+        form = "human";
         boundWidth = 16;
         boundHeight = 100;
         knockbackResistance = 0;
@@ -149,6 +151,9 @@ public class Player extends Creature {
         // transformations
         spiderRun[0] = new Animation(1f/60f, Entities.spiderRun[0], true);
         spiderRun[1] = new Animation(1f/60f, Entities.spiderRun[1], true);
+
+        hydraChase[0] = new Animation(1f/50f, Entities.hydraFly[0], true);
+        hydraChase[1] = new Animation(1f/50f, Entities.hydraFly[1], true);
     }
 
     public void checkSpecialCase() {
@@ -251,6 +256,7 @@ public class Player extends Creature {
         cameraUpdate();
 
         horizontalForce = 0;
+        verticalForce = 0;
 
         if(!GameState.telepathy.focused) {
             inputUpdate();
@@ -259,20 +265,35 @@ public class Player extends Creature {
         updateForm();
         checkMovement();
         animationUpdate();
-
         updateJumpAndFall();
 
-        if(form.equals("player")) {
+        if(form.equals("human")) {
             checkItemOnHold();
         }
     }
 
     public void updateForm() {
-        if(form.equals("spider")) {
-
+        if(form.equals("human")) {
+            flying = false;
+        }
+        else if(form.equals("spider")) {
+            flying = false;
         }
         else if(form.equals("hydra")) {
-
+            flying = true;
+            if(verticalForce == 0) {
+                if(currentSpeedY > 0) {
+                    currentSpeedY -= 0.2;
+                    if (currentSpeedY < 0)
+                        currentSpeedY = 0;
+                } else if(currentSpeedY < 0) {
+                    currentSpeedY += 0.2;
+                    if (currentSpeedY > 0)
+                        currentSpeedY = 0;
+                }
+            }
+            hydraChase[0].tick(ControlCenter.delta);
+            hydraChase[1].tick(ControlCenter.delta);
         }
     }
 
@@ -2078,17 +2099,18 @@ public class Player extends Creature {
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.A) && !dashing) {
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 horizontalForce = -1;
-                currentSpeed += 0.2f;
-                if (currentSpeed >= speed) {
-                    currentSpeed = speed;
+                currentSpeed -= 0.5f;
+                if (currentSpeed <= -speed) {
+                    currentSpeed = -speed;
                 }
                 direction = 0;
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.D) && !dashing) {
+
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 horizontalForce = 1;
-                currentSpeed += 0.2f;
+                currentSpeed += 0.5f;
                 if (currentSpeed >= speed) {
                     currentSpeed = speed;
                 }
@@ -2124,31 +2146,64 @@ public class Player extends Creature {
 
             if (Gdx.input.isKeyPressed(Input.Keys.A)) {
                 horizontalForce = -1;
-                currentSpeed += 0.2f;
-                if (currentSpeed >= 3) {
-                    currentSpeed = 3;
+                currentSpeed -= 0.5f;
+                if (currentSpeed <= -3) {
+                    currentSpeed = -3;
                 }
                 direction = 0;
 
-                spiderRun[0].tick(ControlCenter.delta);
-                spiderRun[1].tick(ControlCenter.delta);
+                if(!jump && !fall) {
+                    spiderRun[0].tick(ControlCenter.delta);
+                    spiderRun[1].tick(ControlCenter.delta);
+                }
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 horizontalForce = 1;
-                currentSpeed += 0.2f;
+                currentSpeed += 0.5f;
                 if (currentSpeed >= 3) {
                     currentSpeed = 3;
                 }
                 direction = 1;
 
-                spiderRun[0].tick(ControlCenter.delta);
-                spiderRun[1].tick(ControlCenter.delta);
+                if(!jump && !fall) {
+                    spiderRun[0].tick(ControlCenter.delta);
+                    spiderRun[1].tick(ControlCenter.delta);
+                }
             }
         }
 
         else if(form.equals("hydra")) {
-
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                horizontalForce = -1;
+                currentSpeed -= 0.5f;
+                if (currentSpeed <= -3) {
+                    currentSpeed = -3;
+                }
+                direction = 0;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                horizontalForce = 1;
+                currentSpeed += 0.5f;
+                if (currentSpeed >= 3) {
+                    currentSpeed = 3;
+                }
+                direction = 1;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                verticalForce = 1;
+                currentSpeedY += 0.5f - 1f + (float)(Math.random()*2);
+                if (currentSpeedY >= 3) {
+                    currentSpeedY = 3 - 1f + (float)(Math.random()*2);
+                }
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                verticalForce = -1;
+                currentSpeedY -= 0.5f - 1f + (float)(Math.random()*2);
+                if (currentSpeedY <= -3) {
+                    currentSpeedY = -3 - 1f + (float)(Math.random()*2);
+                }
+            }
         }
     }
 
@@ -2175,14 +2230,6 @@ public class Player extends Creature {
         }
     }
 
-    @Override
-    public Rectangle getBound() {
-        if(jump || fall) {
-            return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM + 25, boundWidth, boundHeight - 25);
-        }
-        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
-    }
-
     public void checkMovement() {
         if(body.getLinearVelocity().x != 0 && !cameraXStopped) {
             movingHorizontal = true;
@@ -2193,10 +2240,16 @@ public class Player extends Creature {
             movingHorizontal = false;
         }
 
-        if(horizontalForce == 0 && currentSpeed > 0) {
-            currentSpeed -= 0.2;
-            if(currentSpeed <= 0)
-                currentSpeed = 0;
+        if(horizontalForce == 0) {
+            if(currentSpeed > 0) {
+                currentSpeed -= 0.2;
+                if (currentSpeed < 0)
+                    currentSpeed = 0;
+            } else if(currentSpeed < 0) {
+                currentSpeed += 0.2;
+                if (currentSpeed > 0)
+                    currentSpeed = 0;
+            }
         }
 
         if(dashing)
@@ -2206,10 +2259,11 @@ public class Player extends Creature {
             body.setLinearVelocity(body.getLinearVelocity().x, velYBeforeThrust);
             velYBeforeThrust = body.getLinearVelocity().y;
         }
-        if(direction == 0)
-            body.setLinearVelocity(-currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
-        else {
-            body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y);
+
+        if(!flying) {
+            body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
+        } else {
+            body.setLinearVelocity(currentSpeed + xThrust, currentSpeedY + yThrust - 1f + (float)(Math.random()*2));
         }
     }
 
@@ -2243,6 +2297,14 @@ public class Player extends Creature {
 
     public static Vector3 mouseWorldPos() {
         return ControlCenter.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    }
+
+    @Override
+    public Rectangle getBound() {
+        if(jump || fall) {
+            return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM + 25, boundWidth, boundHeight - 25);
+        }
+        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
     }
 
     public void render(SpriteBatch batch) {
@@ -2482,7 +2544,9 @@ public class Player extends Creature {
         }
 
         else if(form.equals("hydra")) {
-
+            batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
+            batch.draw(hydraChase[direction].getFrame(), body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
+            batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
         }
         batch.end();
     }

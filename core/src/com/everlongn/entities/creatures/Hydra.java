@@ -18,9 +18,6 @@ import java.util.ArrayList;
 
 import static com.everlongn.utils.Constants.PPM;
 
-/*
-add the ability to damage enemies even if its not the target, but target is prio
- */
 public class Hydra extends Creature {
     public float directedAngle, currentVelX, currentVelY, stunnTimer, targetX, targetY,
         stabTimer, pausedTimer, resetAngle, resetTimer, stabCooldown, readyTimer;
@@ -50,6 +47,9 @@ public class Hydra extends Creature {
         setMaxResistance(10);
 
         enemyList.add("player");
+        enemyList.add("spider");
+        form = "hydra";
+        type.add("hydra");
 
         damage = size/5;
 
@@ -142,7 +142,7 @@ public class Hydra extends Creature {
                     findTarget();
                 } else {
                     aggro();
-                    if (target != null && !target.getBound().overlaps(sightBound)) {
+                    if (target != null && (!target.getBound().overlaps(sightBound) || target.health <= 0)) {
                         target = null;
                     }
                 }
@@ -232,20 +232,20 @@ public class Hydra extends Creature {
     public void stab() {
         stabTimer += ControlCenter.delta;
         if(canHurt && target.getBound().overlaps(getBound())) {
-            target.hurt(damage);
-            canHurt = false;
-            if(target instanceof Player) {
-                if(direction == 0)
-                    ((Player) target).xThrust -= width/12;
-                else
-                    ((Player) target).xThrust += width/12;
-            } else {
-                if(direction == 0)
-                    target.body.applyForceToCenter(-width*3, 0, false);
-                else
-                    target.body.applyForceToCenter(width*3, 0, false);
-            }
+            damage(target);
         }
+//        if(canHurt) {
+//            for(int i = 0; i < EntityManager.entities.size(); i++) {
+//                Entity e = EntityManager.entities.get(i);
+//                if(e.getBound().overlaps(getBound()) && e.health > 0 && e != this) {
+//                    for(int j = 0; j < e.type.size(); j++) {
+//                        if(enemyList.contains(e.type.get(j))) {
+//                            damage(e);
+//                        }
+//                    }
+//                }
+//            }
+//        }
         if(body.getLinearVelocity().y == 0) {
             stabTimer = 0;
             stabbing = false;
@@ -259,6 +259,28 @@ public class Hydra extends Creature {
             stabbing = false;
         } else {
             body.setLinearVelocity(currentVelX, currentVelY);
+        }
+    }
+
+    public void damage(Entity target) {
+        target.hurt(damage);
+
+        canHurt = false;
+        if(target instanceof Player) {
+            if(direction == 0)
+                ((Player) target).xThrust -= width/12;
+            else
+                ((Player) target).xThrust += width/12;
+        } else {
+            if(direction == 0)
+                target.body.applyForceToCenter(-width*3, 0, false);
+            else
+                target.body.applyForceToCenter(width*3, 0, false);
+        }
+
+        if(target instanceof Creature) {
+            Creature c = (Creature) target;
+            c.target = this;
         }
     }
 
@@ -295,14 +317,14 @@ public class Hydra extends Creature {
         batch.begin();
         if(alive) {
             //batch.draw(Tiles.blackTile, getBound().x, getBound().y, getBound().width, getBound().height);
-            batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
-            batch.draw(chase[direction].getFrame(), body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
-            batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(chase[direction].getFrame(), body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
         } else {
             batch.setColor(0f, 0f, 0f, fadeAlpha);
-            batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
-            batch.draw(chase[direction].getFrame(), body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
-            batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - width/2 + width/10, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(chase[direction].getFrame(), body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
+            batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - width/2 + width/16, body.getPosition().y * PPM - 20, width, height);
             batch.setColor(1f, 1f, 1f, 1f);
             destroyed[destroyedDirection].draw(batch);
         }

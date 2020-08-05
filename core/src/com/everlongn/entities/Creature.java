@@ -131,7 +131,7 @@ public abstract class Creature extends Entity {
             if(e instanceof Creature && e != this) {
                 Creature c = (Creature)e;
                 for(int j = 0; j < c.type.size(); j++) {
-                    if(enemyList.contains(c.type.get(j)) && sightBound.overlaps(c.getBound())) {
+                    if(enemyList.contains(c.type.get(j)) && sightBound.overlaps(c.getBound()) && !c.form.equals(form) && c.health > 0) {
                         if(possibleTarget == null) {
                             possibleTarget = c;
                         } else {
