@@ -423,13 +423,29 @@ public class Message {
                     entity += chars[i] + " ";
                 }
                 entity = entity.substring(0, entity.length() - 1);
-                if (entity.equals("Spider") || entity.equals("spider")) {
-                    EntityManager.player.form = "spider";
-                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
-                } else if (entity.equals("Human") || entity.equals("human")) {
+
+                if (entity.equals("Human") || entity.equals("human")) {
                     EntityManager.player.form = "human";
+                    float sx = EntityManager.player.body.getPosition().x * Constants.PPM - 12.5f;
+                    float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
+                    GameState.world.destroyBody(EntityManager.player.body);
+                    EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
-                } else if (entity.equals("Hydra") || entity.equals("hydra")) {
+                }
+                else if (entity.equals("Spider") || entity.equals("spider")) {
+                    EntityManager.player.form = "spider";
+                    Player.spiderLandTimer = 0;
+                    Player.spiderLeap = false;
+                    Player.spiderLanded = false;
+                    float sx = EntityManager.player.body.getPosition().x * Constants.PPM - 52;
+                    float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
+                    GameState.world.destroyBody(EntityManager.player.body);
+                    EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 104, 57, false, 1.5f, false,
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
+                }
+                else if (entity.equals("Hydra") || entity.equals("hydra")) {
                     EntityManager.player.form = "hydra";
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }

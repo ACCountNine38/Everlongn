@@ -117,7 +117,7 @@ public class WorldLoadingState extends State {
 
     public void createPlayer() {
         GameState.entityManager = new EntityManager(c, new Player(GameState.spawnX, GameState.spawnY,
-                25, 110, 2.5f, maxHealth, health));
+                25, 110, maxHealth, health));
 
         Vector3 position = ControlCenter.camera.position;
         position.x = GameState.spawnX;

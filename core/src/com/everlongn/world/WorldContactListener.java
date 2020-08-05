@@ -38,6 +38,9 @@ public class WorldContactListener implements ContactListener {
 
         if(cDef == (short)(Constants.BIT_ENEMY | Constants.BIT_TILE)) {
             if (a.getFilterData().categoryBits == Constants.BIT_ENEMY) {
+                if(!(a.getUserData() instanceof Creature)) {
+                    return;
+                }
                 Creature temp = (Creature) a.getUserData();
 
                 // special creature tests
@@ -84,6 +87,9 @@ public class WorldContactListener implements ContactListener {
                 }
             }
             else {
+                if(!(b.getUserData() instanceof Creature)) {
+                    return;
+                }
                 Creature temp = (Creature) b.getUserData();
 
                 // special creature tests

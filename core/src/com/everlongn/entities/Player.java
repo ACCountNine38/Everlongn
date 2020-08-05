@@ -82,7 +82,8 @@ public class Player extends Creature {
     public static boolean duoToss, triToss, glaiveLord;
 
     // Transformations
-    public boolean spiderLeap;
+    public static float spiderLandTimer;
+    public static boolean spiderLeap, spiderLanded;
     private Animation[] spiderRun = new Animation[2],
             hydraChase = new Animation[2];
 
@@ -90,8 +91,8 @@ public class Player extends Creature {
 
     // Testing variables
 
-    public Player(float x, float y, int width, int height, float density, float maxHealth, float health) {
-        super(x, y, width, height, density, 5);
+    public Player(float x, float y, int width, int height, float maxHealth, float health) {
+        super(x, y, width, height, 2.5f, 5);
         this.x = x;
         this.y = y;
         this.width = width;
@@ -276,9 +277,40 @@ public class Player extends Creature {
         if(form.equals("human")) {
             flying = false;
         }
+
         else if(form.equals("spider")) {
             flying = false;
+            if(spiderLeap) {
+                if(canJump) {
+                    spiderLanded = true;
+                    spiderLeap = false;
+                    for(Entity e: EntityManager.entities) {
+                        if(e.getBound().overlaps(getBound()) && !e.form.equals(form)) {
+                            if(direction == 0)
+                                e.body.applyForceToCenter(-550, 120, false);
+                            else
+                                e.body.applyForceToCenter(550, 120, false);
+
+                            if(target instanceof Creature) {
+                                Creature c = (Creature) e;
+                                c.target = this;
+                            }
+                            Sounds.playSound(Sounds.basicImpact[(int)(Math.random()*3)], 2f);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(spiderLanded) {
+                spiderLandTimer += Gdx.graphics.getDeltaTime();
+                if(spiderLandTimer > Math.random()*0.4 + 0.6) {
+                    spiderLandTimer = 0;
+                    spiderLanded = false;
+                }
+            }
         }
+
         else if(form.equals("hydra")) {
             flying = true;
             if(verticalForce == 0) {
@@ -2144,7 +2176,21 @@ public class Player extends Creature {
                 Sounds.playSound(Sounds.steps[0]);
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) && canJump && !jump && !fall) {
+                if(direction == 0)
+                    body.applyForceToCenter(-114*8, 114*9, false);
+                else
+                    body.applyForceToCenter(114*8, 114*9, false);
+
+                jump = true;
+                fall = false;
+                canJump = false;
+                airborn = true;
+                Sounds.playSound(Sounds.steps[0]);
+                spiderLeap = true;
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A) && !spiderLeap && !spiderLanded) {
                 horizontalForce = -1;
                 currentSpeed -= 0.5f;
                 if (currentSpeed <= -3) {
@@ -2158,7 +2204,7 @@ public class Player extends Creature {
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.D) && !spiderLeap && !spiderLanded) {
                 horizontalForce = 1;
                 currentSpeed += 0.5f;
                 if (currentSpeed >= 3) {
@@ -2538,9 +2584,14 @@ public class Player extends Creature {
         }
 
         else if(form.equals("spider")) {
-            batch.draw(spiderRun[direction].getFrame(),
-                    body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 35, 114, 114);
+            if(spiderLeap) {
+                batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM,
+                        body.getPosition().y * PPM - 38, 114, 114);
+            } else {
+                batch.draw(spiderRun[direction].getFrame(),
+                        body.getPosition().x * PPM,
+                        body.getPosition().y * PPM - 38, 114, 114);
+            }
         }
 
         else if(form.equals("hydra")) {
