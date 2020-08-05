@@ -19,11 +19,12 @@ import com.everlongn.utils.Tool;
 public class Shuriken extends Throw {
     public ParticleEffect explosion;
 
-    public Shuriken(float x, float y, int direction, float angle, float damage) {
+    public Shuriken(float x, float y, int direction, float angle, float damage, Entity source) {
         super(x, y, 30, 30, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE), (short)0, this);
@@ -63,6 +64,10 @@ public class Shuriken extends Throw {
                     }
 
                     e.hurt(damage);
+                    if(e instanceof Creature) {
+                        Creature c = (Creature)e;
+                        c.target = source;
+                    }
                 }
             }
             if(direction == 0)

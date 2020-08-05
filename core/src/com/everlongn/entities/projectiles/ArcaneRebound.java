@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Sounds;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
@@ -24,11 +21,12 @@ public class ArcaneRebound extends Projectile {
     public float life, angle, yForce;
     public static Color color = new Color(0.00f, 0.01f, 0.00f, 1f);
 
-    public ArcaneRebound(float x, float y, float density, int direction, float angle, float damage) {
+    public ArcaneRebound(float x, float y, float density, int direction, float angle, float damage, Entity source) {
         super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         yForce = 100;
         maxBounce = 3 + (int)(Math.random()*5);
@@ -141,6 +139,7 @@ public class ArcaneRebound extends Projectile {
                         c.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     }
+                    c.target = source;
                     c.hurt(damage);
                 }
             }

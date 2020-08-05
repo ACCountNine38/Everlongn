@@ -10,10 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.ThrowWeapons;
 import com.everlongn.assets.UI;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Throw;
+import com.everlongn.entities.*;
 import com.everlongn.items.Throwing;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
@@ -25,11 +22,12 @@ public class Bomb extends Throw {
     public float chargeRadius = 100f;
     public boolean explode;
 
-    public Bomb(float x, float y, int direction, float angle, float damage) {
+    public Bomb(float x, float y, int direction, float angle, float damage, Entity source) {
         super(x, y, 5, 5, 10);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createBall((int) (x), (int) (y), Throwing.bomb.width/2 - 10, 10f,
                 (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -127,6 +125,7 @@ public class Bomb extends Throw {
                         thrust = 10;
                         force = 850;
                     }
+                    c.target = source;
 
                     if(c instanceof Player) {
                         if (body.getPosition().x < c.body.getPosition().x) {

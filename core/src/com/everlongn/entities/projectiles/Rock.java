@@ -16,11 +16,12 @@ import com.everlongn.utils.Tool;
 public class Rock extends Throw {
     public ParticleEffect explosion;
 
-    public Rock(float x, float y, int direction, float angle, float damage) {
+    public Rock(float x, float y, int direction, float angle, float damage, Entity source) {
         super(x, y, 5, 5, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createBall((int) (x), (int) (y), 5, 0.9f,
                 (short) Constants.BIT_PROJECTILE, (short) (Constants.BIT_TILE | Constants.BIT_ENEMY), (short) 0, this);
@@ -91,6 +92,7 @@ public class Rock extends Throw {
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     }
                     c.hurt(damage);
+                    c.target = source;
                 }
             }
         }

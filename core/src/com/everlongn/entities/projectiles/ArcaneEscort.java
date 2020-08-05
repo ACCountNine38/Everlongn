@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.Inventory;
 import com.everlongn.states.GameState;
@@ -28,11 +25,12 @@ public class ArcaneEscort extends Projectile {
     public int numRotations = 0;
     public static Color color = new Color(0.02f, 0.02f, 0.04f, 1f);
 
-    public ArcaneEscort(float x, float y, float density, int direction, float angle, float damage) {
+    public ArcaneEscort(float x, float y, float density, int direction, float angle, float damage, Entity source) {
         super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -192,6 +190,7 @@ public class ArcaneEscort extends Projectile {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
                     c.hurt(damage);
+                    c.target = source;
                     break;
                 }
             }

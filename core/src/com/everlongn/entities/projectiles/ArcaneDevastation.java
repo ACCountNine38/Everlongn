@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
@@ -24,11 +21,12 @@ public class ArcaneDevastation extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.02f, 0.02f, 0.00f, 1f);
 
-    public ArcaneDevastation(float x, float y, float density, int direction, float angle, float xSize, float damage) {
+    public ArcaneDevastation(float x, float y, float density, int direction, float angle, float xSize, float damage, Entity source) {
         super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -115,6 +113,7 @@ public class ArcaneDevastation extends Projectile {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
                     c.trueDamage(damage, GameState.difficulty);
+                    c.target = source;
                 }
             }
         }

@@ -416,6 +416,30 @@ public class Message {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid learn data", false, Color.YELLOW));
             }
             return;
+        } else if(chars[0].equals("transform")) {
+            try {
+                String entity = "";
+                for (int i = 1; i < chars.length; i++) {
+                    entity += chars[i] + " ";
+                }
+                entity = entity.substring(0, entity.length() - 1);
+                if (entity.equals("Spider") || entity.equals("spider")) {
+                    Player.form = "spider";
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
+                } else if (entity.equals("Human") || entity.equals("human")) {
+                    Player.form = "human";
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
+                } else if (entity.equals("Hydra") || entity.equals("hydra")) {
+                    Player.form = "hydra";
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
+                }
+                else {
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "Unknown transformation", false, Color.YELLOW));
+                }
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid transformation data", false, Color.YELLOW));
+            }
+            return;
         }
 
         Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));

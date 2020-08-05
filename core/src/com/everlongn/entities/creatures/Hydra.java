@@ -18,6 +18,9 @@ import java.util.ArrayList;
 
 import static com.everlongn.utils.Constants.PPM;
 
+/*
+add the ability to damage enemies even if its not the target, but target is prio
+ */
 public class Hydra extends Creature {
     public float directedAngle, currentVelX, currentVelY, stunnTimer, targetX, targetY,
         stabTimer, pausedTimer, resetAngle, resetTimer, stabCooldown, readyTimer;
@@ -57,7 +60,7 @@ public class Hydra extends Creature {
         for(int i = 0; i < destroyed.length; i++)
             destroyed[i].getEmitters().first().scaleSize(1.5f);
 
-        sightWidth = 800;
+        sightWidth = 650;
         sightHeight = 1000;
         sightBound = new Rectangle(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2, sightWidth, sightHeight);
 
@@ -72,7 +75,7 @@ public class Hydra extends Creature {
                 sightWidth = 1600;
                 sightHeight = 1000;
             } else {
-                sightWidth = 800;
+                sightWidth = 650;
                 sightHeight = 1000;
             }
             sightBound.setPosition(body.getPosition().x * Constants.PPM - sightWidth / 2, body.getPosition().y * Constants.PPM - sightHeight / 2);
@@ -107,7 +110,15 @@ public class Hydra extends Creature {
                     body.setLinearVelocity(0, 0);
                 }
             } else if(stabbing) {
-                stab();
+                if(target != null)
+                    stab();
+                else {
+                    stabTimer = 0;
+                    stabbing = false;
+                    reset = true;
+                    resetAngle = (float)Math.PI/4 + (float)(Math.random()*(Math.PI/2));
+                    resetTimer = (float)(Math.random()*0.25f) + 0.5f;
+                }
             } else if(!stunned) {
                 chase[direction].tick(Gdx.graphics.getDeltaTime());
                 stunnedCheck = false;
@@ -131,6 +142,9 @@ public class Hydra extends Creature {
                     findTarget();
                 } else {
                     aggro();
+                    if (target != null && !target.getBound().overlaps(sightBound)) {
+                        target = null;
+                    }
                 }
             } else {
                 chase[direction].tick(Gdx.graphics.getDeltaTime());
@@ -145,10 +159,6 @@ public class Hydra extends Creature {
                     currentVelX = body.getLinearVelocity().x;
                     currentVelY = body.getLinearVelocity().y;
                 }
-            }
-
-            if (target != null && !target.getBound().overlaps(sightBound)) {
-                target = null;
             }
 
             if (health <= 0) {
@@ -241,7 +251,7 @@ public class Hydra extends Creature {
             stabbing = false;
             reset = true;
             resetAngle = (float)Math.PI/4 + (float)(Math.random()*(Math.PI/2));
-            resetTimer = (float)(Math.random()*0.5f) + 0.5f;
+            resetTimer = (float)(Math.random()*0.25f) + 0.5f;
             return;
         }
         if(stabTimer >= 0.5f) {

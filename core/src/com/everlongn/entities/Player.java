@@ -43,7 +43,7 @@ public class Player extends Creature {
     // global item related variables
     public static boolean inCombat, inventoryHold, blink, blinkAlphaMax, haltReset, heavySoundPlayed, thrown;
     public static Rectangle itemCollectBound, itemPickBound;
-    public static String previousItem = "";
+    public static String previousItem = "", form = "human";
     public static float bonusArcanePercentage = 1, bonusMeleePercentage = 1, bonusThrowingPercentage = 1, bonusRangedPercentage = 1;
 
     // special item related variables
@@ -81,6 +81,10 @@ public class Player extends Creature {
     // Passives
     public static boolean duoToss, triToss, glaiveLord;
 
+    // Transformations
+    public boolean spiderLeap;
+    private Animation[] spiderRun = new Animation[2];
+
     // Others
 
     // Testing variables
@@ -101,20 +105,7 @@ public class Player extends Creature {
         boundHeight = 100;
         knockbackResistance = 0;
 
-        legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
-        legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
-
-        legsJump[0] = new Animation(1f/70f, Entities.legJump[0], true);
-        legsJump[1] = new Animation(1f/70f, Entities.legJump[1], true);
-
-        armsRun[0] = new Animation(1f/70f, Entities.armRun[0], true);
-        armsRun[1] = new Animation(1f/70f, Entities.armRun[1], true);
-
-        chestRun[0] = new Animation(1f/70f, Entities.chestRun[0], true);
-        chestRun[1] = new Animation(1f/70f, Entities.chestRun[1], true);
-
-        headRun[0] = new Animation(1f/70f, Entities.headRun[0], true);
-        headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
+        initAnimation();
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
                 Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
@@ -137,6 +128,27 @@ public class Player extends Creature {
         itemPickBound = new Rectangle(body.getPosition().x*PPM - 75, body.getPosition().y*PPM - height/2 - 50, 150, 200);
 
         team = 1;
+    }
+
+    public void initAnimation() {
+        legsRun[0] = new Animation(1f/70f, Entities.legRun[0], true);
+        legsRun[1] = new Animation(1f/70f, Entities.legRun[1], true);
+
+        legsJump[0] = new Animation(1f/70f, Entities.legJump[0], true);
+        legsJump[1] = new Animation(1f/70f, Entities.legJump[1], true);
+
+        armsRun[0] = new Animation(1f/70f, Entities.armRun[0], true);
+        armsRun[1] = new Animation(1f/70f, Entities.armRun[1], true);
+
+        chestRun[0] = new Animation(1f/70f, Entities.chestRun[0], true);
+        chestRun[1] = new Animation(1f/70f, Entities.chestRun[1], true);
+
+        headRun[0] = new Animation(1f/70f, Entities.headRun[0], true);
+        headRun[1] = new Animation(1f/70f, Entities.headRun[1], true);
+
+        // transformations
+        spiderRun[0] = new Animation(1f/60f, Entities.spiderRun[0], true);
+        spiderRun[1] = new Animation(1f/60f, Entities.spiderRun[1], true);
     }
 
     public void checkSpecialCase() {
@@ -216,31 +228,55 @@ public class Player extends Creature {
                 dashTimer = 0;
             }
         }
-    }
 
-    @Override
-    public void tick() {
-        checkSpecialCase();
         if(godMode) {
             health = maxHealth;
         }
+    }
 
+    public void updateChunkInfo() {
         currentChunkX = (int)(body.getPosition().x/GameState.chunkSize);
         currentChunkY = (int)(body.getPosition().y/GameState.chunkSize);
 
         currentTileX = (int)(body.getPosition().x);
         currentTileY = (int)(body.getPosition().y);
+    }
+
+    @Override
+    public void tick() {
+        checkSpecialCase();
+        updateChunkInfo();
+        regenerate();
 
         cameraUpdate();
+
         horizontalForce = 0;
+
         if(!GameState.telepathy.focused) {
             inputUpdate();
         }
+
+        updateForm();
         checkMovement();
         animationUpdate();
 
-        regenerate();
+        updateJumpAndFall();
 
+        if(form.equals("player")) {
+            checkItemOnHold();
+        }
+    }
+
+    public void updateForm() {
+        if(form.equals("spider")) {
+
+        }
+        else if(form.equals("hydra")) {
+
+        }
+    }
+
+    public void updateJumpAndFall() {
         if(body.getLinearVelocity().y <= 0 && jump && !airborn) {
             fall = true;
             jump = false;
@@ -253,8 +289,6 @@ public class Player extends Creature {
         if(jump && !Gdx.input.isKeyPressed(Input.Keys.W) && body.getLinearVelocity().y > 0) {
             body.setLinearVelocity(body.getLinearVelocity().x + xThrust, body.getLinearVelocity().y/1.15f);
         }
-
-        checkItemOnHold();
     }
 
     public void animationUpdate() {
@@ -695,19 +729,19 @@ public class Player extends Creature {
                         Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                             Sounds.playSound(Sounds.shurikenThrow);
-                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Condensed Energy")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
+                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0, this);
                         }
                         EntityManager.throwing.add(temp);
                     }
@@ -811,19 +845,19 @@ public class Player extends Creature {
                         Throw temp = null;
                         if(Inventory.inventory[Inventory.selectedIndex].name.equals("Rock")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Rock(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shredder")) {
                             Sounds.playSound(Sounds.shurikenThrow);
-                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new Shuriken(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Throw Knife")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                            temp = new ThrowKnife(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                         }
                         else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Condensed Energy")) {
                             Sounds.playSound(Sounds.throwWeapon);
-                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0);
+                            temp = new Bomb(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), 0, this);
                         }
                         EntityManager.throwing.add(temp);
                     }
@@ -928,11 +962,11 @@ public class Player extends Creature {
                                 Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
                                     Sounds.playSound(Sounds.ninjaStarThrow);
-                                    temp = new TriStar(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new TriStar(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
                                     Sounds.playSound(Sounds.throwWeapon);
-                                    temp = new Dagger(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new Dagger(throwX, throwY, direction, shootAngle - (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                                 }
                                 EntityManager.throwing.add(temp);
                             }
@@ -1040,11 +1074,11 @@ public class Player extends Creature {
                                 Throw temp = null;
                                 if(Inventory.inventory[Inventory.selectedIndex].name.equals("Shuriken")) {
                                     Sounds.playSound(Sounds.ninjaStarThrow);
-                                    temp = new TriStar(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new TriStar(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                                 }
                                 else if(Inventory.inventory[Inventory.selectedIndex].name.equals("Dagger")) {
                                     Sounds.playSound(Sounds.throwWeapon);
-                                    temp = new Dagger(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage);
+                                    temp = new Dagger(throwX, throwY, direction, shootAngle + (float)(i*5 * Math.PI/180), Inventory.inventory[Inventory.selectedIndex].throwingDamage*bonusThrowingPercentage, this);
                                 }
                                 EntityManager.throwing.add(temp);
                             }
@@ -1576,7 +1610,7 @@ public class Player extends Creature {
                         Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle + (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
 
                         EntityManager.entities.add(arcaneTrail);
                     } else {
@@ -1594,7 +1628,7 @@ public class Player extends Creature {
                         Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle - (float)Math.PI/15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
@@ -1647,7 +1681,7 @@ public class Player extends Creature {
                         }
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
+                                1, direction, shootAngle + (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage, this);
 
                         EntityManager.entities.add(arcaneTrail);
                     } else {
@@ -1664,7 +1698,7 @@ public class Player extends Creature {
                         }
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage);
+                                1, direction, shootAngle - (float)Math.PI/10f, forceCharge, (forceCharge * 50)*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneTrail);
                     }
                 }
@@ -1713,7 +1747,7 @@ public class Player extends Creature {
                         }
                         ArcaneReflection arcaneReflection = new ArcaneReflection(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle + (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle + (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneReflection);
 
                     } else {
@@ -1730,7 +1764,7 @@ public class Player extends Creature {
                         }
                         ArcaneReflection arcaneReflection = new ArcaneReflection((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle - (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle - (float) Math.PI / 15, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneReflection);
                     }
                 }
@@ -1809,7 +1843,7 @@ public class Player extends Creature {
                                     body.getPosition().y * PPM + 69 + yAim,
                                     10, direction, shootAngle,
                                     (float)Math.sin(shootAngle + Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle + Math.PI/20)*forceCharge,
-                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage);
+                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage, this);
                             EntityManager.entities.add(arcaneTrail);
                         } else {
                             float xAim = (float) Math.cos(Math.toRadians(-armRotationRight)) * (76);
@@ -1827,7 +1861,7 @@ public class Player extends Creature {
                                     69 + body.getPosition().y * PPM + yAim,
                                     10, direction, shootAngle,
                                     (float)Math.sin(shootAngle - Math.PI/20)*forceCharge, -(float)Math.cos(shootAngle - Math.PI/20)*forceCharge,
-                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage);
+                                    (Inventory.inventory[Inventory.selectedIndex].burst + forceCharge)*bonusArcanePercentage, this);
                             EntityManager.entities.add(arcaneTrail);
                         }
                     }
@@ -1877,7 +1911,7 @@ public class Player extends Creature {
                         }
                         ArcaneRebound arcaneRebound = new ArcaneRebound(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneRebound);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -1893,7 +1927,7 @@ public class Player extends Creature {
                         }
                         ArcaneRebound arcaneRebound = new ArcaneRebound((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneRebound);
                     }
                 }
@@ -1937,7 +1971,7 @@ public class Player extends Creature {
                         }
                         ArcaneEscort arcaneEscort = new ArcaneEscort(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
-                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneEscort);
                     } else {
                         float xAim = (float) Math.cos(Math.toRadians(aimAngle - 45)) * (70);
@@ -1953,7 +1987,7 @@ public class Player extends Creature {
                         }
                         ArcaneEscort arcaneEscort = new ArcaneEscort((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
-                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage);
+                                1, direction, shootAngle, Inventory.inventory[Inventory.selectedIndex].burst*bonusArcanePercentage, this);
                         EntityManager.entities.add(arcaneEscort);
                     }
                 }
@@ -1992,6 +2026,7 @@ public class Player extends Creature {
     }
 
     public void inputUpdate() {
+        // testing commands
         if(Gdx.input.isKeyJustPressed(Input.Keys.Y)) {
             EntityManager.entities.add(new Spiderling(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50)+ 75));
         }
@@ -1999,79 +2034,121 @@ public class Player extends Creature {
             EntityManager.entities.add(new Hydra(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50) + 150));
         }
 
-        if(dash) {
-            if(canDash) {
-                dashResetTimer += ControlCenter.delta;
-                if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 0) {
-                    body.setLinearVelocity(-50, -2);
-                    dashing = true;
-                    canDash = false;
-                    dashResetTimer = 0;
-                    dashEffect = new ParticleEffect();
-                    dashEffect.load(Gdx.files.internal("particles/dashLeft"), Gdx.files.internal(""));
-                    dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-                    dashEffect.start();
-                    //EntityManager.particles.add(dashEffect);
+        if(form.equals("human")) {
+            if (dash) {
+                if (canDash) {
+                    dashResetTimer += ControlCenter.delta;
+                    if (Gdx.input.isKeyJustPressed(Input.Keys.A) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 0) {
+                        body.setLinearVelocity(-50, -2);
+                        dashing = true;
+                        canDash = false;
+                        dashResetTimer = 0;
+                        dashEffect = new ParticleEffect();
+                        dashEffect.load(Gdx.files.internal("particles/dashLeft"), Gdx.files.internal(""));
+                        dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+                        dashEffect.start();
+                        //EntityManager.particles.add(dashEffect);
+                    }
+                    if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 1) {
+                        body.setLinearVelocity(50, -2);
+                        dashing = true;
+                        canDash = false;
+                        dashResetTimer = 0;
+                        dashEffect = new ParticleEffect();
+                        dashEffect.load(Gdx.files.internal("particles/dashRight"), Gdx.files.internal(""));
+                        dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
+                        dashEffect.start();
+                        //EntityManager.particles.add(dashEffect);
+                    }
+                    if (dashResetTimer > 0.25f) {
+                        canDash = false;
+                        dashResetTimer = 0;
+                    }
+                } else {
+                    if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+                        canDash = true;
+                        dashDirection = 0;
+                        dashResetTimer = 0;
+                    }
+                    if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+                        canDash = true;
+                        dashDirection = 1;
+                        dashResetTimer = 0;
+                    }
                 }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.D) && dashResetTimer > 0.05f && dashResetTimer <= 0.25f && dashDirection == 1) {
-                    body.setLinearVelocity(50, -2);
-                    dashing = true;
-                    canDash = false;
-                    dashResetTimer = 0;
-                    dashEffect = new ParticleEffect();
-                    dashEffect.load(Gdx.files.internal("particles/dashRight"), Gdx.files.internal(""));
-                    dashEffect.getEmitters().first().setPosition(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM);
-                    dashEffect.start();
-                    //EntityManager.particles.add(dashEffect);
+            }
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A) && !dashing) {
+                horizontalForce = -1;
+                currentSpeed += 0.2f;
+                if (currentSpeed >= speed) {
+                    currentSpeed = speed;
                 }
-                if(dashResetTimer > 0.25f) {
-                    canDash = false;
-                    dashResetTimer = 0;
+                direction = 0;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.D) && !dashing) {
+                horizontalForce = 1;
+                currentSpeed += 0.2f;
+                if (currentSpeed >= speed) {
+                    currentSpeed = speed;
                 }
-            } else {
-                if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-                    canDash = true;
-                    dashDirection = 0;
-                    dashResetTimer = 0;
-                }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-                    canDash = true;
-                    dashDirection = 1;
-                    dashResetTimer = 0;
-                }
+                direction = 1;
+            }
+
+            // jump test
+            if (Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
+                body.applyForceToCenter(0, 800 / (body.getLinearVelocity().y / 10 + 1), false);
+                jump = true;
+                fall = false;
+                canJump = false;
+                airborn = true;
+                Sounds.playSound(Sounds.steps[0]);
+
+                legsJump[0].currentIndex = 0;
+                legsJump[1].currentIndex = 0;
+                legsRun[0].currentIndex = 0;
+                legsRun[1].currentIndex = 0;
             }
         }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.A) && !dashing) {
-            horizontalForce = -1;
-            currentSpeed += 0.2f;
-            if(currentSpeed >= speed) {
-                currentSpeed = speed;
+        else if(form.equals("spider")) {
+            // jump test
+            if (Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
+                body.applyForceToCenter(0, 800 / (body.getLinearVelocity().y / 10 + 1), false);
+                jump = true;
+                fall = false;
+                canJump = false;
+                airborn = true;
+                Sounds.playSound(Sounds.steps[0]);
             }
-            direction = 0;
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.D) && !dashing) {
-            horizontalForce = 1;
-            currentSpeed += 0.2f;
-            if(currentSpeed >= speed) {
-                currentSpeed = speed;
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                horizontalForce = -1;
+                currentSpeed += 0.2f;
+                if (currentSpeed >= 3) {
+                    currentSpeed = 3;
+                }
+                direction = 0;
+
+                spiderRun[0].tick(ControlCenter.delta);
+                spiderRun[1].tick(ControlCenter.delta);
             }
-            direction = 1;
+
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                horizontalForce = 1;
+                currentSpeed += 0.2f;
+                if (currentSpeed >= 3) {
+                    currentSpeed = 3;
+                }
+                direction = 1;
+
+                spiderRun[0].tick(ControlCenter.delta);
+                spiderRun[1].tick(ControlCenter.delta);
+            }
         }
 
-        // jump test
-        if(Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
-            body.applyForceToCenter(0, 800/(body.getLinearVelocity().y/10 + 1), false);
-            jump = true;
-            fall = false;
-            canJump = false;
-            airborn = true;
-            Sounds.playSound(Sounds.steps[0]);
+        else if(form.equals("hydra")) {
 
-            legsJump[0].currentIndex = 0;
-            legsJump[1].currentIndex = 0;
-            legsRun[0].currentIndex = 0;
-            legsRun[1].currentIndex = 0;
         }
     }
 
@@ -2170,181 +2247,69 @@ public class Player extends Creature {
 
     public void render(SpriteBatch batch) {
         batch.begin();
-        Rectangle attackRectangle;
-//        if(direction == 0) {
-//            attackRectangle = new Rectangle(body.getPosition().x*PPM - Tile.TILESIZE*2 + width - Tile.TILESIZE/2, body.getPosition().y*PPM - Tile.TILESIZE,
-//                    Tile.TILESIZE*2 + Tile.TILESIZE/2, height + Tile.TILESIZE * 2);
-//        } else {
-//            attackRectangle = new Rectangle(body.getPosition().x*PPM, body.getPosition().y*PPM - Tile.TILESIZE,
-//                    Tile.TILESIZE*2 + Tile.TILESIZE/2, height + Tile.TILESIZE * 2);
-//        }
-//        batch.draw(Tiles.blackTile, attackRectangle.x, attackRectangle.y, attackRectangle.width, attackRectangle.height);
-
-        if(tilePlacing) {
-            int tileX = (int)((Player.mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
-            int tileY = (int)((Player.mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
-            if(!canPlace) {
-                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.35f);
+//       batch.draw(Tiles.blackTile, attackRectangle.x, attackRectangle.y, attackRectangle.width, attackRectangle.height);
+        if(form.equals("human")) {
+            if(tilePlacing) {
+                int tileX = (int)((Player.mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);
+                int tileY = (int)((Player.mouseWorldPos().y + Tile.TILESIZE/2)/Tile.TILESIZE);
+                if(!canPlace) {
+                    batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 0.35f);
+                }
+                if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].texture != null)
+                    batch.draw(Inventory.inventory[Inventory.selectedIndex].texture,
+                            tileX*Constants.PPM - Inventory.inventory[Inventory.selectedIndex].width/2,
+                            tileY*Constants.PPM - Inventory.inventory[Inventory.selectedIndex].height/2,
+                            Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
+                if(!canPlace) {
+                    batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1f);
+                }
             }
-            if(Inventory.inventory[Inventory.selectedIndex] != null && Inventory.inventory[Inventory.selectedIndex].texture != null)
-                batch.draw(Inventory.inventory[Inventory.selectedIndex].texture,
-                        tileX*Constants.PPM - Inventory.inventory[Inventory.selectedIndex].width/2,
-                        tileY*Constants.PPM - Inventory.inventory[Inventory.selectedIndex].height/2,
-                        Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
-            if(!canPlace) {
-                batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1f);
-            }
-        }
 
-        if(eruptionHold)
-            eruptionCharge.draw(batch);
-        else {
-            if(!eruptionCharge.isComplete()) {
+            if(eruptionHold)
                 eruptionCharge.draw(batch);
+            else {
+                if(!eruptionCharge.isComplete()) {
+                    eruptionCharge.draw(batch);
+                }
             }
-        }
 
-        if(shadowHold)
-            shadowCharge.draw(batch);
-        else {
-            if(!shadowCharge.isComplete()) {
+            if(shadowHold)
                 shadowCharge.draw(batch);
+            else {
+                if(!shadowCharge.isComplete()) {
+                    shadowCharge.draw(batch);
+                }
             }
-        }
 
-        if(dashEffect != null && !dashEffect.isComplete()) {
-            dashEffect.draw(batch);
-        }
+            if(dashEffect != null && !dashEffect.isComplete()) {
+                dashEffect.draw(batch);
+            }
 
-        if(blink) {
-            shadowExplosion.draw(batch);
-        } else {
-            if(!shadowExplosion.isComplete()) {
+            if(blink) {
                 shadowExplosion.draw(batch);
+            } else {
+                if(!shadowExplosion.isComplete()) {
+                    shadowExplosion.draw(batch);
+                }
             }
-        }
 
-        if(horizontalForce != 0) {
-            if(jump || fall) {
-                jumpAnimation = true;
-                batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-            } else {
-                legAnimation = true;
-                batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-            }
-            if(!onhold) {
-                armAnimation = true;
-                batch.draw(armsRun[direction].getFrame(),
-                        body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-            } else {
-                if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
-                    batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5,
-                            57, 74,
-                            114, 114, 1f, 1f, armRotationRight);
+            if (horizontalForce != 0) {
+                if (jump || fall) {
+                    jumpAnimation = true;
+                    batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
                 } else {
-                    batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5,
-                            57, 74,
-                            114, 114, 1f, 1f, armRotationRight);
-                    batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5,
-                            57, 74,
-                            114, 114, 1f, 1f, -armRotationLeft);
+                    legAnimation = true;
+                    batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
                 }
-
-                if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex] instanceof Melee ||
-                        Inventory.inventory[Inventory.selectedIndex] instanceof Arcane || Inventory.inventory[Inventory.selectedIndex] instanceof Throwing)) {
-                    if (direction == 0) {
-                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
-                                body.getPosition().x * PPM + width / 2 - 33 - (Inventory.inventory[Inventory.selectedIndex].width - Inventory.inventory[Inventory.selectedIndex].holdX),
-                                body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
-                                Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width/2 - Inventory.inventory[Inventory.selectedIndex].holdX)*2,
-                                Inventory.inventory[Inventory.selectedIndex].holdY + 23,
-                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
-                                1f, 1f, armRotationRight);
-                    } else {
-                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
-                                body.getPosition().x * PPM + width / 2 + 33 - Inventory.inventory[Inventory.selectedIndex].holdX,
-                                body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
-                                Inventory.inventory[Inventory.selectedIndex].holdX - 33,
-                                Inventory.inventory[Inventory.selectedIndex].holdY + 23,
-                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
-                                1f, 1f, armRotationRight);
-                    }
-                }
-            }
-            bodyAnimation = true;
-            batch.draw(chestRun[direction].getFrame(),
-                    body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-
-            headAnimation = true;
-            batch.draw(headRun[direction].getFrame(),
-                    body.getPosition().x * PPM + width / 2 - 57,
-                    body.getPosition().y * PPM - 5, 114, 114);
-
-        } else {
-            if(headAnimation && headRun[direction].currentIndex > 15) {
-                batch.draw(headRun[direction].getFrame(),
-                        body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-            } else {
-                headAnimation = false;
-                batch.draw(Entities.headRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-                headRun[0].currentIndex = 0;
-                headRun[1].currentIndex = 0;
-            }
-
-            if(bodyAnimation && chestRun[direction].currentIndex > 15) {
-                batch.draw(chestRun[direction].getFrame(),
-                        body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-            } else {
-                bodyAnimation = false;
-                batch.draw(Entities.chestRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                        body.getPosition().y * PPM - 5, 114, 114);
-                chestRun[0].currentIndex = 0;
-                chestRun[1].currentIndex = 0;
-            }
-
-            if (!onhold) {
-                if(armAnimation && armsRun[direction].currentIndex > 15) {
+                if (!onhold) {
+                    armAnimation = true;
                     batch.draw(armsRun[direction].getFrame(),
                             body.getPosition().x * PPM + width / 2 - 57,
                             body.getPosition().y * PPM - 5, 114, 114);
                 } else {
-                    armAnimation = false;
-                    batch.draw(Entities.armRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5, 114, 114);
-                    armsRun[0].currentIndex = 0;
-                    armsRun[1].currentIndex = 0;
-                }
-            } else {
-                armAnimation = false;
-                if(!weaponActive && Inventory.inventory[Inventory.selectedIndex].heavy) {
-                    batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5, 114, 114);
-                    batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
-                            body.getPosition().y * PPM - 5, 114, 114);
-
-                    if (direction == 1) {
-                        batch.draw(Inventory.inventory[Inventory.selectedIndex].texture,
-                                body.getPosition().x * PPM + width / 2 - 57 + 90 - Inventory.inventory[Inventory.selectedIndex].holdX,
-                                body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
-                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
-                    } else {
-                        batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
-                                body.getPosition().x * PPM + width / 2 - 57 + 24 - Inventory.inventory[Inventory.selectedIndex].holdX,
-                                body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
-                                Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
-                    }
-                } else {
-                    if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
+                    if (Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
                         batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
                                 body.getPosition().y * PPM - 5,
                                 57, 74,
@@ -2359,13 +2324,14 @@ public class Player extends Creature {
                                 57, 74,
                                 114, 114, 1f, 1f, -armRotationLeft);
                     }
-                    if(Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex] instanceof Melee ||
+
+                    if (Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex] instanceof Melee ||
                             Inventory.inventory[Inventory.selectedIndex] instanceof Arcane || Inventory.inventory[Inventory.selectedIndex] instanceof Throwing)) {
                         if (direction == 0) {
                             batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
                                     body.getPosition().x * PPM + width / 2 - 33 - (Inventory.inventory[Inventory.selectedIndex].width - Inventory.inventory[Inventory.selectedIndex].holdX),
-                                    body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
-                                    Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width/2 - Inventory.inventory[Inventory.selectedIndex].holdX)*2,
+                                    body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                    Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width / 2 - Inventory.inventory[Inventory.selectedIndex].holdX) * 2,
                                     Inventory.inventory[Inventory.selectedIndex].holdY + 23,
                                     Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
                                     1f, 1f, armRotationRight);
@@ -2380,29 +2346,143 @@ public class Player extends Creature {
                         }
                     }
                 }
-                armsRun[0].currentIndex = 0;
-                armsRun[1].currentIndex = 0;
-            }
-
-            if (jump || fall) {
-                jumpAnimation = true;
-                batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                bodyAnimation = true;
+                batch.draw(chestRun[direction].getFrame(),
+                        body.getPosition().x * PPM + width / 2 - 57,
                         body.getPosition().y * PPM - 5, 114, 114);
+
+                headAnimation = true;
+                batch.draw(headRun[direction].getFrame(),
+                        body.getPosition().x * PPM + width / 2 - 57,
+                        body.getPosition().y * PPM - 5, 114, 114);
+
             } else {
-                if(legAnimation && legsRun[direction].currentIndex > 15) {
-                    batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                if (headAnimation && headRun[direction].currentIndex > 15) {
+                    batch.draw(headRun[direction].getFrame(),
+                            body.getPosition().x * PPM + width / 2 - 57,
                             body.getPosition().y * PPM - 5, 114, 114);
                 } else {
-                    legAnimation = false;
-                    jumpAnimation = false;
-                    batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                    headAnimation = false;
+                    batch.draw(Entities.headRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
                             body.getPosition().y * PPM - 5, 114, 114);
-                    legsRun[0].currentIndex = 0;
-                    legsRun[1].currentIndex = 0;
-                    legsJump[0].currentIndex = 0;
-                    legsJump[1].currentIndex = 0;
+                    headRun[0].currentIndex = 0;
+                    headRun[1].currentIndex = 0;
+                }
+
+                if (bodyAnimation && chestRun[direction].currentIndex > 15) {
+                    batch.draw(chestRun[direction].getFrame(),
+                            body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                } else {
+                    bodyAnimation = false;
+                    batch.draw(Entities.chestRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                    chestRun[0].currentIndex = 0;
+                    chestRun[1].currentIndex = 0;
+                }
+
+                if (!onhold) {
+                    if (armAnimation && armsRun[direction].currentIndex > 15) {
+                        batch.draw(armsRun[direction].getFrame(),
+                                body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+                    } else {
+                        armAnimation = false;
+                        batch.draw(Entities.armRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+                        armsRun[0].currentIndex = 0;
+                        armsRun[1].currentIndex = 0;
+                    }
+                } else {
+                    armAnimation = false;
+                    if (!weaponActive && Inventory.inventory[Inventory.selectedIndex].heavy) {
+                        batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+                        batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+
+                        if (direction == 1) {
+                            batch.draw(Inventory.inventory[Inventory.selectedIndex].texture,
+                                    body.getPosition().x * PPM + width / 2 - 57 + 90 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                    body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                    Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
+                        } else {
+                            batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                    body.getPosition().x * PPM + width / 2 - 57 + 24 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                    body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                    Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height);
+                        }
+                    } else {
+                        if (Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex].heavy || Inventory.inventory[Inventory.selectedIndex] instanceof Arcane)) {
+                            batch.draw(Entities.doubleArmsHold[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                    body.getPosition().y * PPM - 5,
+                                    57, 74,
+                                    114, 114, 1f, 1f, armRotationRight);
+                        } else {
+                            batch.draw(Entities.armsHoldRight[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                    body.getPosition().y * PPM - 5,
+                                    57, 74,
+                                    114, 114, 1f, 1f, armRotationRight);
+                            batch.draw(Entities.armsHoldLeft[direction], body.getPosition().x * PPM + width / 2 - 57,
+                                    body.getPosition().y * PPM - 5,
+                                    57, 74,
+                                    114, 114, 1f, 1f, -armRotationLeft);
+                        }
+                        if (Inventory.inventory[Inventory.selectedIndex] != null && (Inventory.inventory[Inventory.selectedIndex] instanceof Melee ||
+                                Inventory.inventory[Inventory.selectedIndex] instanceof Arcane || Inventory.inventory[Inventory.selectedIndex] instanceof Throwing)) {
+                            if (direction == 0) {
+                                batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                        body.getPosition().x * PPM + width / 2 - 33 - (Inventory.inventory[Inventory.selectedIndex].width - Inventory.inventory[Inventory.selectedIndex].holdX),
+                                        body.getPosition().y * PPM - 5 + 51 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                        Inventory.inventory[Inventory.selectedIndex].holdX + 33 + (Inventory.inventory[Inventory.selectedIndex].width / 2 - Inventory.inventory[Inventory.selectedIndex].holdX) * 2,
+                                        Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                        Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                        1f, 1f, armRotationRight);
+                            } else {
+                                batch.draw(Inventory.inventory[Inventory.selectedIndex].display[direction],
+                                        body.getPosition().x * PPM + width / 2 + 33 - Inventory.inventory[Inventory.selectedIndex].holdX,
+                                        body.getPosition().y * PPM + 46 - Inventory.inventory[Inventory.selectedIndex].holdY,
+                                        Inventory.inventory[Inventory.selectedIndex].holdX - 33,
+                                        Inventory.inventory[Inventory.selectedIndex].holdY + 23,
+                                        Inventory.inventory[Inventory.selectedIndex].width, Inventory.inventory[Inventory.selectedIndex].height,
+                                        1f, 1f, armRotationRight);
+                            }
+                        }
+                    }
+                    armsRun[0].currentIndex = 0;
+                    armsRun[1].currentIndex = 0;
+                }
+
+                if (jump || fall) {
+                    jumpAnimation = true;
+                    batch.draw(legsJump[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                            body.getPosition().y * PPM - 5, 114, 114);
+                } else {
+                    if (legAnimation && legsRun[direction].currentIndex > 15) {
+                        batch.draw(legsRun[direction].getFrame(), body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+                    } else {
+                        legAnimation = false;
+                        jumpAnimation = false;
+                        batch.draw(Entities.legRun[direction][0], body.getPosition().x * PPM + width / 2 - 57,
+                                body.getPosition().y * PPM - 5, 114, 114);
+                        legsRun[0].currentIndex = 0;
+                        legsRun[1].currentIndex = 0;
+                        legsJump[0].currentIndex = 0;
+                        legsJump[1].currentIndex = 0;
+                    }
                 }
             }
+        }
+
+        else if(form.equals("spider")) {
+            batch.draw(spiderRun[direction].getFrame(),
+                    body.getPosition().x * PPM + width / 2 - 57,
+                    body.getPosition().y * PPM - 35, 114, 114);
+        }
+
+        else if(form.equals("hydra")) {
+
         }
         batch.end();
     }

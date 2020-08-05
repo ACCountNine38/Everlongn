@@ -10,6 +10,7 @@ import com.everlongn.game.ControlCenter;
 public abstract class Projectile extends Entity {
     public float speedX, speedY, explosionTimer, damage;
     public boolean lifeOut, exploded, pickedUp;
+    public Entity source;
 
     // light effects
     public float maxMovingRadius, maxExplodingRadius, currentRadius;

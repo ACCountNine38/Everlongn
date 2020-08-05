@@ -40,6 +40,8 @@ public class ControlCenter extends ApplicationAdapter {
 
 	public static float delta;
 
+	public static boolean rightClick, leftClick, rightPress, leftPress;
+
 	public ControlCenter(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -77,6 +79,18 @@ public class ControlCenter extends ApplicationAdapter {
 	@Override
 	public void render () {
 		delta = Gdx.graphics.getDeltaTime();
+		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			leftPress = true;
+		}
+		if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			rightPress = true;
+		}
+		if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+			leftClick = true;
+		}
+		if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+			rightClick = true;
+		}
 		stateManager.tick(delta);
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

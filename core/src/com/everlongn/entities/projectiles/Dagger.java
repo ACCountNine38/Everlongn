@@ -20,11 +20,12 @@ import com.everlongn.utils.Tool;
 public class Dagger extends Throw {
     public ParticleEffect explosion;
 
-    public Dagger(float x, float y, int direction, float angle, float damage) {
+    public Dagger(float x, float y, int direction, float angle, float damage, Entity source) {
         super(x, y, 5, 5, 1);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, 1, false,
                 (short) Constants.BIT_PROJECTILE, (short)(Constants.BIT_TILE | Constants.BIT_ENEMY), (short)0, this);
@@ -144,6 +145,7 @@ public class Dagger extends Throw {
                     }
 
                     c.hurt(damage);
+                    c.target = source;
 
                     break;
                 }

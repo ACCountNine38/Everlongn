@@ -17,6 +17,7 @@ public abstract class Throw extends Entity {
     public Entity attached;
     public Tile locked;
     public ArrayList<Entity> damaged = new ArrayList<>();
+    public Entity source;
 
     public Throw(float x, float y, int width, int height, float density) {
         super(x, y, width, height, density);

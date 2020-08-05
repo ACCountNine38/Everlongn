@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Sounds;
-import com.everlongn.entities.Creature;
-import com.everlongn.entities.EntityManager;
-import com.everlongn.entities.Player;
-import com.everlongn.entities.Projectile;
+import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
@@ -25,11 +22,12 @@ public class ArcaneReflection extends Projectile {
     public float life, angle;
     public static Color color = new Color(0.01f, 0f, 0.01f, 1f);
 
-    public ArcaneReflection(float x, float y, float density, int direction, float angle, float damage) {
+    public ArcaneReflection(float x, float y, float density, int direction, float angle, float damage, Entity Source) {
         super(x, y, 5, 5, density);
         this.direction = direction;
         this.angle = angle;
         this.damage = damage;
+        this.source = source;
 
         maxReflection = (int)(Math.random()*7) + 6;
 
@@ -139,9 +137,9 @@ public class ArcaneReflection extends Projectile {
                 if(EntityManager.entities.get(i) instanceof Creature && !(EntityManager.entities.get(i) instanceof Player)) {
                     Creature c = (Creature)EntityManager.entities.get(i);
 
-                    //c.stunned = true;
+                    c.stunned = true;
 
-                    float force = 375 + (float)Math.random()*50;
+                    float force = 400 + (float)Math.random()*50;
                     float angle = (float)(Math.random()*(Math.PI/4));
 
                     float thrust = 10 + (float)Math.random()*5;
@@ -149,11 +147,11 @@ public class ArcaneReflection extends Projectile {
                         c.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     } else {
-                        c.xThrust += (float)Math.cos(angle)*thrust;
-                        c.yThrust += (float)Math.sin(angle)*thrust;
                         c.body.applyForceToCenter(
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
+
+                    c.target = source;
 
                     c.hurt(damage);
 
