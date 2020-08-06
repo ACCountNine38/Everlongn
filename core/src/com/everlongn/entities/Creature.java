@@ -99,12 +99,12 @@ public abstract class Creature extends Entity {
 
     public void updateThrust() {
         if(xThrust > 0) {
-            xThrust -= 0.5 - knockbackResistance;
+            xThrust -= 1 - knockbackResistance;
             if(xThrust < 0) {
                 xThrust = 0;
             }
         } else if(xThrust < 0) {
-            xThrust += 0.5 + knockbackResistance;
+            xThrust += 1 + knockbackResistance;
             if(xThrust > 0) {
                 xThrust = 0;
             }

@@ -252,11 +252,14 @@ public class Hydra extends Creature {
             reset = true;
             resetAngle = (float)Math.PI/4 + (float)(Math.random()*(Math.PI/2));
             resetTimer = (float)(Math.random()*0.25f) + 0.5f;
+            body.setLinearVelocity(0, 0);
             return;
         }
-        if(stabTimer >= 0.5f) {
+        if(stabTimer >= 0.25f) {
             stabTimer = 0;
             stabbing = false;
+            body.setLinearVelocity(0, 0);
+            return;
         } else {
             body.setLinearVelocity(currentVelX, currentVelY);
         }

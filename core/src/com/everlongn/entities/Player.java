@@ -82,14 +82,14 @@ public class Player extends Creature {
     public static boolean duoToss, triToss, glaiveLord;
 
     // Transformations
+    // spider
     public static float spiderLandTimer;
-    public static boolean spiderLeap, spiderLanded;
+    public static boolean spiderLeap, spiderLanded, canHurt;
     private Animation[] spiderRun = new Animation[2],
             hydraChase = new Animation[2];
-
-    // Others
-
-    // Testing variables
+    // hydra
+    public static float stabCooldown, stabAngle, stabTimer, speedBoostTimer;
+    public static boolean stabbing, recharging, stabPaused;
 
     public Player(float x, float y, int width, int height, float maxHealth, float health) {
         super(x, y, width, height, 2.5f, 5);
@@ -186,7 +186,7 @@ public class Player extends Creature {
         updateThrust();
 
         // check fall damage
-        if(Math.abs(previousVelY - body.getLinearVelocity().y) > 15 && !dash) {
+        if(Math.abs(previousVelY - body.getLinearVelocity().y) > 15 && !dash && !form.equals("spider") && !form.equals("hydra")) {
             health -= (Math.abs(previousVelY - body.getLinearVelocity().y)-15) * 5;
         }
 
@@ -284,27 +284,32 @@ public class Player extends Creature {
                 if(canJump) {
                     spiderLanded = true;
                     spiderLeap = false;
-                    for(Entity e: EntityManager.entities) {
-                        if(e.getBound().overlaps(getBound()) && !e.form.equals(form)) {
-                            if(direction == 0)
+                }
+                if(canHurt) {
+                    for (Entity e : EntityManager.entities) {
+                        if (e.getBound().overlaps(getBound()) && !e.form.equals(form) && e != this) {
+                            if (direction == 0)
                                 e.body.applyForceToCenter(-550, 120, false);
                             else
                                 e.body.applyForceToCenter(550, 120, false);
-
-                            if(target instanceof Creature) {
+                            e.hurt(20);
+                            canHurt = false;
+                            if (e instanceof Creature) {
                                 Creature c = (Creature) e;
                                 c.target = this;
                             }
-                            Sounds.playSound(Sounds.basicImpact[(int)(Math.random()*3)], 2f);
+                            Sounds.playSound(Sounds.basicImpact[(int) (Math.random() * 3)], 2f);
                             break;
                         }
                     }
                 }
+            } else {
+                canHurt = true;
             }
 
             if(spiderLanded) {
                 spiderLandTimer += Gdx.graphics.getDeltaTime();
-                if(spiderLandTimer > Math.random()*0.4 + 0.6) {
+                if(spiderLandTimer > 0.4) {
                     spiderLandTimer = 0;
                     spiderLanded = false;
                 }
@@ -313,19 +318,77 @@ public class Player extends Creature {
 
         else if(form.equals("hydra")) {
             flying = true;
-            if(verticalForce == 0) {
-                if(currentSpeedY > 0) {
-                    currentSpeedY -= 0.2;
-                    if (currentSpeedY < 0)
-                        currentSpeedY = 0;
-                } else if(currentSpeedY < 0) {
-                    currentSpeedY += 0.2;
-                    if (currentSpeedY > 0)
-                        currentSpeedY = 0;
+            if(stabPaused) {
+                stabTimer += ControlCenter.delta;
+                if(stabTimer >= 0.25f) {
+                    stabTimer = 0;
+                    stabPaused = false;
+                    stabbing = true;
                 }
+                body.setLinearVelocity(0, 0);
+                hydraChase[0].tick(ControlCenter.delta);
+                hydraChase[1].tick(ControlCenter.delta);
+            } else if(recharging) {
+                stabTimer += ControlCenter.delta;
+                if(stabTimer > 0.25f) {
+                    stabTimer = 0;
+                    recharging = false;
+                    stabPaused = true;
+                }
+                canHurt = true;
+                body.setLinearVelocity(-12*(float)Math.cos(stabAngle), -12*(float)Math.sin(stabAngle));
+                hydraChase[0].tick(ControlCenter.delta);
+                hydraChase[1].tick(ControlCenter.delta);
+            } else if(stabbing) {
+                stabTimer += ControlCenter.delta;
+                if(canHurt) {
+                    for (Entity e : EntityManager.entities) {
+                        if (e.getBound().overlaps(getBound()) && !e.form.equals(form) && e != this) {
+                            if(direction == 0)
+                                e.body.applyForceToCenter(-510, 0, false);
+                            else
+                                e.body.applyForceToCenter(510, 0, false);
+                            e.hurt(34);
+                            canHurt = false;
+                            if (e instanceof Creature) {
+                                Creature c = (Creature) e;
+                                c.target = this;
+                            }
+                            break;
+                        }
+                    }
+                }
+                if(body.getLinearVelocity().y == 0) {
+                    stabTimer = 0;
+                    stabbing = false;
+                    speedBoostTimer = 1.2f;
+                    stabCooldown = 5f;
+                    body.setLinearVelocity(0, 0);
+                    return;
+                }
+                if(stabTimer >= 0.25f) {
+                    stabTimer = 0;
+                    stabbing = false;
+                    stabCooldown = 4.5f;
+                    body.setLinearVelocity(0, 0);
+                    return;
+                }
+                body.setLinearVelocity(33f*(float)Math.cos(stabAngle), 33f*(float)Math.sin(stabAngle));
+            } else {
+                if (verticalForce == 0) {
+                    if (currentSpeedY > 0) {
+                        currentSpeedY -= 0.2;
+                        if (currentSpeedY < 0)
+                            currentSpeedY = 0;
+                    } else if (currentSpeedY < 0) {
+                        currentSpeedY += 0.2;
+                        if (currentSpeedY > 0)
+                            currentSpeedY = 0;
+                    }
+                }
+                hydraChase[0].tick(ControlCenter.delta);
+                hydraChase[1].tick(ControlCenter.delta);
             }
-            hydraChase[0].tick(ControlCenter.delta);
-            hydraChase[1].tick(ControlCenter.delta);
         }
     }
 
@@ -2169,18 +2232,18 @@ public class Player extends Creature {
             // jump test
             if (Gdx.input.isKeyJustPressed(Input.Keys.W) && canJump && !jump && !fall) {
                 body.applyForceToCenter(0, 800 / (body.getLinearVelocity().y / 10 + 1), false);
+
                 jump = true;
                 fall = false;
                 canJump = false;
                 airborn = true;
                 Sounds.playSound(Sounds.steps[0]);
-            }
 
-            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) && canJump && !jump && !fall) {
+            } else if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) && canJump && !jump && !fall) {
                 if(direction == 0)
-                    body.applyForceToCenter(-114*8, 114*9, false);
+                    body.applyForceToCenter(-550, 1650, false);
                 else
-                    body.applyForceToCenter(114*8, 114*9, false);
+                    body.applyForceToCenter(550, 1650, false);
 
                 jump = true;
                 fall = false;
@@ -2220,34 +2283,60 @@ public class Player extends Creature {
         }
 
         else if(form.equals("hydra")) {
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-                horizontalForce = -1;
-                currentSpeed -= 0.5f;
-                if (currentSpeed <= -3) {
-                    currentSpeed = -3;
-                }
-                direction = 0;
+            if(stabCooldown > 0) {
+                stabCooldown -= ControlCenter.delta;
+                if(stabCooldown < 0)
+                    stabCooldown = 0;
             }
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-                horizontalForce = 1;
-                currentSpeed += 0.5f;
-                if (currentSpeed >= 3) {
-                    currentSpeed = 3;
+            if(!stabbing && !recharging && !stabPaused) {
+                float maxSpeedFactor = 3f;
+                if(speedBoostTimer > 0) {
+                    maxSpeedFactor = 6f;
+                    speedBoostTimer -= ControlCenter.delta;
+                    if(speedBoostTimer < 0)
+                        speedBoostTimer = 0;
                 }
-                direction = 1;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-                verticalForce = 1;
-                currentSpeedY += 0.5f - 1f + (float)(Math.random()*2);
-                if (currentSpeedY >= 3) {
-                    currentSpeedY = 3 - 1f + (float)(Math.random()*2);
+                if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                    horizontalForce = -1;
+                    currentSpeed -= 0.5f;
+                    if (currentSpeed <= -maxSpeedFactor) {
+                        currentSpeed = -maxSpeedFactor;
+                    }
+                    direction = 0;
                 }
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-                verticalForce = -1;
-                currentSpeedY -= 0.5f - 1f + (float)(Math.random()*2);
-                if (currentSpeedY <= -3) {
-                    currentSpeedY = -3 - 1f + (float)(Math.random()*2);
+                if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                    horizontalForce = 1;
+                    currentSpeed += 0.5f;
+                    if (currentSpeed >= maxSpeedFactor) {
+                        currentSpeed = maxSpeedFactor;
+                    }
+                    direction = 1;
+                }
+                if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                    verticalForce = 1;
+                    currentSpeedY += 0.5f - 1f + (float) (Math.random() * 2);
+                    if (currentSpeedY >= maxSpeedFactor) {
+                        currentSpeedY = maxSpeedFactor - 1f + (float) (Math.random() * 2);
+                    }
+                }
+                if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+                    verticalForce = -1;
+                    currentSpeedY -= 0.5f - 1f + (float) (Math.random() * 2);
+                    if (currentSpeedY <= -maxSpeedFactor) {
+                        currentSpeedY = -maxSpeedFactor - 1f + (float) (Math.random() * 2);
+                    }
+                }
+
+                if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) && stabCooldown == 0) {
+                    recharging = true;
+
+                    float ex = mouseWorldPos().x;
+                    float ey = mouseWorldPos().y;
+                    float sx = body.getPosition().x * Constants.PPM;
+                    float sy = body.getPosition().y * Constants.PPM;
+
+                    stabAngle = (float)Math.atan2(ey - sy, ex - sx);
+                    stabTimer = 0;
                 }
             }
         }
@@ -2306,10 +2395,18 @@ public class Player extends Creature {
             velYBeforeThrust = body.getLinearVelocity().y;
         }
 
-        if(!flying) {
+        if(form.equals("human")) {
             body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
+        } else if(form.equals("spider")) {
+            if(!spiderLeap) {
+                body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
+            }
+        } else if(form.equals("hydra")) {
+            if(!stabbing && !recharging && !stabPaused) {
+                body.setLinearVelocity(currentSpeed + xThrust, currentSpeedY + yThrust - 1f + (float) (Math.random() * 2));
+            }
         } else {
-            body.setLinearVelocity(currentSpeed + xThrust, currentSpeedY + yThrust - 1f + (float)(Math.random()*2));
+            body.setLinearVelocity(currentSpeed + xThrust, body.getLinearVelocity().y + yThrust);
         }
     }
 
@@ -2347,10 +2444,10 @@ public class Player extends Creature {
 
     @Override
     public Rectangle getBound() {
-        if(jump || fall) {
-            return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM + 25, boundWidth, boundHeight - 25);
+        if (jump || fall) {
+            return new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM + 25, boundWidth, boundHeight - 25);
         }
-        return new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM, boundWidth, boundHeight);
+        return new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM, boundWidth, boundHeight);
     }
 
     public void render(SpriteBatch batch) {

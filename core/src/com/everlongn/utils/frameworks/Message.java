@@ -431,6 +431,12 @@ public class Message {
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
                             Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+
+                    EntityManager.player.boundWidth = 16;
+                    EntityManager.player.boundHeight = 100;
+
+                    GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
                 else if (entity.equals("Spider") || entity.equals("spider")) {
@@ -443,10 +449,34 @@ public class Message {
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 104, 57, false, 1.5f, false,
                             Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+
+                    EntityManager.player.boundWidth = 94;
+                    EntityManager.player.boundHeight = 57;
+
+                    GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
                 else if (entity.equals("Hydra") || entity.equals("hydra")) {
                     EntityManager.player.form = "hydra";
+                    float sx = EntityManager.player.body.getPosition().x * Constants.PPM - 12.5f;
+                    float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
+                    GameState.world.destroyBody(EntityManager.player.body);
+                    EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+
+                    EntityManager.player.boundWidth = 16;
+                    EntityManager.player.boundHeight = 100;
+
+                    EntityManager.player.stabCooldown = 0;
+                    EntityManager.player.stabTimer = 0;
+                    EntityManager.player.speedBoostTimer = 0;
+                    EntityManager.player.stabbing = false;
+                    EntityManager.player.recharging = false;
+                    EntityManager.player.stabPaused = false;
+
+                    GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
                 else {
