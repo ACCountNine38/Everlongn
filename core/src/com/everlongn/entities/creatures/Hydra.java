@@ -255,7 +255,7 @@ public class Hydra extends Creature {
             body.setLinearVelocity(0, 0);
             return;
         }
-        if(stabTimer >= 0.25f) {
+        if(stabTimer >= 0.5f) {
             stabTimer = 0;
             stabbing = false;
             body.setLinearVelocity(0, 0);
