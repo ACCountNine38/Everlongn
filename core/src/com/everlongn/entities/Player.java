@@ -15,6 +15,7 @@ import com.everlongn.assets.Entities;
 import com.everlongn.assets.Tiles;
 import com.everlongn.entities.creatures.Hydra;
 import com.everlongn.entities.creatures.Spiderling;
+import com.everlongn.entities.creatures.Warf;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.entities.staticEntity.CondensedDarkEnergy;
 import com.everlongn.entities.staticEntity.Tree;
@@ -2148,6 +2149,9 @@ public class Player extends Creature {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.U)) {
             EntityManager.entities.add(new Hydra(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50) + 150));
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+            EntityManager.entities.add(new Warf(body.getPosition().x * PPM - 500, body.getPosition().y * PPM + 100,  (int)(Math.random()*100) + 550));
         }
 
         if(form.equals("human")) {
