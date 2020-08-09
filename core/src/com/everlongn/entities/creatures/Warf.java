@@ -7,6 +7,7 @@ import com.everlongn.assets.Entities;
 import com.everlongn.assets.Sounds;
 import com.everlongn.entities.Animation;
 import com.everlongn.entities.Creature;
+import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
@@ -14,21 +15,22 @@ import com.everlongn.utils.Tool;
 import static com.everlongn.utils.Constants.PPM;
 
 public class Warf extends Creature {
-    public boolean enraged = true;
+    public boolean enraged, canTurn;
+    public float currentRotation, targetRotation, turnTimer;
 
     public Warf(float x, float y, int size) {
-        super(x, y, size, size, 5f, 0.25f + (float)Math.random()*0.1f);
+        super(x, y, size, size, 1.5f, 0.25f + (float)Math.random()*0.2f);
 
         // base variables
-        body = Tool.createEntity((int)(x), (int)(y), width/12, height/2 - height/8, false, density, true,
+        body = Tool.createEntity((int)(x), (int)(y), width/12, height/2 - height/8, false, density, false,
                 Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PROJECTILE), (short)0, this);
 
         chase = new Animation[2];
         chase[0] = new Animation(1f/20f, Entities.warfWalk[0], true);
         chase[1] = new Animation(1f/20f, Entities.warfWalk[1], true);
 
-        boundWidth = size - 20;
-        boundHeight = height/2;
+        boundWidth = width/12;
+        boundHeight = height/2 - height/8;
 
         setMaxHealth(height);
         setMaxResistance(15);
@@ -49,17 +51,21 @@ public class Warf extends Creature {
             destroyed[i].getEmitters().first().scaleSize(1.5f);
         jumpForce = size*7;
 
-        sightHeight = 400;
-        sightWidth = 400;
+        sightHeight = 500;
+        sightWidth = 500;
         sightBound = new Rectangle(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2, sightWidth, sightHeight);
     }
 
     @Override
     public void tick() {
+        System.out.println(body.getLinearVelocity().x);
+        if(status.equals("natural") && health > 0 && naturalStatus != 2 && body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
+            body.setLinearVelocity(0, 1);
+        }
         if(alive) {
             if(status.equals("chase") || health < maxHealth) {
                 sightWidth = 1600;
-                sightHeight = 450;
+                sightHeight = 500;
             } else {
                 sightWidth = 800;
                 sightHeight = 500;
@@ -69,13 +75,41 @@ public class Warf extends Creature {
             if (target == null) {
                 findTarget();
                 natural();
-            } else {
-                chase();
+            } else if(canSwitchNatural()) {
                 if(enraged) {
+                    chase();
+                } else if(canTurn) {
+                    if (target.body.getPosition().x*Constants.PPM < body.getPosition().x*Constants.PPM) {
+                        if (direction == 1) {
+                            turnTimer += ControlCenter.delta;
+                            if (turnTimer > 2f) {
+                                turnTimer = 0;
+                                direction = 0;
+                            }
+                        } else {
+                            turnTimer = 0;
+                        }
+                    } else {
+                        if (direction == 0) {
+                            turnTimer += ControlCenter.delta;
+                            if (turnTimer > 2f) {
+                                turnTimer = 0;
+                                direction = 1;
+                            }
+                        } else {
+                            turnTimer = 0;
+                        }
+                    }
+                    if(direction == 1 && target.body.getPosition().x > body.getPosition().x) {
 
+                    } else if(direction == 0 && target.body.getPosition().x < body.getPosition().x) {
+
+                    }
                 } else {
-
+                    natural();
                 }
+            } else {
+                natural();
             }
 
             if(target != null && (!target.getBound().overlaps(sightBound) || target.health <= 0)) {
@@ -108,9 +142,10 @@ public class Warf extends Creature {
         status = "natural";
         transitionTimer = 0;
         naturalTimer+=Gdx.graphics.getDeltaTime();
+
         if(naturalTimer > naturalRotation && canSwitchNatural()) {
             naturalTimer = 0;
-            if(naturalStatus < 2) {
+            if(naturalStatus == 2) {
                 naturalStatus = (int)(Math.random()*3);
             } else {
                 naturalStatus = 2;
@@ -122,20 +157,27 @@ public class Warf extends Creature {
         if(naturalStatus == 0) {
             direction = 0;
             body.setLinearVelocity(-speed, body.getLinearVelocity().y);
-            chase[direction].tick(Gdx.graphics.getDeltaTime());
+            chase[0].tick(Gdx.graphics.getDeltaTime());
+            chase[1].tick(Gdx.graphics.getDeltaTime());
+            canTurn = false;
         } else if(naturalStatus == 1) {
             direction = 1;
             body.setLinearVelocity(speed, body.getLinearVelocity().y);
-            chase[direction].tick(Gdx.graphics.getDeltaTime());
+            chase[0].tick(Gdx.graphics.getDeltaTime());
+            chase[1].tick(Gdx.graphics.getDeltaTime());
+            canTurn = false;
         } else {
             body.setLinearVelocity(0, body.getLinearVelocity().y);
+            turnTimer+=ControlCenter.delta;
+            if(turnTimer > 2f) {
+                turnTimer = 0;
+                canTurn = true;
+            }
         }
     }
 
     public boolean canSwitchNatural() {
-        if(direction == 0 && (chase[0].currentIndex == 0 || chase[0].currentIndex == chase[0].textures.length - 1)) {
-            return true;
-        } else if(direction == 1 && (chase[1].currentIndex == 0 || chase[1].currentIndex == chase[1].textures.length - 1)) {
+        if((chase[direction].currentIndex == 0 || chase[direction].currentIndex == chase[direction].textures.length - 1)) {
             return true;
         }
 
@@ -145,14 +187,19 @@ public class Warf extends Creature {
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-        if(alive) {
-            //batch.draw(Tiles.blackTile, leapBound.x, leapBound.y, leapBound.width, leapBound.height);
-            if(getCurrentFrame() != null)
-                batch.draw(getCurrentFrame(), body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
-        } else {
+        if(!alive) {
             batch.setColor(0f, 0f, 0f, fadeAlpha);
-            if(getCurrentFrame() != null)
-                batch.draw(getCurrentFrame(), body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, height, height);
+        }
+            //batch.draw(Tiles.blackTile, leapBound.x, leapBound.y, leapBound.width, leapBound.height);
+            if (body.getLinearVelocity().x != 0) {
+                if(getCurrentFrame() != null)
+                    batch.draw(getCurrentFrame(), body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
+            } else {
+                batch.draw(Entities.warfBody[direction], body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
+                batch.draw(Entities.warfHead[direction], body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
+            }
+
+        if(!alive) {
             batch.setColor(1f, 1f, 1f, 1f);
             destroyed[destroyedDirection].draw(batch);
         }

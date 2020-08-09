@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Entities {
     // creatures
     public static TextureRegion[][] spiderRun, hydraFly, warfWalk;
-    public static TextureRegion[] spiderLeap, hydraBody, hydraHead, warf;
+    public static TextureRegion[] spiderLeap, hydraBody, hydraHead, warfBody, warfHead;
     public static Texture spiderRunSprite, spiderLeapSprite, hydraWing1, hydraWing2, hydraHeadSprite, hydraBodySprite,
-            warfWalkSprite1, warfWalkSprite2, warfWalkSprite3;
+            warfWalkSprite1, warfWalkSprite2, warfWalkSprite3, warfBodySprite, warfHeadSprite;
 
     // player
     public static TextureRegion[][] legRun, armRun, chestRun, headRun, legJump;
@@ -88,9 +88,19 @@ public class Entities {
             }
         }
 
-        warf = new TextureRegion[2];
-        warf[0] = warfWalk[0][0];
-        warf[1] = warfWalk[1][0];
+        warfBody = new TextureRegion[2];
+        warfBodySprite = new Texture(Gdx.files.internal("creatures/warfWalkBody.png"),true);
+        warfBodySprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        warfBody[0] = new TextureRegion(warfBodySprite, 0, 0, 1200, 1200);
+        warfBody[1] = new TextureRegion(warfBodySprite, 0, 0, 1200, 1200);
+        warfBody[1].flip(true, false);
+
+        warfHead = new TextureRegion[2];
+        warfHeadSprite = new Texture(Gdx.files.internal("creatures/warfWalkHead.png"),true);
+        warfHeadSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        warfHead[0] = new TextureRegion(warfHeadSprite, 0, 0, 1200, 1200);
+        warfHead[1] = new TextureRegion(warfHeadSprite, 0, 0, 1200, 1200);
+        warfHead[1].flip(true, false);
 
         // hydra
         hydraWing1 = new Texture(Gdx.files.internal("creatures/hydraWing1.png"),true);

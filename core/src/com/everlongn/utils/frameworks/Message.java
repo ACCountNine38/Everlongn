@@ -3,6 +3,7 @@ package com.everlongn.utils.frameworks;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
@@ -436,6 +437,11 @@ public class Message {
                     EntityManager.player.boundHeight = 100;
 
                     GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+                    ParticleEffect explosion = new ParticleEffect();
+                    explosion.load(Gdx.files.internal("particles/destroyed"), Gdx.files.internal(""));
+                    explosion.getEmitters().first().setPosition(EntityManager.player.body.getPosition().x * Constants.PPM, EntityManager.player.body.getPosition().y * Constants.PPM);
+                    explosion.start();
+                    EntityManager.particles.add(explosion);
 
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
