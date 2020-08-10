@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.game.ControlCenter;
 
+/*
+fix hydra directional attack
+ */
 public abstract class UIComponent {
     public GlyphLayout layout = new GlyphLayout();
     public float width, height, x, y;
@@ -71,8 +74,8 @@ public abstract class UIComponent {
 
     public boolean isHovering() {
         if(clickable) {
-            if (Gdx.input.getX() >= x && Gdx.input.getX() < x + width &&
-                    Gdx.input.getY() >= ControlCenter.height-y && Gdx.input.getY() < ControlCenter.height-y+height) {
+            if (ControlCenter.touchPos.x >= x && ControlCenter.touchPos.x < x + width &&
+                    ControlCenter.touchPos.y < y && ControlCenter.touchPos.y >= y-height) {
                 return true;
             }
         }

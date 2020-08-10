@@ -22,7 +22,7 @@ public class Warf extends Creature {
         super(x, y, size, size, 1.5f, 0.25f + (float)Math.random()*0.2f);
 
         // base variables
-        body = Tool.createEntity((int)(x), (int)(y), width/12, height/2 - height/8, false, density, false,
+        body = Tool.createEntity((int)(x), (int)(y), width/12, height/2 - height/8, false, density, true,
                 Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PROJECTILE), (short)0, this);
 
         chase = new Animation[2];

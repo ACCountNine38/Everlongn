@@ -25,7 +25,7 @@ public class ControlCenter extends ApplicationAdapter {
 	public static Vector3 camStartingPosition;
 	public static boolean DEBUG, DEBUG_RENDER;
 	public static float SCALE = 1f;
-	public static int width, height;
+	public static int screenWidth, screenHeight, width, height;
 
 	public static Pixmap cursor1, emptyCursor, aimCursor, attackCursor, handCursor;
 
@@ -42,9 +42,11 @@ public class ControlCenter extends ApplicationAdapter {
 
 	public static boolean rightClick, leftClick, rightPress, leftPress;
 
+	public static Vector3 touchPos = new Vector3(), mousePos = new Vector3();
+
 	public ControlCenter(int width, int height) {
-		this.width = width;
-		this.height = height;
+		this.screenWidth = width;
+		this.screenWidth = height;
 	}
 
 	@Override
@@ -59,11 +61,16 @@ public class ControlCenter extends ApplicationAdapter {
 		TileItem.init();
 		ObjectItem.init();
 
-		float width = Gdx.graphics.getWidth();
-		float height = Gdx.graphics.getHeight();
+		screenWidth = Gdx.graphics.getWidth();
+		screenHeight = Gdx.graphics.getHeight();
+
+		SCALE = Math.min((float)screenWidth/1280, (float)screenHeight/800);
+
+		width = (int)(screenWidth/SCALE);
+		height = (int)(screenHeight/SCALE);
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, width/SCALE, height/SCALE);
+		camera.setToOrtho(false, width, height);
 		camStartingPosition = camera.position;
 		stateManager = new StateManager(this);
 
@@ -78,19 +85,7 @@ public class ControlCenter extends ApplicationAdapter {
 	// note (0, 0) is now at bottom left not top left
 	@Override
 	public void render () {
-		delta = Gdx.graphics.getDeltaTime();
-		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-			leftPress = true;
-		}
-		if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-			rightPress = true;
-		}
-		if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-			leftClick = true;
-		}
-		if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-			rightClick = true;
-		}
+		update();
 		stateManager.tick(delta);
 		Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -100,6 +95,32 @@ public class ControlCenter extends ApplicationAdapter {
 		//batch.begin(); // begins drawing process
 		stateManager.render();
 		//batch.end();
+	}
+
+	public void update() {
+		delta = Gdx.graphics.getDeltaTime();
+		touchPos.set(Gdx.input.getX()/SCALE, height - Gdx.input.getY()/SCALE, 0);
+		mousePos.set(Gdx.input.getX()/SCALE, Gdx.input.getY()/SCALE, 0);
+		if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+			leftPress = true;
+		} else {
+			leftPress = false;
+		}
+		if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			rightPress = true;
+		} else {
+			rightPress = false;
+		}
+		if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+			leftClick = true;
+		} else {
+			leftClick = false;
+		}
+		if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+			rightClick = true;
+		} else {
+			rightClick = false;
+		}
 	}
 
 	@Override

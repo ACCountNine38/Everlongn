@@ -766,12 +766,12 @@ public class Player extends Creature {
                 aimAngle = -aimAngle;
             }
             if(throwRecharge) {
-                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() > ControlCenter.width/2) {
-                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x > ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
 
                 if(aimAngle < tempAngle - 5) {
@@ -806,10 +806,10 @@ public class Player extends Creature {
 
                 Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
-                        Gdx.input.getY() - 8 - vec.y));
-                if (Gdx.input.getX() > ControlCenter.width/2) {
-                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                        ControlCenter.mousePos.y - 8 - vec.y));
+                if (ControlCenter.mousePos.x > ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
                             ControlCenter.height - vec.y - 8));
                 }
 
@@ -864,12 +864,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() > ControlCenter.width / 2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x > ControlCenter.width / 2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
                 thrown = false;
             }
@@ -881,12 +881,12 @@ public class Player extends Creature {
                 aimAngle = Math.abs(aimAngle);
             }
             if(throwRecharge) {
-                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() < ControlCenter.width/2) {
-                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
 
                 if(aimAngle < tempAngle - 5) {
@@ -922,10 +922,10 @@ public class Player extends Creature {
 
                 Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
-                        Gdx.input.getY() - 8 - vec.y));
-                if (Gdx.input.getX() < ControlCenter.width/2) {
-                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                        ControlCenter.mousePos.y - 8 - vec.y));
+                if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
                             ControlCenter.height - vec.y - 8));
                 }
 
@@ -980,12 +980,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() < ControlCenter.width/2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
                 thrown = false;
             }
@@ -1000,12 +1000,12 @@ public class Player extends Creature {
                     aimAngle = -aimAngle;
                 }
                 if(throwRecharge) {
-                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                    if (Gdx.input.getX() > ControlCenter.width/2) {
-                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
+                    if (ControlCenter.mousePos.x > ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                         ControlCenter.width / 2),
-                                Gdx.input.getY() - ControlCenter.height / 2));
+                                ControlCenter.mousePos.y - ControlCenter.height / 2));
                     }
 
                     if(aimAngle < tempAngle - 5) {
@@ -1039,10 +1039,10 @@ public class Player extends Creature {
 
                         Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                        float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
-                                Gdx.input.getY() - 8 - vec.y));
-                        if (Gdx.input.getX() > ControlCenter.width/2) {
-                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                        float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                                ControlCenter.mousePos.y - 8 - vec.y));
+                        if (ControlCenter.mousePos.x > ControlCenter.width/2) {
+                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
                                     ControlCenter.height - vec.y - 8));
                         }
 
@@ -1091,12 +1091,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() > ControlCenter.width / 2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x > ControlCenter.width / 2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
             }
             armRotationRight = aimAngle + 45 - 360;
@@ -1108,12 +1108,12 @@ public class Player extends Creature {
                     aimAngle = -aimAngle;
                 }
                 if(throwRecharge) {
-                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                    if (Gdx.input.getX() < ControlCenter.width/2) {
-                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
+                    if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                         ControlCenter.width / 2),
-                                Gdx.input.getY() - ControlCenter.height / 2));
+                                ControlCenter.mousePos.y - ControlCenter.height / 2));
                     }
 
                     if(aimAngle < tempAngle - 5) {
@@ -1149,10 +1149,10 @@ public class Player extends Creature {
 
                         Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                        float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() + 8 - vec.x),
-                                Gdx.input.getY() - 8 - vec.y));
-                        if (Gdx.input.getX() < ControlCenter.width/2) {
-                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - Gdx.input.getX()) - vec.x + 8)),
+                        float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                                ControlCenter.mousePos.y - 8 - vec.y));
+                        if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
                                     ControlCenter.height - vec.y - 8));
                         }
 
@@ -1203,12 +1203,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() < ControlCenter.width/2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
             }
             armRotationRight = aimAngle + 45 - 90;
@@ -1222,12 +1222,12 @@ public class Player extends Creature {
                     aimAngle = -aimAngle;
                 }
                 if(meleeRecharge) {
-                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                    if (Gdx.input.getX() > ControlCenter.width/2) {
-                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
+                    if (ControlCenter.mousePos.x > ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                         ControlCenter.width / 2),
-                                Gdx.input.getY() - ControlCenter.height / 2));
+                                ControlCenter.mousePos.y - ControlCenter.height / 2));
                     }
 
                     if(aimAngle < tempAngle - 5) {
@@ -1385,12 +1385,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() > ControlCenter.width / 2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x > ControlCenter.width / 2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
             }
             armRotationRight = aimAngle + 45 - 360;
@@ -1402,12 +1402,12 @@ public class Player extends Creature {
                     aimAngle = -aimAngle;
                 }
                 if(meleeRecharge) {
-                    float tempAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
-                    if (Gdx.input.getX() < ControlCenter.width/2) {
-                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                    float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
+                    if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                        tempAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                         ControlCenter.width / 2),
-                                Gdx.input.getY() - ControlCenter.height / 2));
+                                ControlCenter.mousePos.y - ControlCenter.height / 2));
                     }
 
                     if(aimAngle < tempAngle - 5) {
@@ -1573,12 +1573,12 @@ public class Player extends Creature {
                     }
                 }
             } else {
-                aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
-                if (Gdx.input.getX() < ControlCenter.width/2) {
-                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+                aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
+                if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                    aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                     ControlCenter.width / 2),
-                            Gdx.input.getY() - ControlCenter.height / 2));
+                            ControlCenter.mousePos.y - ControlCenter.height / 2));
                 }
             }
             armRotationRight = aimAngle + 45 - 90;
@@ -1635,12 +1635,12 @@ public class Player extends Creature {
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-85);
 
                             // shoot angle is in radians
-                            if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             } else {
-                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Sounds.playSound(Sounds.shadowCast, 2.5f);
                             Shadow shadow = new Shadow(body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
@@ -1653,12 +1653,12 @@ public class Player extends Creature {
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-85);
 
                             // shoot angle is in radians
-                            if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             } else {
-                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             Sounds.playSound(Sounds.shadowCast, 2.5f);
                             Shadow shadow = new Shadow(body.getPosition().x * PPM + width / 2 + xAim, 69 + body.getPosition().y * PPM + yAim,
@@ -1717,12 +1717,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail(body.getPosition().x * PPM + width / 2 + xAim,
@@ -1735,12 +1735,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         Sounds.playSound(Sounds.arcaneCaster);
                         ArcaneTrail arcaneTrail = new ArcaneTrail((body.getPosition().x * PPM + width / 2) + xAim,
@@ -1789,12 +1789,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 35 + 90)) * (100);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
@@ -1806,12 +1806,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 35)) * (100);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneDevastation arcaneTrail = new ArcaneDevastation((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
@@ -1855,12 +1855,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneReflection arcaneReflection = new ArcaneReflection(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
@@ -1872,12 +1872,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneReflection arcaneReflection = new ArcaneReflection((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
@@ -1949,12 +1949,12 @@ public class Player extends Creature {
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight + 180)) * (-76);
 
                             // shoot angle is in radians
-                            if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             } else {
-                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             ArcaneEruption arcaneTrail = new ArcaneEruption(body.getPosition().x * PPM + width / 2 + xAim,
                                     body.getPosition().y * PPM + 69 + yAim,
@@ -1967,12 +1967,12 @@ public class Player extends Creature {
                             float yAim = (float) Math.sin(Math.toRadians(-armRotationRight)) * (-76);
 
                             // shoot angle is in radians
-                            if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             } else {
-                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                             }
                             ArcaneEruption arcaneTrail = new ArcaneEruption(body.getPosition().x * PPM + width / 2 + xAim,
                                     69 + body.getPosition().y * PPM + yAim,
@@ -2019,12 +2019,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneRebound arcaneRebound = new ArcaneRebound(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
@@ -2035,12 +2035,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneRebound arcaneRebound = new ArcaneRebound((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
@@ -2079,12 +2079,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.cos(Math.toRadians(aimAngle + 45 + 90)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneEscort arcaneEscort = new ArcaneEscort(body.getPosition().x * PPM + width / 2 + xAim,
                                 body.getPosition().y * PPM + 46 + 23 + yAim,
@@ -2095,12 +2095,12 @@ public class Player extends Creature {
                         float yAim = (float) Math.sin(Math.toRadians(aimAngle - 45)) * (70);
 
                         // shoot angle is in radians
-                        if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                            shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                        if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                            shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         } else {
-                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                                    (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                            shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                                    (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
                         }
                         ArcaneEscort arcaneEscort = new ArcaneEscort((body.getPosition().x * PPM + width / 2) + xAim,
                                 (body.getPosition().y * PPM + 46 + 23) + yAim,
@@ -2123,21 +2123,21 @@ public class Player extends Creature {
     public void findShootAngle(float xAim, float yAim) {
         if(direction == 0) {
             // shoot angle is in radians
-            if (Gdx.input.getX() <= ControlCenter.width / 2) {
-                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+            if (ControlCenter.mousePos.x <= ControlCenter.width / 2) {
+                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
             } else {
-                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (Gdx.input.getX() - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 - (ControlCenter.mousePos.x - ControlCenter.width / 2) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
             }
         } else {
             // shoot angle is in radians
-            if (Gdx.input.getX() >= ControlCenter.width / 2) {
-                shootAngle = (float) Math.atan2(((Gdx.input.getX() + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+            if (ControlCenter.mousePos.x >= ControlCenter.width / 2) {
+                shootAngle = (float) Math.atan2(((ControlCenter.mousePos.x + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
             } else {
-                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - Gdx.input.getX()) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
-                        (Gdx.input.getY() + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
+                shootAngle = (float) Math.atan2(((ControlCenter.width / 2 + (ControlCenter.width / 2 - ControlCenter.mousePos.x) + ControlCenter.camera.position.x - ControlCenter.width / 2) - ((body.getPosition().x * PPM + width / 2) + xAim)),
+                        (ControlCenter.mousePos.y + ControlCenter.camera.position.y - ControlCenter.height / 2) - ((body.getPosition().y * PPM + 46 + 23) + yAim));
             }
         }
     }
@@ -2348,21 +2348,21 @@ public class Player extends Creature {
 
     public void findAimAngle() {
         if(direction == 0) {
-            aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                    Gdx.input.getY() - ControlCenter.height / 2));
-            if (Gdx.input.getX() > ControlCenter.width / 2) {
-                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+            aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                    ControlCenter.mousePos.y - ControlCenter.height / 2));
+            if (ControlCenter.mousePos.x > ControlCenter.width / 2) {
+                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                 ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
             }
             armRotationRight = aimAngle + 45 - 360;
         } else {
-            aimAngle = (float) Math.toDegrees(Math.atan2((Gdx.input.getX() - ControlCenter.width / 2),
-                    Gdx.input.getY() - ControlCenter.height / 2));
-            if (Gdx.input.getX() < ControlCenter.width/2) {
-                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - Gdx.input.getX()) -
+            aimAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x - ControlCenter.width / 2),
+                    ControlCenter.mousePos.y - ControlCenter.height / 2));
+            if (ControlCenter.mousePos.x < ControlCenter.width/2) {
+                aimAngle = (float) Math.toDegrees(Math.atan2(((ControlCenter.width - ControlCenter.mousePos.x) -
                                 ControlCenter.width / 2),
-                        Gdx.input.getY() - ControlCenter.height / 2));
+                        ControlCenter.mousePos.y - ControlCenter.height / 2));
             }
 
             armRotationRight = aimAngle + 45 - 90;
@@ -2443,7 +2443,7 @@ public class Player extends Creature {
     }
 
     public static Vector3 mouseWorldPos() {
-        return ControlCenter.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        return ControlCenter.camera.unproject(new Vector3(ControlCenter.mousePos.x, ControlCenter.mousePos.y, 0));
     }
 
     @Override

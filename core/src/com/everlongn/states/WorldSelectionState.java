@@ -360,10 +360,10 @@ public class WorldSelectionState extends State  implements InputProcessor {
     @Override
     public boolean scrolled(int amount) {
         if(amount == 1){
-            scrollY += 5;
+            scrollY += 10;
         }
         else if(amount == -1){
-            scrollY -= 5;
+            scrollY -= 10;
         }
         return false;
     }

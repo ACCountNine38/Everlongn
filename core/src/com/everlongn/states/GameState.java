@@ -547,8 +547,8 @@ public class GameState extends State {
         telepathy.render(batch);
 
         if(Player.forceCharge > 0) {
-            batch.draw(UI.chargeCursor,Gdx.input.getX() - 38 + 16,  ControlCenter.height-Gdx.input.getY() - 38 - 16, 76, 76);
-            batch.draw(UI.chargeOrb,Gdx.input.getX() - Player.forceCharge/Player.forceMax*32/2 + 16,  ControlCenter.height-Gdx.input.getY() - Player.forceCharge/Player.forceMax*32/2 + 1 - 16, Player.forceCharge/Player.forceMax*32, Player.forceCharge/Player.forceMax*32);
+            batch.draw(UI.chargeCursor,ControlCenter.mousePos.x - 38 + 16,  ControlCenter.height-ControlCenter.mousePos.y - 38 - 16, 76, 76);
+            batch.draw(UI.chargeOrb,ControlCenter.mousePos.x - Player.forceCharge/Player.forceMax*32/2 + 16,  ControlCenter.height-ControlCenter.mousePos.y - Player.forceCharge/Player.forceMax*32/2 + 1 - 16, Player.forceCharge/Player.forceMax*32, Player.forceCharge/Player.forceMax*32);
             Tool.changeCursor(1);
         }
 

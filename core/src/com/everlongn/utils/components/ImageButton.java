@@ -23,16 +23,11 @@ public class ImageButton extends UIComponent {
 
     @Override
     public void tick() {
-        if(Gdx.input.getX() > x && Gdx.input.getX() < x + width &&
-                ControlCenter.height - Gdx.input.getY() > y && ControlCenter.height - Gdx.input.getY() < y + height) {
+        if(ControlCenter.touchPos.x > x && ControlCenter.touchPos.x < x + width &&
+                ControlCenter.touchPos.y > y - height/2 && ControlCenter.touchPos.y < y + height/2) {
             hover = true;
-//            if(soundCanPlay) {
-//                Sounds.playSound(Sounds.buttonHover);
-//                soundCanPlay = false;
-//            }
         } else {
             hover = false;
-            //soundCanPlay = true;
         }
     }
 

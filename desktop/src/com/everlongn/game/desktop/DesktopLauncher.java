@@ -11,8 +11,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		Dimension dimension = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		//config.width = 1280;
-		//config.height = 800;
+
 		config.width = (int)dimension.getWidth();
 		config.height = (int)dimension.getHeight();
 		config.resizable = false;

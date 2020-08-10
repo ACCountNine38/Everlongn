@@ -61,6 +61,9 @@ public class TriStar extends Throw {
 
                     float force = 500 + (float)Math.random()*100;
                     float angle = (float)(Math.random()*(Math.PI/4));
+
+                    body.setLinearVelocity(body.getLinearVelocity().x/4*3, body.getLinearVelocity().y);
+
                     if(direction == 0) {
                         e.body.applyForceToCenter(
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);

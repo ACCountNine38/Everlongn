@@ -34,7 +34,7 @@ public abstract class State {
     }
 
     public void updateLayers(float delta) {
-        mouseLight.setPosition(Gdx.input.getX() + 8, ControlCenter.height - Gdx.input.getY() - 8);
+        mouseLight.setPosition(ControlCenter.touchPos.x + 8, ControlCenter.touchPos.y - 8);
         mouseLight.setDistance(lightSize);
 
         lightSizeIncreaseCounter += delta;

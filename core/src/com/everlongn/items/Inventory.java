@@ -283,33 +283,33 @@ public class Inventory {
         renderHotbar(batch);
 
         // only display dragged item when the cursor is out of the selected slot
-        if(draggedItem != null && !(Gdx.input.getX() > dragBoundX && Gdx.input.getX() < dragBoundX + slotSize &&
-                Gdx.input.getY() > dragBoundY && Gdx.input.getY() < dragBoundY + slotSize)) {
-            batch.draw(draggedItem.texture, Gdx.input.getX() - draggedItem.itemWidth/2, ControlCenter.height - Gdx.input.getY() - draggedItem.itemHeight/2, draggedItem.itemWidth, draggedItem.itemHeight);
+        if(draggedItem != null && !((int)ControlCenter.mousePos.x > dragBoundX && (int)ControlCenter.mousePos.x < dragBoundX + slotSize &&
+                (int)ControlCenter.mousePos.y > dragBoundY && (int)ControlCenter.mousePos.y < dragBoundY + slotSize)) {
+            batch.draw(draggedItem.texture, (int)ControlCenter.mousePos.x - draggedItem.itemWidth/2, ControlCenter.height - (int)ControlCenter.mousePos.y - draggedItem.itemHeight/2, draggedItem.itemWidth, draggedItem.itemHeight);
 
             if(draggedItem.stackable) {
-                batch.draw(UI.selectedSlot, Gdx.input.getX() - slotSize/2 + slotSize - 15, ControlCenter.height - Gdx.input.getY() + slotSize/2 - slotSize - 5, 20, 20);
-                TextManager.draw("" + draggedItem.count, Gdx.input.getX() - slotSize/2 + slotSize - 5, ControlCenter.height - Gdx.input.getY() + slotSize/2 - slotSize + 10, Color.WHITE, 1, true);
+                batch.draw(UI.selectedSlot, (int)ControlCenter.mousePos.x - slotSize/2 + slotSize - 15, ControlCenter.height - (int)ControlCenter.mousePos.y + slotSize/2 - slotSize - 5, 20, 20);
+                TextManager.draw("" + draggedItem.count, (int)ControlCenter.mousePos.x - slotSize/2 + slotSize - 5, ControlCenter.height - (int)ControlCenter.mousePos.y + slotSize/2 - slotSize + 10, Color.WHITE, 1, true);
             }
         }
         if(itemPicking) {
-            batch.draw(pickedItem.texture, Gdx.input.getX() - pickedItem.itemWidth/2, ControlCenter.height - Gdx.input.getY() - pickedItem.itemHeight/2, pickedItem.itemWidth, pickedItem.itemHeight);
+            batch.draw(pickedItem.texture, (int)ControlCenter.mousePos.x - pickedItem.itemWidth/2, ControlCenter.height - (int)ControlCenter.mousePos.y - pickedItem.itemHeight/2, pickedItem.itemWidth, pickedItem.itemHeight);
             if(pickedItem.stackable) {
-                batch.draw(UI.selectedSlot, Gdx.input.getX() - slotSize/2 + slotSize - 15, ControlCenter.height - Gdx.input.getY() + slotSize/2 - slotSize - 5, 20, 20);
-                TextManager.draw("" + pickedItem.count, Gdx.input.getX() - slotSize/2 + slotSize - 5, ControlCenter.height - Gdx.input.getY() + slotSize/2 - slotSize + 10, Color.WHITE, 1, true);
+                batch.draw(UI.selectedSlot, (int)ControlCenter.mousePos.x - slotSize/2 + slotSize - 15, ControlCenter.height - (int)ControlCenter.mousePos.y + slotSize/2 - slotSize - 5, 20, 20);
+                TextManager.draw("" + pickedItem.count, (int)ControlCenter.mousePos.x - slotSize/2 + slotSize - 5, ControlCenter.height - (int)ControlCenter.mousePos.y + slotSize/2 - slotSize + 10, Color.WHITE, 1, true);
             }
         }
 
         if(!itemDescription.equals("")) {
-            TextManager.draw(itemDescription, Gdx.input.getX() + 25, ControlCenter.height - Gdx.input.getY(), Color.WHITE, 1f, false);
+            TextManager.draw(itemDescription, (int)ControlCenter.mousePos.x + 25, ControlCenter.height - (int)ControlCenter.mousePos.y, Color.WHITE, 1f, false);
         }
         batch.end();
     }
 
     public void renderHotbar(SpriteBatch batch) {
         for(int i = 0; i < hotbarSize; i++) {
-            if(Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
-                    Gdx.input.getY() < 20 + slotSize && Gdx.input.getY() > 20) {
+            if((int)ControlCenter.mousePos.x > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && (int)ControlCenter.mousePos.x < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
+                    (int)ControlCenter.mousePos.y < 20 + slotSize && (int)ControlCenter.mousePos.y > 20) {
                 batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20, slotSize, slotSize);
 
                 itemPickDrop = true;
@@ -355,8 +355,8 @@ public class Inventory {
     public void renderExtendedInventory(SpriteBatch batch) {
         for(int r = 2; r >= 1; r--) {
             for(int i = 0; i < hotbarSize; i++) {
-                if(Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
-                        Gdx.input.getY() < 20 + slotSize + (r * (slotSize+10)) && Gdx.input.getY() > 20 + (r * (slotSize+10))) {
+                if((int)ControlCenter.mousePos.x > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && (int)ControlCenter.mousePos.x < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
+                        (int)ControlCenter.mousePos.y < 20 + slotSize + (r * (slotSize+10)) && (int)ControlCenter.mousePos.y > 20 + (r * (slotSize+10))) {
                     batch.draw(UI.selectedSlot, (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10), ControlCenter.height - slotSize - 20 - rowY[r-1], slotSize, slotSize);
 
                     itemPickDrop = true;
@@ -406,8 +406,8 @@ public class Inventory {
         }
 
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !itemPicking && !Player.inCombat) {
-            if(draggedItem == null && Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
-                    Gdx.input.getY() < 20 + slotSize + (row * (slotSize+10)) && Gdx.input.getY() > 20 + (row * (slotSize+10))) {
+            if(draggedItem == null && (int)ControlCenter.mousePos.x > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && (int)ControlCenter.mousePos.x < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
+                    (int)ControlCenter.mousePos.y < 20 + slotSize + (row * (slotSize+10)) && (int)ControlCenter.mousePos.y > 20 + (row * (slotSize+10))) {
                 draggedItem = inventory[i + row*hotbarSize];
                 dragBoundX = (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10);
                 dragBoundY = 20 + (row * (slotSize+10));
@@ -425,8 +425,8 @@ public class Inventory {
         }
 
         if(Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT) &&
-                Gdx.input.getX() > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && Gdx.input.getX() < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
-                Gdx.input.getY() < 20 + slotSize + (row * (slotSize+10)) && Gdx.input.getY() > 20 + (row * (slotSize+10)) && draggedItem == null && !Player.inCombat) {
+                (int)ControlCenter.mousePos.x > (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) && (int)ControlCenter.mousePos.x < (ControlCenter.width/2 - ((slotSize+5)*3)) + i * (slotSize + 10) + slotSize &&
+                (int)ControlCenter.mousePos.y < 20 + slotSize + (row * (slotSize+10)) && (int)ControlCenter.mousePos.y > 20 + (row * (slotSize+10)) && draggedItem == null && !Player.inCombat) {
             if(pickedItem != null && inventory[i + row*hotbarSize].id != pickedItem.id) {
                 return;
             }

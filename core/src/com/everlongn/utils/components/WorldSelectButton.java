@@ -51,8 +51,8 @@ public class WorldSelectButton extends UIComponent {
         if(startY > ControlCenter.height/2 - 240 + 445) {
             startY = ControlCenter.height/2 - 240 + 445;
         }
-        if(Gdx.input.getY() < startY && Gdx.input.getY() > endY &&
-                Gdx.input.getX() > x && Gdx.input.getX() < x + 530) {
+        if(ControlCenter.height - ControlCenter.touchPos.y < startY && ControlCenter.height - ControlCenter.touchPos.y > endY &&
+                ControlCenter.touchPos.x > x && ControlCenter.touchPos.x < x + 530) {
             hover = true;
             if(soundCanPlay) {
                 Sounds.playSound(Sounds.buttonHover);
