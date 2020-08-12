@@ -154,7 +154,7 @@ public class ArcaneEruption extends Projectile {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*(800+actionForce), false);
                     }
 
-                    c.hurt(damage);
+                    c.hurt(damage, source);
                     c.target = source;
                 }
             }

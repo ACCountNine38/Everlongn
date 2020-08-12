@@ -139,7 +139,7 @@ public class ArcaneTrail extends Projectile {
 
                     c.target = source;
 
-                    c.hurt(damage);
+                    c.hurt(damage, source);
                     break;
                 }
             }

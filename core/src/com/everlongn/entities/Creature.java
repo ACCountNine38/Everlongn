@@ -53,7 +53,7 @@ public abstract class Creature extends Entity {
 
     public void move() {
         if(!stunned) {
-            testBasicJump();
+            //testBasicJump();
             if (direction == 0)
                 body.setLinearVelocity(-speed, body.getLinearVelocity().y);
             else {
@@ -92,6 +92,7 @@ public abstract class Creature extends Entity {
             return;
         }
         if(Math.abs(body.getLinearVelocity().x) < jumpCondition && canJump) {
+            stunned = true;
             body.applyForceToCenter(0, jumpForce,false);
             canJump = false;
         }

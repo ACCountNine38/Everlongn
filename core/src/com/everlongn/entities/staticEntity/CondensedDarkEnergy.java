@@ -108,7 +108,7 @@ public class CondensedDarkEnergy extends StaticEntity {
 
                         if(GameState.herbs[(int)x-xOffset][(int)y-i] != null) {
                             GameState.herbs[(int) x - xOffset][(int) y - i].exploded = true;
-                            GameState.herbs[(int) x - xOffset][(int) y - i].hurt(10000);
+                            GameState.herbs[(int) x - xOffset][(int) y - i].hurt(10000, EntityManager.player);
                         }
                     }
                     if((int)x-xOffset >= 0 && (int)y+i < GameState.worldHeight) {
@@ -124,7 +124,7 @@ public class CondensedDarkEnergy extends StaticEntity {
 
                         if(GameState.herbs[(int)x-xOffset][(int)y+i] != null) {
                             GameState.herbs[(int)x-xOffset][(int)y+i].exploded = true;
-                            GameState.herbs[(int)x-xOffset][(int)y+i].hurt(10000);
+                            GameState.herbs[(int)x-xOffset][(int)y+i].hurt(10000, EntityManager.player);
                         }
                     }
                     if((int)x+xOffset < GameState.worldWidth && (int)y-i >= 0) {
@@ -140,7 +140,7 @@ public class CondensedDarkEnergy extends StaticEntity {
 
                         if(GameState.herbs[(int)x+xOffset][(int)y-i] != null) {
                             GameState.herbs[(int)x+xOffset][(int)y-i].exploded = true;
-                            GameState.herbs[(int)x+xOffset][(int)y-i].hurt(10000);
+                            GameState.herbs[(int)x+xOffset][(int)y-i].hurt(10000, EntityManager.player);
                         }
                     }
                     if((int)x+xOffset < GameState.worldWidth && (int)y+i < GameState.worldHeight && GameState.tiles[(int)x+xOffset][(int)y+i] != null) {
@@ -156,7 +156,7 @@ public class CondensedDarkEnergy extends StaticEntity {
 
                         if(GameState.herbs[(int)x+xOffset][(int)y+i] != null) {
                             GameState.herbs[(int)x+xOffset][(int)y+i].exploded = true;
-                            GameState.herbs[(int)x+xOffset][(int)y+i].hurt(10000);
+                            GameState.herbs[(int)x+xOffset][(int)y+i].hurt(10000, EntityManager.player);
                         }
                     }
                 }
@@ -187,15 +187,15 @@ public class CondensedDarkEnergy extends StaticEntity {
                     int thrust = 0;
                     int force = 0;
                     if(dx < 250) {
-                        c.hurt((float) 2000);
+                        c.hurt((float) 2000, EntityManager.player);
                         thrust = 30;
                         force = 1800;
                     } else if(dx < 750) {
-                        c.hurt((float) 1000);
+                        c.hurt((float) 1000, EntityManager.player);
                         thrust = 20;
                         force = 1500;
                     } else {
-                        c.hurt((float) 50);
+                        c.hurt((float) 50, EntityManager.player);
                         thrust = 10;
                         force = 1200;
                     }

@@ -293,7 +293,7 @@ public class Player extends Creature {
                                 e.body.applyForceToCenter(-550, 120, false);
                             else
                                 e.body.applyForceToCenter(550, 120, false);
-                            e.hurt(20);
+                            e.hurt(20, this);
                             canHurt = false;
                             if (e instanceof Creature) {
                                 Creature c = (Creature) e;
@@ -349,7 +349,7 @@ public class Player extends Creature {
                                 e.body.applyForceToCenter(-510, 0, false);
                             else
                                 e.body.applyForceToCenter(510, 0, false);
-                            e.hurt(34);
+                            e.hurt(34, this);
                             canHurt = false;
                             if (e instanceof Creature) {
                                 Creature c = (Creature) e;
@@ -922,10 +922,10 @@ public class Player extends Creature {
 
                 Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 + vec.x),
                         ControlCenter.mousePos.y - 8 - vec.y));
                 if (ControlCenter.mousePos.x < ControlCenter.width/2) {
-                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
+                    tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) + vec.x + 8)),
                             ControlCenter.height - vec.y - 8));
                 }
 
@@ -1046,8 +1046,8 @@ public class Player extends Creature {
                                     ControlCenter.height - vec.y - 8));
                         }
 
-                        if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
-                                aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
+                        if(aimAngle >= tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
+                                aimAngle <= tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
                             thrown = true;
                             int amount = 0;
                             if(glaiveLord) {
@@ -1149,15 +1149,15 @@ public class Player extends Creature {
 
                         Vector3 vec = ControlCenter.camera.project(new Vector3(throwX, throwY, 0));
 
-                        float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 - vec.x),
+                        float tempAngle = (float) Math.toDegrees(Math.atan2((ControlCenter.mousePos.x + 8 + vec.x),
                                 ControlCenter.mousePos.y - 8 - vec.y));
                         if (ControlCenter.mousePos.x < ControlCenter.width/2) {
-                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) - vec.x + 8)),
+                            tempAngle = (float) Math.toDegrees(Math.atan2((((ControlCenter.width - ControlCenter.mousePos.x) + vec.x + 8)),
                                     ControlCenter.height - vec.y - 8));
                         }
 
-                        if(aimAngle > tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
-                                aimAngle < tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
+                        if(aimAngle >= tempAngle - Inventory.inventory[Inventory.selectedIndex].throwSpeed &&
+                                aimAngle <= tempAngle + Inventory.inventory[Inventory.selectedIndex].throwSpeed && !thrown) {
 
                             thrown = true;
 
@@ -1285,7 +1285,7 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     -force, 250, false);
-                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, this);
                                         }
                                     }
                                 }
@@ -1375,7 +1375,7 @@ public class Player extends Creature {
                                         float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
                                         c.body.applyForceToCenter(
                                                 -force, 250, false);
-                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, this);
                                     }
                                 }
                             }
@@ -1467,7 +1467,7 @@ public class Player extends Creature {
                                                     + haltForce * 30;
                                             EntityManager.entities.get(i).body.applyForceToCenter(
                                                     force, 250, false);
-                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
+                                            c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, this);
                                         }
                                     }
                                 }
@@ -1563,7 +1563,7 @@ public class Player extends Creature {
                                         float force = Inventory.inventory[Inventory.selectedIndex].force + (float) (Math.random() * Inventory.inventory[Inventory.selectedIndex].force / 4);
                                         c.body.applyForceToCenter(
                                                 -force, 250, false);
-                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage);
+                                        c.hurt(Inventory.inventory[Inventory.selectedIndex].damage, this);
                                     }
                                 }
                             }
@@ -2443,7 +2443,7 @@ public class Player extends Creature {
     }
 
     public static Vector3 mouseWorldPos() {
-        return ControlCenter.camera.unproject(new Vector3(ControlCenter.mousePos.x, ControlCenter.mousePos.y, 0));
+        return ControlCenter.camera.unproject(new Vector3(ControlCenter.mousePos.x*ControlCenter.SCALE, ControlCenter.mousePos.y*ControlCenter.SCALE, 0));
     }
 
     @Override
@@ -2454,6 +2454,7 @@ public class Player extends Creature {
         return new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM, boundWidth, boundHeight);
     }
 
+    @Override
     public void render(SpriteBatch batch) {
         batch.begin();
 //       batch.draw(Tiles.blackTile, attackRectangle.x, attackRectangle.y, attackRectangle.width, attackRectangle.height);

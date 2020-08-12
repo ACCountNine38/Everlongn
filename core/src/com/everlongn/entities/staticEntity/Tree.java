@@ -192,7 +192,7 @@ public class Tree extends StaticEntity {
     }
 
     public void impact(int damage, int direction) {
-        hurt(damage);
+        hurt(damage, EntityManager.player);
         impactForce = Math.max(damage/50, 1);
         if(direction == 0) {
             rightShift = true;
@@ -216,7 +216,7 @@ public class Tree extends StaticEntity {
     }
 
     public void explode() {
-        hurt(10000);
+        hurt(10000, EntityManager.player);
         exploded = true;
     }
 

@@ -63,7 +63,7 @@ public class Shuriken extends Throw {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
-                    e.hurt(damage);
+                    e.hurt(damage, source);
                     if(e instanceof Creature) {
                         Creature c = (Creature)e;
                         c.target = source;

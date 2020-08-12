@@ -153,7 +153,7 @@ public class ArcaneReflection extends Projectile {
 
                     c.target = source;
 
-                    c.hurt(damage);
+                    c.hurt(damage, source);
 
                     break;
                 }

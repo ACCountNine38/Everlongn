@@ -140,7 +140,7 @@ public class ArcaneRebound extends Projectile {
                                 -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     }
                     c.target = source;
-                    c.hurt(damage);
+                    c.hurt(damage, source);
                 }
             }
         }

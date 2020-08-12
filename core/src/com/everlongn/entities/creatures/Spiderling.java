@@ -129,7 +129,7 @@ public class Spiderling extends Creature {
                             target.body.applyForceToCenter(-550, 120, false);
                         else
                             target.body.applyForceToCenter(550, 120, false);
-                        target.hurt(damage);
+                        target.hurt(damage, this);
                         if(target instanceof Creature) {
                             Creature c = (Creature) target;
                             c.target = this;

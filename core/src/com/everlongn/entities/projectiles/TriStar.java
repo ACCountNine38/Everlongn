@@ -72,7 +72,7 @@ public class TriStar extends Throw {
                                 (float)Math.cos(angle)*force, (float)Math.sin(angle)*force, false);
                     }
 
-                    e.hurt(damage);
+                    e.hurt(damage, source);
                     if(e instanceof Creature) {
                         Creature c = (Creature)e;
                         c.target = source;
@@ -86,7 +86,7 @@ public class TriStar extends Throw {
         } else {
             if(!collected) {
                 if(locked != null && locked.body != null)
-                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, 0);
                 else
                     lifeOut = false;
             }

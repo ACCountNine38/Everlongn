@@ -86,12 +86,12 @@ public class Rock extends Throw {
                     // c.body.getPosition().x*Constants.PPM + c.width/2 < body.getPosition().x*Constants.PPM + 2
                     if(direction == 0) {
                         c.body.applyForceToCenter(
-                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
+                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     } else {
                         c.body.applyForceToCenter(
-                                -(float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
+                                (float)Math.cos(angle)*force, (float)Math.sin(angle)*(force), false);
                     }
-                    c.hurt(damage);
+                    c.hurt(damage, source);
                     c.target = source;
                 }
             }

@@ -105,23 +105,23 @@ public class Bomb extends Throw {
                     int thrust = 0;
                     int force = 0;
                     if(dx < 100) {
-                        c.hurt((float) 500);
+                        c.hurt((float) 500, source);
                         thrust = 40;
                         force = 1500;
                     } else if(dx < 150) {
-                        c.hurt((float) 200);
+                        c.hurt((float) 200, source);
                         thrust = 30;
                         force = 1250;
                     } else if(dx < 225) {
-                        c.hurt((float) 100);
+                        c.hurt((float) 100, source);
                         thrust = 20;
                         force = 1050;
                     } else if(dx < 275) {
-                        c.hurt((float) 50);
+                        c.hurt((float) 50, source);
                         thrust = 15;
                         force = 950;
                     } else {
-                        c.hurt((float) 20);
+                        c.hurt((float) 20, source);
                         thrust = 10;
                         force = 850;
                     }
@@ -171,7 +171,7 @@ public class Bomb extends Throw {
                 if(GameState.herbs[x][y] != null &&
                         Intersector.overlaps(explosionCircle, GameState.herbs[x][y].getBound())) {
                     GameState.herbs[x][y].exploded = true;
-                    GameState.herbs[x][y].hurt(10000);
+                    GameState.herbs[x][y].hurt(10000, source);
                 }
             }
         }

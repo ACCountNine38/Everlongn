@@ -88,7 +88,7 @@ public abstract class Entity {
     }
 
     // method that calculates damage to player and enemies by difficulty
-    public void hurt(float damage) {
+    public void hurt(float damage, Entity source) {
         if(name.equals("player")) {
             if (GameState.difficulty == 2) { // insane difficulty
                 if (damage*1.5 - resistance > 0) {

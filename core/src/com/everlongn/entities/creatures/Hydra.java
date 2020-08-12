@@ -266,7 +266,7 @@ public class Hydra extends Creature {
     }
 
     public void damage(Entity target) {
-        target.hurt(damage);
+        target.hurt(damage, this);
 
         canHurt = false;
         if(target instanceof Player) {
