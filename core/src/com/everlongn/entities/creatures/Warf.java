@@ -231,6 +231,8 @@ public class Warf extends Creature {
                 }
             } else if (attack[direction].currentIndex == attack[direction].textures.length - 1) {
                 attacking = false;
+                chase[0].currentIndex = 0;
+                chase[1].currentIndex = 0;
             }
         }
     }

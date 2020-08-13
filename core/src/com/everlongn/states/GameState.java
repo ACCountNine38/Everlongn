@@ -8,6 +8,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.everlongn.assets.Sounds;
@@ -36,7 +37,7 @@ import static com.everlongn.utils.Constants.PPM;
 
 public class GameState extends State {
     // screen settings //
-    public static OrthographicCamera hud, parallaxBackground;
+    public static OrthographicCamera hud, hud2, parallaxBackground;
     public static  float screenTransitionAlpha = 1f;
     public static boolean frameSkip = true;
     ///////////////////
@@ -501,14 +502,31 @@ public class GameState extends State {
 
         batch.setProjectionMatrix(hud.combined);
         renderStain(batch);
+
+        float camX = hud.position.x;
+        float camY = hud.position.y;
+        if(Math.abs(EntityManager.player.body.getLinearVelocity().x) > 20) {
+            if(EntityManager.player.direction == 0)
+                hud.position.set(camX + 20, camY, 0);
+            else
+                hud.position.set(camX - 20, camY, 0);
+        } else {
+            hud.position.set(camX - EntityManager.player.body.getLinearVelocity().x*2, camY, 0);
+        }
+        hud.update();
+
         inventory.render(batch);
-        options.render(batch);
 
         batch.begin();
 
         inventoryButton.render(batch);
         fusionButton.render(batch);
         memoryButton.render(batch);
+
+        hud.position.set(camX, camY, 0);
+        //hud.update();
+
+        batch.setProjectionMatrix(hud2.combined);
 
         if(ControlCenter.DEBUG) {
             TextManager.analogDraw("Ticks: " + Math.round(ControlCenter.delta*1000) + "ms   FPS: " + Gdx.graphics.getFramesPerSecond(),
@@ -545,6 +563,8 @@ public class GameState extends State {
         }
 
         telepathy.render(batch);
+
+        options.render(batch);
 
         if(Player.forceCharge > 0) {
             batch.draw(UI.chargeCursor,ControlCenter.mousePos.x - 38 + 16,  ControlCenter.height-ControlCenter.mousePos.y - 38 - 16, 76, 76);

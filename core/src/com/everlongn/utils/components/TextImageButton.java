@@ -26,8 +26,8 @@ public class TextImageButton extends UIComponent {
 
     @Override
     public void tick() {
-        if(Gdx.input.getX() > x && Gdx.input.getX() < x + width &&
-                Gdx.input.getY() < ControlCenter.height - y && Gdx.input.getY() > ControlCenter.height - y - height) {
+        if(ControlCenter.mousePos.x > x && ControlCenter.mousePos.x < x + width &&
+                ControlCenter.mousePos.y < ControlCenter.height - y && ControlCenter.mousePos.y > ControlCenter.height - y - height) {
             hover = true;
             if(soundCanPlay) {
                 Sounds.playSound(Sounds.buttonHover);

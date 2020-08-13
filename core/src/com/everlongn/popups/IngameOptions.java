@@ -70,7 +70,7 @@ public class IngameOptions extends Popup{
 
     @Override
     public void render(SpriteBatch batch) {
-        batch.begin();
+        //batch.begin();
         if(displayAlpha > 0) {
             batch.setColor(batch.getColor().r, batch.getColor().b, batch.getColor().g, displayAlpha);
             batch.draw(UI.stain5, 0, 0, ControlCenter.width, ControlCenter.height);
@@ -89,6 +89,6 @@ public class IngameOptions extends Popup{
 
             batch.setColor(1f, 1f, 1f, 1f);
         }
-        batch.end();
+        //batch.end();
     }
 }

@@ -211,6 +211,8 @@ public class WorldLoadingState extends State {
         float height = Gdx.graphics.getHeight();
         GameState.hud = new OrthographicCamera();
         GameState.hud.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
+        GameState.hud2 = new OrthographicCamera();
+        GameState.hud2.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
         GameState.parallaxBackground = new OrthographicCamera();
         GameState.parallaxBackground.setToOrtho(false, width/ControlCenter.SCALE, height/ControlCenter.SCALE);
 

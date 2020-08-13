@@ -27,8 +27,8 @@ public class TextArea extends UIComponent {
 
     @Override
     public void tick() {
-        if (Gdx.input.getX() >= x && Gdx.input.getX() < x + width &&
-                Gdx.input.getY() >= ControlCenter.height-y-height - 20 && Gdx.input.getY() < ControlCenter.height - y) {
+        if (ControlCenter.mousePos.x >= x && ControlCenter.mousePos.x < x + width &&
+                ControlCenter.mousePos.y >= ControlCenter.height-y-height - 20 && ControlCenter.mousePos.y < ControlCenter.height - y) {
             hover = true;
             if(soundCanPlay) {
                 Sounds.playSound(Sounds.buttonHover);

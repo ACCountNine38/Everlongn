@@ -26,13 +26,13 @@ public class PercentageBar extends UIComponent {
     @Override
     public void tick() {
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (Gdx.input.getX() > x && Gdx.input.getX() < x + width &&
-                    ControlCenter.height - Gdx.input.getY() > y && ControlCenter.height - Gdx.input.getY() < y + height) {
+            if (ControlCenter.mousePos.x > x && ControlCenter.mousePos.x < x + width &&
+                    ControlCenter.height - ControlCenter.mousePos.y > y && ControlCenter.height - ControlCenter.mousePos.y < y + height) {
                 selectedID = clickID;
-                selectedPercentage = 1 - ((x + width - Gdx.input.getX()) / width);
-            } else if(ControlCenter.height - Gdx.input.getY() > y && ControlCenter.height - Gdx.input.getY() < y + height) {
+                selectedPercentage = 1 - ((x + width - ControlCenter.mousePos.x) / width);
+            } else if(ControlCenter.height - ControlCenter.mousePos.y > y && ControlCenter.height - ControlCenter.mousePos.y < y + height) {
                 if(selectedID == selectedID) {
-                    selectedPercentage = 1 - ((x + width - Gdx.input.getX()) / width);
+                    selectedPercentage = 1 - ((x + width - ControlCenter.mousePos.x) / width);
                     if(selectedPercentage < 0f)
                         selectedPercentage = 0f;
                     else if(selectedPercentage > 1f)
