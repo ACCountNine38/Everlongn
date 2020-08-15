@@ -2381,11 +2381,11 @@ public class Player extends Creature {
 
         if(horizontalForce == 0) {
             if(currentSpeed > 0) {
-                currentSpeed -= 0.2;
+                currentSpeed -= 0.5;
                 if (currentSpeed < 0)
                     currentSpeed = 0;
             } else if(currentSpeed < 0) {
-                currentSpeed += 0.2;
+                currentSpeed += 0.5;
                 if (currentSpeed > 0)
                     currentSpeed = 0;
             }

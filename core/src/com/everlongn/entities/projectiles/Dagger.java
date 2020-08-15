@@ -65,9 +65,9 @@ public class Dagger extends Throw {
             }
             if(!collected) {
                 if(locked != null && locked.body != null)
-                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, angle);
+                    body.setTransform(locked.body.getPosition().x + lockX, locked.body.getPosition().y + lockY, 0);
                 else if(attached != null && attached.body != null && attached.health > 0)
-                    body.setTransform(attached.body.getPosition().x + lockX, attached.body.getPosition().y + lockY, angle);
+                    body.setTransform(attached.body.getPosition().x + lockX, attached.body.getPosition().y + lockY, 0);
                 else
                     lifeOut = false;
             }

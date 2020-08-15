@@ -63,34 +63,36 @@ public class Tool {
         def.fixedRotation = true;
 
         PolygonShape shape = new PolygonShape();
+        EdgeShape edge = new EdgeShape();
 
-        Vector2[] vertices = new Vector2[]{new Vector2(0, 0),
-                new Vector2(Tile.TILESIZE / Constants.PPM, 0),
-                new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
-                new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+//        Vector2[] vertices = new Vector2[]{new Vector2(0, 0),
+//                new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+//                new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+//                new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+
+        FixtureDef fixtureDef = new FixtureDef();
+        Vector2[] vertices = new Vector2[]{};
 
         if(numAdjacent == 2) {
             if(right && down) {
-                vertices = new Vector2[]{new Vector2(0, 0),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, 0),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM)};
+                edge.set(0, 0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM);
+                fixtureDef.shape = edge;
             } else if(left && down) {
-                vertices = new Vector2[]{new Vector2(0, 0),
-                        new Vector2(0, Tile.TILESIZE / Constants.PPM),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
+                edge.set(0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM, 0);
+                fixtureDef.shape = edge;
             } else if(right && up) {
-                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, 0),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
-                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+                edge.set(0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM, 0);
+                fixtureDef.shape = edge;
             } else if(left && up) {
-                vertices = new Vector2[]{new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
-                        new Vector2(0, Tile.TILESIZE / Constants.PPM),
-                        new Vector2(0, 0)};
+                edge.set(0, 0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM);
+                fixtureDef.shape = edge;
             } else {
                 vertices = new Vector2[]{new Vector2(0, 0),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, 0),
-                        new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
-                        new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+                    new Vector2(Tile.TILESIZE / Constants.PPM, 0),
+                    new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM),
+                    new Vector2(0, Tile.TILESIZE / Constants.PPM)};
+                shape.set(vertices);
+                fixtureDef.shape = shape;
             }
         } else if(numAdjacent == 1) {
             if(left) {
@@ -110,16 +112,32 @@ public class Tool {
                         new Vector2(Tile.TILESIZE / 2 / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
                         new Vector2(Tile.TILESIZE / Constants.PPM, 0)};
             }
+            shape.set(vertices);
+            fixtureDef.shape = shape;
         } else if(numAdjacent == 0) {
             vertices = new Vector2[]{new Vector2(Tile.TILESIZE / 2 / Constants.PPM, 0),
                     new Vector2(Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / 2 / Constants.PPM),
                     new Vector2(Tile.TILESIZE / 2 / Constants.PPM, Tile.TILESIZE / Constants.PPM),
                     new Vector2(0, Tile.TILESIZE / 2 / Constants.PPM)};
+            shape.set(vertices);
+            fixtureDef.shape = shape;
+        } else {
+            if(left && down && right) {
+                edge.set(0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM);
+                fixtureDef.shape = edge;
+            } else if(left && up && right) {
+                edge.set(0, 0, Tile.TILESIZE / Constants.PPM, 0);
+                fixtureDef.shape = edge;
+            } else if(up && left && down) {
+                edge.set(Tile.TILESIZE / Constants.PPM, 0, Tile.TILESIZE / Constants.PPM, Tile.TILESIZE / Constants.PPM);
+                fixtureDef.shape = edge;
+            } else if(up && right && down) {
+                edge.set(0, 0, 0, Tile.TILESIZE / Constants.PPM);
+                fixtureDef.shape = edge;
+            }
         }
 
-        shape.set(vertices);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
+        //fixtureDef.shape = shape;
         fixtureDef.density = 1;
         fixtureDef.friction = 0;
         fixtureDef.filter.categoryBits = cBits;

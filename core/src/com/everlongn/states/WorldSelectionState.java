@@ -226,6 +226,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
             Gdx.files.external("everlongn/realms/tile/" + worlds.get(selectedIndex).worldName + ".png").delete();
             Gdx.files.external("everlongn/realms/wall/" + worlds.get(selectedIndex).worldName + ".png").delete();
             Gdx.files.external("everlongn/realms/herb/" + worlds.get(selectedIndex).worldName + ".txt").delete();
+            Gdx.files.external("everlongn/realms/minerals/" + worlds.get(selectedIndex).worldName + ".png").delete();
 
             names.remove(worlds.get(selectedIndex).worldName);
             worlds.clear();

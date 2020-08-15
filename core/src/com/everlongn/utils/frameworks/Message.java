@@ -460,6 +460,11 @@ public class Message {
                     EntityManager.player.boundHeight = 57;
 
                     GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+                    ParticleEffect explosion = new ParticleEffect();
+                    explosion.load(Gdx.files.internal("particles/destroyed"), Gdx.files.internal(""));
+                    explosion.getEmitters().first().setPosition(EntityManager.player.body.getPosition().x * Constants.PPM, EntityManager.player.body.getPosition().y * Constants.PPM);
+                    explosion.start();
+                    EntityManager.particles.add(explosion);
 
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }
@@ -482,6 +487,11 @@ public class Message {
                     EntityManager.player.stabPaused = false;
 
                     GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+                    ParticleEffect explosion = new ParticleEffect();
+                    explosion.load(Gdx.files.internal("particles/destroyed"), Gdx.files.internal(""));
+                    explosion.getEmitters().first().setPosition(EntityManager.player.body.getPosition().x * Constants.PPM, EntityManager.player.body.getPosition().y * Constants.PPM);
+                    explosion.start();
+                    EntityManager.particles.add(explosion);
 
                     Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
                 }

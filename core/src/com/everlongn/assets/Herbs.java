@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Herbs {
     public static Texture grass0, grass1, grass2;
-    public static Texture treeSprite, treeStemSprite, treeRootsSprite;
+    public static Texture treeSprite, treeStemSprite, treeRootsSprite, aerogelSprite;
 
-    public static TextureRegion treeStem, treeRoots, tree1;
+    public static TextureRegion treeStem, treeRoots, tree1, aerogel[];
 
     public static void init() {
         grass0 = new Texture(Gdx.files.internal("herbs/Grass0.png"));
@@ -23,5 +23,16 @@ public class Herbs {
         treeRootsSprite = new Texture(Gdx.files.internal("herbs/treeRoots.png"),true);
         treeRootsSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         treeRoots = new TextureRegion(treeRootsSprite, 0, 0, treeRootsSprite.getWidth(), treeRootsSprite.getHeight());
+
+        aerogelSprite = new Texture(Gdx.files.internal("herbs/aerogel.png"), true);
+        aerogelSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        aerogel = new TextureRegion[4];
+        aerogel[0] = new TextureRegion(aerogelSprite, 0, 0, aerogelSprite.getWidth(), aerogelSprite.getHeight());
+        aerogel[1] = new TextureRegion(aerogelSprite, 0, 0, aerogelSprite.getWidth(), aerogelSprite.getHeight());
+        aerogel[1].flip(true, false);
+        aerogel[2] = new TextureRegion(aerogelSprite, 0, 0, aerogelSprite.getWidth(), aerogelSprite.getHeight());
+        aerogel[2].flip(false, true);
+        aerogel[3] = new TextureRegion(aerogelSprite, 0, 0, aerogelSprite.getWidth(), aerogelSprite.getHeight());
+        aerogel[3].flip(true, true);
     }
 }

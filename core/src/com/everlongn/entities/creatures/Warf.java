@@ -1,17 +1,17 @@
 package com.everlongn.entities.creatures;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.everlongn.assets.Entities;
-import com.everlongn.assets.Sounds;
-import com.everlongn.assets.Tiles;
 import com.everlongn.entities.*;
 import com.everlongn.game.ControlCenter;
-import com.everlongn.items.Inventory;
 import com.everlongn.states.GameState;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
+import com.everlongn.utils.frameworks.Message;
+import com.everlongn.utils.frameworks.Telepathy;
 
 import static com.everlongn.utils.Constants.PPM;
 
@@ -21,7 +21,6 @@ public class Warf extends Creature {
 
     public Rectangle attackBound;
 
-    // add where after player attacks a warf, the other warfs also starts to attack the player
     public Warf(float x, float y, int size) {
         super(x, y, size, size, 5f, (0.25f + (float)Math.random()*0.2f)*2);
 
@@ -69,13 +68,16 @@ public class Warf extends Creature {
 
     @Override
     public void tick() {
-//        if(status.equals("natural") && health > 0 && naturalStatus == 0 && body.getLinearVelocity().x == 0 && body.getLinearVelocity().y == 0) {
-//            body.setLinearVelocity(0, 2);
-//        }
-
         if(alive) {
+            if (stunned) {
+                body.setLinearVelocity(body.getLinearVelocity().x/1.1f, body.getLinearVelocity().y);
+                if(Math.abs(body.getLinearVelocity().x) <= 0.15 && Math.abs(body.getLinearVelocity().y) <= 0.15) {
+                    stunned = false;
+                }
+                return;
+            }
             if(status.equals("chase") || health < maxHealth) {
-                sightWidth = 1600;
+                sightWidth = 2000;
                 sightHeight = 800;
             } else {
                 sightWidth = 600;
@@ -93,7 +95,17 @@ public class Warf extends Creature {
             } else {
                 if(enraged) {
                     if(attacking) {
-                        attack();
+                        if (currentRotation > 0) {
+                            currentRotation -= 0.01f;
+                            if (currentRotation < 0)
+                                currentRotation = 0;
+                        } else if (currentRotation < 0) {
+                            currentRotation += 0.01f;
+                            if (currentRotation > 0)
+                                currentRotation = 0;
+                        } else {
+                            attack();
+                        }
                     } else {
                         if (currentRotation > 0) {
                             currentRotation -= 0.01f;
@@ -115,7 +127,6 @@ public class Warf extends Creature {
                     if(attacking) {
                         attack();
                     } else {
-                        status.equals("idle");
                         if (sightBound.overlaps(target.getBound()) && canSwitchNatural()) {
                             if (!canTurn) {
                                 turnTimer += ControlCenter.delta;
@@ -128,11 +139,13 @@ public class Warf extends Creature {
                                     canTurn = false;
                                     direction = 0;
                                     currentRotation *= -1;
+                                    targetRotation *= -1;
                                 }
                                 if (target.body.getPosition().x > body.getPosition().x && direction == 0 && canTurn) {
                                     canTurn = false;
                                     direction = 1;
                                     currentRotation *= -1;
+                                    targetRotation *= -1;
                                 }
                             }
                             body.setLinearVelocity(0, body.getLinearVelocity().y);
@@ -142,8 +155,8 @@ public class Warf extends Creature {
                                     targetRotation = (float) Math.atan2(target.body.getPosition().y * Constants.PPM - body.getPosition().y * Constants.PPM - height / 10,
                                             target.body.getPosition().x * Constants.PPM - body.getPosition().x * Constants.PPM);
                                 } else {
-                                    targetRotation = (float) Math.atan2(target.body.getPosition().y * Constants.PPM - body.getPosition().y * Constants.PPM - height / 10,
-                                            target.body.getPosition().x * Constants.PPM - body.getPosition().x * Constants.PPM);
+                                    targetRotation = -(float) Math.atan2(target.body.getPosition().y * Constants.PPM - body.getPosition().y * Constants.PPM - height / 10,
+                                            Math.abs(target.body.getPosition().x * Constants.PPM - body.getPosition().x * Constants.PPM));
                                 }
                                 if (currentRotation < targetRotation - 0.01f) {
                                     currentRotation += 0.01f;
@@ -167,6 +180,9 @@ public class Warf extends Creature {
             if(target != null && (!target.getBound().overlaps(sightBound) || target.health <= 0)) {
                 target = null;
                 enraged = false;
+                canTurn = false;
+                chase[0].currentIndex = 0;
+                chase[1].currentIndex = 0;
             }
 
             if (health <= 0) {
@@ -192,48 +208,42 @@ public class Warf extends Creature {
     }
 
     public void attack() {
-        if (currentRotation > 0) {
-            currentRotation -= 0.01f;
-            if (currentRotation < 0)
-                currentRotation = 0;
-        } else if (currentRotation < 0) {
-            currentRotation += 0.01f;
-            if (currentRotation > 0)
-                currentRotation = 0;
-        } else {
-            attack[direction].tick(ControlCenter.delta);
-            if (attack[direction].currentIndex == 32) {
-                Rectangle attackRect;
-                if (direction == 1) {
-                    attackRect = new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - (height / 2 - height / 8) / 2, 250, height / 2);
-                } else {
-                    attackRect = new Rectangle(body.getPosition().x * Constants.PPM - 250, body.getPosition().y * Constants.PPM - (height / 2 - height / 8) / 2, 250, height / 2);
-                }
-                for (Entity e : EntityManager.entities) {
-                    if (e.getBound().overlaps(attackRect)) {
-                        for (int i = 0; i < e.type.size(); i++) {
-                            if (enemyList.contains(e.type.get(i))) {
-                                e.hurt(damage, this);
-                                if (e instanceof Player) {
-                                    if (direction == 0)
-                                        ((Player) e).xThrust -= width / 40;
-                                    else
-                                        ((Player) e).xThrust += width / 40;
-                                } else {
-                                    if (direction == 0)
-                                        e.body.applyForceToCenter(-width * 2, 0, false);
-                                    else
-                                        e.body.applyForceToCenter(width * 2, 0, false);
-                                }
+        body.setLinearVelocity(0, body.getLinearVelocity().y);
+        attack[direction].tick(ControlCenter.delta);
+        if (attack[direction].currentIndex == 32) {
+            Rectangle attackRect;
+            if (direction == 1) {
+                attackRect = new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM - (height / 2 - height / 8) / 2, 250, height / 2);
+            } else {
+                attackRect = new Rectangle(body.getPosition().x * Constants.PPM - 250, body.getPosition().y * Constants.PPM - (height / 2 - height / 8) / 2, 250, height / 2);
+            }
+            for (Entity e : EntityManager.entities) {
+                if (e.getBound().overlaps(attackRect)) {
+                    for (int i = 0; i < e.type.size(); i++) {
+                        if (enemyList.contains(e.type.get(i))) {
+                            e.hurt(damage, this);
+                            if (e instanceof Player) {
+                                if (direction == 0)
+                                    ((Player) e).xThrust -= width / 50;
+                                else
+                                    ((Player) e).xThrust += width / 50;
+                            } else {
+                                if (direction == 0)
+                                    e.body.applyForceToCenter(-width * 2, 0, false);
+                                else
+                                    e.body.applyForceToCenter(width * 2, 0, false);
                             }
                         }
                     }
                 }
-            } else if (attack[direction].currentIndex == attack[direction].textures.length - 1) {
-                attacking = false;
-                chase[0].currentIndex = 0;
-                chase[1].currentIndex = 0;
             }
+        } else if (attack[direction].currentIndex == attack[direction].textures.length - 1) {
+            attacking = false;
+            currentRotation = 0;
+            chase[0].currentIndex = 0;
+            chase[1].currentIndex = 0;
+            attack[0].currentIndex = 0;
+            attack[1].currentIndex = 0;
         }
     }
 
@@ -334,21 +344,32 @@ public class Warf extends Creature {
         }
         //batch.draw(Tiles.blackTile, attackRect.x, attackRect.y, attackRect.width, attackRect.height);
 
-        if(attacking) {
-            if(attack[direction].getFrame() != null)
-                batch.draw(attack[direction].getFrame(), body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
-        } else if (body.getLinearVelocity().x != 0) {
-            if(getCurrentFrame() != null)
-                batch.draw(getCurrentFrame(), body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
-        } else {
-            batch.draw(Entities.warfBody[direction], body.getPosition().x * PPM - width/2 + width/24, body.getPosition().y * PPM - height/3f, width, height);
+        if(currentRotation != 0) {
+            batch.draw(Entities.warfBody[direction], body.getPosition().x * PPM - width / 2 + width / 24, body.getPosition().y * PPM - height / 3f, width, height);
             batch.draw(Entities.warfHead[direction],
                     body.getPosition().x * PPM - width / 2 + width / 24,
                     body.getPosition().y * PPM - height / 3f,
                     width / 2,
                     height / 2 + height / 8,
                     width, height,
-                    1f, 1f, (float)Math.toDegrees(currentRotation));
+                    1f, 1f, (float) Math.toDegrees(currentRotation));
+        } else {
+            if (attacking) {
+                if (attack[direction].getFrame() != null)
+                    batch.draw(attack[direction].getFrame(), body.getPosition().x * PPM - width / 2 + width / 24, body.getPosition().y * PPM - height / 3f, width, height);
+            } else if (body.getLinearVelocity().x != 0) {
+                if (getCurrentFrame() != null)
+                    batch.draw(getCurrentFrame(), body.getPosition().x * PPM - width / 2 + width / 24, body.getPosition().y * PPM - height / 3f, width, height);
+            } else {
+                batch.draw(Entities.warfBody[direction], body.getPosition().x * PPM - width / 2 + width / 24, body.getPosition().y * PPM - height / 3f, width, height);
+                batch.draw(Entities.warfHead[direction],
+                        body.getPosition().x * PPM - width / 2 + width / 24,
+                        body.getPosition().y * PPM - height / 3f,
+                        width / 2,
+                        height / 2 + height / 8,
+                        width, height,
+                        1f, 1f, (float) Math.toDegrees(currentRotation));
+            }
         }
 
         if(!alive) {
@@ -362,6 +383,19 @@ public class Warf extends Creature {
     public void hurt(float damage, Entity source) {
         enraged = true;
         super.hurt(damage, source);
+
+        Rectangle allyBound = new Rectangle(body.getPosition().x*Constants.PPM - 600, body.getPosition().y*Constants.PPM - 300,
+                1200, 800);
+
+        for(Entity e: EntityManager.entities) {
+            if(e instanceof Warf && e.getBound().overlaps(allyBound) && e != this) {
+                Warf warf = (Warf)e;
+                if(!warf.enraged) {
+                    warf.target = source;
+                    warf.enraged = true;
+                }
+            }
+        }
     }
 
     @Override

@@ -7,7 +7,7 @@ public class UI {
     public static Texture worldSelect, worldSelected, worldSelectPanel, worldSelectBoarder, hardcore, normal,
         chargeCursor, chargeOrb, percentageBar;
     public static Texture shockwave1, shockwave2, shockwave3,
-        capsult[], fusion[], memory[], quest[];
+        capsult[], fusion[], memory[], quest[], settings[];
 
     public static void init() {
         inventorySlot = new Texture(Gdx.files.internal("UI/inventorySlot.png"));
@@ -53,6 +53,7 @@ public class UI {
         fusion = new Texture[2];
         memory = new Texture[2];
         quest = new Texture[2];
+        settings = new Texture[2];
 
         capsult[0] = new Texture(Gdx.files.internal("UI/capsult1.png"), true);
         capsult[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
@@ -62,6 +63,8 @@ public class UI {
         memory[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         quest[0] = new Texture(Gdx.files.internal("UI/quest1.png"), true);
         quest[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        settings[0] = new Texture(Gdx.files.internal("UI/settings1.png"), true);
+        settings[0].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
 
         capsult[1] = new Texture(Gdx.files.internal("UI/capsult2.png"), true);
         capsult[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
@@ -71,6 +74,8 @@ public class UI {
         memory[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         quest[1] = new Texture(Gdx.files.internal("UI/quest2.png"), true);
         quest[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        settings[1] = new Texture(Gdx.files.internal("UI/settings2.png"), true);
+        settings[1].setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
     }
 }
 

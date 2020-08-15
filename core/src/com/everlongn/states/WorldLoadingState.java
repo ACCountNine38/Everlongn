@@ -40,7 +40,8 @@ public class WorldLoadingState extends State {
     private int currentStep, numSteps;
     private float count;
 
-    private float health, maxHealth;
+    private float health, maxHealth, playerX, playerY;
+    private String playerForm;
 
     public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbFile, int difficulty, String mode, String name) {
         super(stateManager);
@@ -66,11 +67,14 @@ public class WorldLoadingState extends State {
         String[] data = read.split("\n");
         GameState.spawnX = Float.parseFloat(data[1]);
         GameState.spawnY = Float.parseFloat(data[2]);
-        maxHealth = Integer.parseInt(data[3]);
-        health = Integer.parseInt(data[4]);
+        playerX = Float.parseFloat(data[3]);
+        playerY = Float.parseFloat(data[4]);
+        maxHealth = Integer.parseInt(data[5]);
+        health = Integer.parseInt(data[6]);
+        playerForm = data[7];
 
         Inventory.inventory = new Item[18];
-        for(int i = 5; i < Inventory.inventory.length + 5; i++) {
+        for(int i = 8; i < Inventory.inventory.length + 5; i++) {
             if(!data[i].equals("null")) {
                 String[] info = data[i].split(" ");
                 int id = Integer.parseInt(info[0]);
@@ -116,8 +120,10 @@ public class WorldLoadingState extends State {
     }
 
     public void createPlayer() {
-        GameState.entityManager = new EntityManager(c, new Player(GameState.spawnX, GameState.spawnY,
+        GameState.entityManager = new EntityManager(c, new Player(playerX, playerY,
                 25, 110, maxHealth, health));
+
+        EntityManager.player.form = playerForm;
 
         Vector3 position = ControlCenter.camera.position;
         position.x = GameState.spawnX;

@@ -26,13 +26,13 @@ public class WorldGenerationState extends State {
     private int horizon, underground, chunkSize, worldWidth, worldHeight, spawnX, spawnY, seed, numSteps, currentStep;
     private String name, size, difficulty, mode, currentStage = "Setting Up...";
 
-    private Pixmap caveMap, tileMap, wallMap;
+    private Pixmap caveMap, tileMap, wallMap, mineralMap, aerogelMap;
     private ArrayList<Integer> elevation;
     private ArrayList<String> biomes;
     private ArrayList<Integer> vegetation;
     private boolean[][] mainBranchCave;
 
-    private int currentElevation, caveInstance, previousTreeX;
+    private int currentElevation, caveInstance, previousTreeX, aerogel1Instance, aerogel2Instance;
     private float count;
     private boolean generated;
 
@@ -78,8 +78,8 @@ public class WorldGenerationState extends State {
 
             if(size.equals("Small")) {
                 worldWidth = 1500;
-                worldHeight = 400;
-                chunkSize = 50;
+                worldHeight = 600;
+                chunkSize = 75;
             } else if(size.equals("Medium")) {
                 worldWidth = 2100;
                 worldHeight = 600;
@@ -117,13 +117,16 @@ public class WorldGenerationState extends State {
             wallMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
             wallMap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
 
-            //herbsMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+            mineralMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
             mainBranchCave = new boolean[worldWidth][worldHeight];
 
             // perlin noise generation
             caveInstance = 30;
+            aerogel1Instance = 12;
+            aerogel2Instance = 7;
             caveMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 500, 6);
+            aerogelMap = PerlinNoiseGenerator.generatePixmap(worldWidth, worldHeight, 0, 100, 4);
         }
         else if(step == 2) {
             currentStage = "Generating Caves...";
@@ -235,6 +238,9 @@ public class WorldGenerationState extends State {
             FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
             PixmapIO.writePNG(wallFile, wallMap);
 
+            FileHandle mineralFile = Gdx.files.external("everlongn/realms/minerals/" + name + ".png");
+            PixmapIO.writePNG(mineralFile, mineralMap);
+
             FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".txt");
             for(int i = 0; i < herbData.size(); i++) {
                 if(i == 0) {
@@ -257,11 +263,14 @@ public class WorldGenerationState extends State {
             data.writeString("\n", true);
 
             FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
-            meta.writeString("1\n", false); // version
+            meta.writeString("0.1.0\n", false); // version
+            meta.writeString((spawnX* Tile.TILESIZE) + "\n", true);
+            meta.writeString(((worldHeight - 1 - spawnY)* Tile.TILESIZE) + "\n", true);
             meta.writeString((spawnX* Tile.TILESIZE) + "\n", true);
             meta.writeString(((worldHeight - 1 - spawnY)* Tile.TILESIZE) + "\n", true);
             meta.writeString(100 + "\n", true); // max health
             meta.writeString(100 + "\n", true); // health
+            meta.writeString("human" + "\n", true);
             for(int i = 0; i < Inventory.inventory.length; i++) {
                 meta.writeString("null\n", true);
             }
@@ -269,6 +278,9 @@ public class WorldGenerationState extends State {
 
             tileMap.dispose();
             wallMap.dispose();
+            aerogelMap.dispose();
+            mineralMap.dispose();
+            caveMap.dispose();
         }
         currentStep++;
 
@@ -385,47 +397,6 @@ public class WorldGenerationState extends State {
         }
     }
 
-//    public void digSubCave(int xStart, int yStart, int direction, int numBlocks) {
-//        int limit = 10;
-//        int low = 4;
-//
-//        int yEnd = yStart - (r.nextInt(3) + 4);
-//        while(yStart < worldHeight-1 && xStart < worldWidth-1 && yStart > 1 && xStart > 1 && numBlocks > 0) {
-//            numBlocks--;
-//
-//            if (r.nextInt(6) == 0) {
-//                yStart += r.nextInt(3);
-//                yEnd += r.nextInt(4);
-//                if (yStart - yEnd > limit) {
-//                    yEnd = yStart - limit;
-//                } else if (yStart - yEnd < low) {
-//                    yEnd = yStart - low;
-//                }
-//            }
-//
-//            for (int i = 0; i < yStart - yEnd; i++) {
-//                tileMap.drawPixel(xStart, yStart - i);
-//            }
-//
-//            if (direction == 0) {
-//                xStart++;
-//            } else {
-//                xStart--;
-//            }
-//
-//            if (r.nextInt(200) == 0) {
-//                if (direction == 0) {
-//                    direction = 1;
-//                } else {
-//                    direction = 0;
-//                }
-//            }
-//            if (r.nextInt(600) == 0) {
-//                digSubCave(xStart, yStart, r.nextInt(2), r.nextInt(400) + 50);
-//            }
-//        }
-//    }
-
     public void finishTerrainShape(int i, int j) {
         for(int h = currentElevation; h < worldHeight; h++) {
             int color = caveMap.getPixel(i * chunkSize + j, h);
@@ -438,6 +409,22 @@ public class WorldGenerationState extends State {
                 tileMap.drawPixel(i * chunkSize + j, h);
             } else if(red > caveInstance && green > caveInstance && blue > caveInstance && !mainBranchCave[i * chunkSize + j][h]) {
                 tileMap.drawPixel(i * chunkSize + j, h);
+            }
+
+            int mineral = aerogelMap.getPixel(i * chunkSize + j, h);
+            int red1 = mineral >>> 24;
+            int green1 = (mineral & 0xFF0000) >>> 16;
+            int blue1 = (mineral & 0xFF00) >>> 8;
+            if(h > worldHeight/4*3) {
+                if(red1 < aerogel1Instance && green1 < aerogel1Instance && blue1 < aerogel1Instance) {
+                    mineralMap.setColor(Color.BLUE);
+                    mineralMap.drawPixel(i * chunkSize + j, h);
+                }
+            } else if(h > worldHeight/2) {
+                if(red1 < aerogel2Instance && green1 < aerogel2Instance && blue1 < aerogel2Instance) {
+                    mineralMap.setColor(Color.BLUE);
+                    mineralMap.drawPixel(i * chunkSize + j, h);
+                }
             }
         }
 

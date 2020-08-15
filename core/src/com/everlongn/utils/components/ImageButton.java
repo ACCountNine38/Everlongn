@@ -24,7 +24,7 @@ public class ImageButton extends UIComponent {
     @Override
     public void tick() {
         if(ControlCenter.touchPos.x > x && ControlCenter.touchPos.x < x + width &&
-                ControlCenter.touchPos.y > y - height/2 && ControlCenter.touchPos.y < y + height/2) {
+                ControlCenter.touchPos.y > y && ControlCenter.touchPos.y < y + height) {
             hover = true;
         } else {
             hover = false;

@@ -12,7 +12,7 @@ import com.everlongn.utils.Tool;
 
 public class EarthTile extends Tile {
     private Sprite grass = new Sprite(Herbs.grass1);
-    private boolean rotate = false;
+    private boolean rotate = false, containsAerogel;
 
     private int slantType = 0;
 
@@ -21,6 +21,9 @@ public class EarthTile extends Tile {
     public EarthTile(int x, int y) {
         super(Tiles.earthTile, x, y, 1, true, true);
         slantType = (int)(Math.random()*2);
+
+        containType = 0;
+        aerogelIndex = (int)(Math.random()*4);
         if((int)(Math.random()*2) == 0) {
             grass.flip(true, false);
         }
@@ -53,7 +56,7 @@ public class EarthTile extends Tile {
                     GameState.world.destroyBody(body);
                     body = null;
                 }
-                body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 4, true, true, true, true,
+                body = Tool.createTile(x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, 3, left, right, up, down,
                         Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, this);
                 currentType = 1;
             }
@@ -221,6 +224,7 @@ public class EarthTile extends Tile {
             }
             batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
         }
+
         if(currentTexture != null) {
             batch.draw(currentTexture, x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, TILESIZE, TILESIZE);
         }
@@ -231,6 +235,7 @@ public class EarthTile extends Tile {
             else
                 batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
         }
+
         if(digged) {
             batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
         }

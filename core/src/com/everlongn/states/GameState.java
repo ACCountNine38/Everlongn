@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.everlongn.assets.Herbs;
 import com.everlongn.assets.Sounds;
 import com.everlongn.assets.Tiles;
 import com.everlongn.assets.UI;
@@ -62,7 +63,7 @@ public class GameState extends State {
 
     // UI //
     public static IngameOptions options;
-    public static ImageButton inventoryButton, fusionButton, memoryButton, questButton;
+    public static ImageButton inventoryButton, fusionButton, memoryButton, questButton, settingsButton;
     ///////////////////
 
     // Player Related Fields //
@@ -77,6 +78,8 @@ public class GameState extends State {
 
     // game camera //
     public static ArrayList<ScreenShake> shakeForce = new ArrayList<ScreenShake>();
+    public static float camOrginX, camOrginY;
+    public static float camXOffset, camYOffset;
     ///////////////////
 
     // Cursor Selections //
@@ -107,9 +110,13 @@ public class GameState extends State {
         exiting = false;
 
         inventoryButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 100, 75, 75, true, UI.capsult);
-        fusionButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 200, 75, 75, true, UI.fusion);
-        memoryButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 300, 75, 75, true, UI.memory);
-        questButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 400, 75, 75, true, UI.quest);
+        fusionButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 195, 75, 75, true, UI.fusion);
+        memoryButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 290, 75, 75, true, UI.memory);
+        questButton = new ImageButton(ControlCenter.width - 100, ControlCenter.height - 385, 75, 75, true, UI.quest);
+        settingsButton = new ImageButton(25, ControlCenter.height - 100, 75, 75, true, UI.settings);
+
+        camOrginX = hud.position.x;
+        camOrginY = hud.position.y;
     }
 
     public void tick(float delta) {
@@ -213,10 +220,16 @@ public class GameState extends State {
         inventoryButton.tick();
         fusionButton.tick();
         memoryButton.tick();
+        settingsButton.tick();
 
         if(inventoryButton.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Sounds.playSound(Sounds.buttonClick);
             Inventory.extended = !Inventory.extended;
+        }
+
+        if(settingsButton.hover && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            Sounds.playSound(Sounds.buttonClick);
+            options.active = !options.active;
         }
     }
 
@@ -264,10 +277,13 @@ public class GameState extends State {
 
         FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
         meta.writeString("1\n", false);
+        meta.writeString(spawnX + "\n", true);
+        meta.writeString(spawnY + "\n", true);
         meta.writeString(EntityManager.player.body.getPosition().x*Tile.TILESIZE + "\n", true);
         meta.writeString(EntityManager.player.body.getPosition().y*Tile.TILESIZE + "\n", true);
         meta.writeString(Math.round(EntityManager.player.maxHealth) + "\n", true);
         meta.writeString(Math.round(EntityManager.player.health) + "\n", true);
+        meta.writeString(EntityManager.player.form + "\n", true);
         for(int i = 0; i < Inventory.inventory.length; i++) {
             if(Inventory.inventory[i] == null) {
                 meta.writeString( "null\n", true);
@@ -276,6 +292,9 @@ public class GameState extends State {
             }
         }
         meta.writeString("\n", true);
+
+        // add effects after its implementation
+        // add eternal tree after full implementation
     }
 
     public void updateCursor() {
@@ -347,7 +366,7 @@ public class GameState extends State {
                                     tiles[x][y].checkAdjacent();
                                     tiles[x][y].currentType = 0;
                                     if(tiles[x][y].body == null && tiles[x][y].numAdjacent != 4) {
-                                        tiles[x][y].body = Tool.createTile(x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, 4, true, true, true, true,
+                                        tiles[x][y].body = Tool.createTile(x * Tile.TILESIZE - Tile.TILESIZE / 2, y * Tile.TILESIZE - Tile.TILESIZE / 2, tiles[x][y].numAdjacent, tiles[x][y].left, tiles[x][y].right, tiles[x][y].up, tiles[x][y].down,
                                                 Constants.BIT_TILE, (short)(Constants.BIT_PLAYER | Constants.BIT_ENEMY | Constants.BIT_PARTICLE | Constants.BIT_PROJECTILE), (short)0, tiles[x][y]);
                                         tiles[x][y].currentType = 1;
                                     }
@@ -500,19 +519,13 @@ public class GameState extends State {
         if(lightsOn)
             rayHandler.render();
 
-        batch.setProjectionMatrix(hud.combined);
+        batch.setProjectionMatrix(hud2.combined);
         renderStain(batch);
+        batch.setProjectionMatrix(hud.combined);
 
-        float camX = hud.position.x;
-        float camY = hud.position.y;
-        if(Math.abs(EntityManager.player.body.getLinearVelocity().x) > 20) {
-            if(EntityManager.player.direction == 0)
-                hud.position.set(camX + 20, camY, 0);
-            else
-                hud.position.set(camX - 20, camY, 0);
-        } else {
-            hud.position.set(camX - EntityManager.player.body.getLinearVelocity().x*2, camY, 0);
-        }
+        calculateHudOffset();
+
+        hud.position.set(camOrginX + camXOffset, camOrginY + camYOffset, 0);
         hud.update();
 
         inventory.render(batch);
@@ -522,8 +535,9 @@ public class GameState extends State {
         inventoryButton.render(batch);
         fusionButton.render(batch);
         memoryButton.render(batch);
+        settingsButton.render(batch);
 
-        hud.position.set(camX, camY, 0);
+        hud.position.set(camOrginX, camOrginY, 0);
         //hud.update();
 
         batch.setProjectionMatrix(hud2.combined);
@@ -584,6 +598,42 @@ public class GameState extends State {
         }
     }
 
+    public void calculateHudOffset() {
+        if(EntityManager.player.body.getLinearVelocity().x != 0) {
+            if(EntityManager.player.direction == 0)
+                camXOffset -= 0.5f;
+            else
+                camXOffset += 0.5f;
+        } else {
+            if(camXOffset < 0)
+                camXOffset += 0.5f;
+            else if(camXOffset > 0)
+                camXOffset -= 0.5f;
+        }
+
+        if(camXOffset > 5f)
+            camXOffset = 5f;
+        else if(camXOffset < -5f)
+            camXOffset = -5f;
+
+        if(EntityManager.player.body.getLinearVelocity().y > 0) {
+            camYOffset += 0.25f;
+        } else if (EntityManager.player.body.getLinearVelocity().y < 0) {
+            camYOffset -= 0.25f;
+        } else {
+            if(camYOffset > 0) {
+                camYOffset -= 0.25f;
+            } else if(camYOffset < 0) {
+                camYOffset += 0.25f;
+            }
+        }
+
+        if(camYOffset > 2.5f)
+            camYOffset = 2.5f;
+        else if(camYOffset < -2.5f)
+            camYOffset = -2.5f;
+    }
+
     public void renderStain(SpriteBatch batch) {
         batch.begin();
         if(stainAlpha[0] > 0) {
@@ -611,6 +661,20 @@ public class GameState extends State {
     }
 
     public void renderTiles(SpriteBatch batch) {
+        batch.begin();
+        for (int y = yStart; y < yEnd; y++) {
+            for (int x = xStart; x < xEnd; x++) {
+                if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null && tiles[x][y].containType != 0) {
+                    if(tiles[x][y].containType == 1) {
+                        batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, tiles[x][y].alpha);
+                        batch.draw(Herbs.aerogel[tiles[x][y].aerogelIndex], x*Tile.TILESIZE - Tile.TILESIZE, y*Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE*2, Tile.TILESIZE*2);
+                        batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
+                    }
+                }
+            }
+        }
+        batch.end();
+
         for (int y = yStart; y < yEnd; y++) {
             for (int x = xStart; x < xEnd; x++) {
                 if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null) {

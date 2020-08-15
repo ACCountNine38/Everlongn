@@ -68,8 +68,8 @@ public class Spiderling extends Creature {
     public void tick() {
         if(alive) {
             if(status.equals("chase") || health < maxHealth) {
-                sightWidth = 1600;
-                sightHeight = 450;
+                sightWidth = 1800;
+                sightHeight = 800;
             } else {
                 sightWidth = 800;
                 sightHeight = 500;
