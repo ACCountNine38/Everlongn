@@ -287,7 +287,7 @@ public class GameState extends State {
         wallmap.dispose();
 
         FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
-        meta.writeString("1\n", false);
+        meta.writeString("0.2.0\n", false);
         meta.writeString(spawnX + "\n", true);
         meta.writeString(spawnY + "\n", true);
         meta.writeString(EntityManager.player.body.getPosition().x*Tile.TILESIZE + "\n", true);

@@ -15,7 +15,8 @@ public class StateManager {
         MENU_STATE,
         WORLD_SELECTION_STATE,
         WORLD_CREATION_STATE,
-        GAME_STATE
+        GAME_STATE,
+        ERROR_LOADING_STATE
     }
 
     public StateManager(ControlCenter c) {
@@ -60,6 +61,7 @@ public class StateManager {
             case WORLD_SELECTION_STATE: return new WorldSelectionState(this);
             case WORLD_CREATION_STATE: return new WorldCreationState(this);
             case GAME_STATE: return new GameState(this);
+            case ERROR_LOADING_STATE: return new ErrorLoadingState(this);
         }
         return null;
     }

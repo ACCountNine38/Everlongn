@@ -27,6 +27,7 @@ public abstract class Tile {
     public float health, alpha = 1f;
 
     public Body body;
+    public ParticleEffect containedEffect;
 
     // adjacency test variables
     public int numAdjacent = 0, currentType = 0;

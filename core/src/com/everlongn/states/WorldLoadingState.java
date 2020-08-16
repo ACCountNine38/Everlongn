@@ -10,10 +10,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.graphics.ParticleEmitterBox2D;
 import com.everlongn.assets.Sounds;
 import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
@@ -25,6 +27,7 @@ import com.everlongn.items.Item;
 import com.everlongn.tiles.EarthTile;
 import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Chunk;
+import com.everlongn.utils.Constants;
 import com.everlongn.walls.EarthWall;
 import com.everlongn.walls.Wall;
 import com.everlongn.world.BackgroundManager;
@@ -36,12 +39,14 @@ public class WorldLoadingState extends State {
 
     public FileHandle tilemap, wallmap, herbFile, debrisMap;
 
-    private boolean generated;
+    private boolean generated, terminate;
     private int currentStep, numSteps;
-    private float count;
+    private float count, statusTimer;
 
     private float health, maxHealth, playerX, playerY;
     private String playerForm;
+
+    private String[] allowedVersions = new String[]{"0.2.0"};
 
     public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbFile, FileHandle debrisMap, int difficulty, String mode, String name) {
         super(stateManager);
@@ -66,26 +71,61 @@ public class WorldLoadingState extends State {
 
         String read = meta.readString();
         String[] data = read.split("\n");
-        GameState.spawnX = Float.parseFloat(data[1]);
-        GameState.spawnY = Float.parseFloat(data[2]);
-        playerX = Float.parseFloat(data[3]);
-        playerY = Float.parseFloat(data[4]);
-        maxHealth = Integer.parseInt(data[5]);
-        health = Integer.parseInt(data[6]);
-        playerForm = data[7];
-
-        Inventory.inventory = new Item[18];
-        for(int i = 8; i < Inventory.inventory.length + 5; i++) {
-            if(!data[i].equals("null")) {
-                String[] info = data[i].split(" ");
-                int id = Integer.parseInt(info[0]);
-                int amount = Integer.parseInt(info[1]);
-                Inventory.inventory[i - 8] = Item.items[id].createNew(amount);
+        String version = data[0];
+        if(version.equals("1")) {
+            version = "0.1.0";
+        }
+        boolean passed = false;
+        for(String s: allowedVersions) {
+            if(s.equals(version)) {
+                passed = true;
+                break;
             }
+        }
+        if(!passed) {
+            ErrorLoadingState.reason = 1;
+            ErrorLoadingState.version = version;
+            stateManager.setState(StateManager.CurrentState.ERROR_LOADING_STATE);
+            terminate = true;
+            return;
+        }
+
+        try {
+            GameState.spawnX = Float.parseFloat(data[1]);
+            GameState.spawnY = Float.parseFloat(data[2]);
+            playerX = Float.parseFloat(data[3]);
+            playerY = Float.parseFloat(data[4]);
+            maxHealth = Integer.parseInt(data[5]);
+            health = Integer.parseInt(data[6]);
+            playerForm = data[7];
+
+            Inventory.inventory = new Item[18];
+            for(int i = 8; i < Inventory.inventory.length + 5; i++) {
+                if(!data[i].equals("null")) {
+                    String[] info = data[i].split(" ");
+                    int id = Integer.parseInt(info[0]);
+                    int amount = Integer.parseInt(info[1]);
+                    Inventory.inventory[i - 8] = Item.items[id].createNew(amount);
+                }
+            }
+        } catch(ArrayIndexOutOfBoundsException e) {
+            ErrorLoadingState.reason = 2;
+            stateManager.setState(StateManager.CurrentState.ERROR_LOADING_STATE);
+            terminate = true;
+            return;
+        } catch(NumberFormatException error2) {
+            ErrorLoadingState.reason = 2;
+            stateManager.setState(StateManager.CurrentState.ERROR_LOADING_STATE);
+            terminate = true;
+            return;
         }
     }
 
     public void generate(int step, float delta) {
+        if(terminate) {
+            return;
+        }
+
         count += delta;
         if(count < 0.5) {
             return;
@@ -95,29 +135,46 @@ public class WorldLoadingState extends State {
 
         if(step == 0) {
             currentStage = "Initializing Realm...";
-            initializing();
+            statusTimer+=delta;
+            if(statusTimer > 0.1f) {
+                statusTimer = 0;
+                loadMeta();
+                initializing();
+                currentStep++;
+            }
         } else if (step == 1) {
             currentStage = "Loading Realm...";
-            loadWorld(tilemap, wallmap, herbFile);
-        } else if(step == 2) {
-            currentStage = "Loading Meta...";
-            loadMeta();
-        } else if(step == 3) {
-            currentStage = "Loading Chunks...";
-
-            GameState.chunks = new Chunk[GameState.worldWidth/GameState.chunkSize][GameState.worldHeight/GameState.chunkSize];
-
-            for(int i = 0; i < GameState.worldWidth/GameState.chunkSize; i++) {
-                for(int j = 0; j < GameState.worldHeight/GameState.chunkSize; j++) {
-                    GameState.chunks[i][j] = new Chunk(false);
-                }
+            statusTimer+=delta;
+            if(statusTimer > 0.1f) {
+                statusTimer = 0;
+                loadWorld(tilemap, wallmap, herbFile);
+                currentStep++;
             }
-        } else if(step == 4) {
-            currentStage = "Finalizing...";
-            createPlayer();
-        }
+        } else if(step == 2) {
+            currentStage = "Loading Chunks...";
+            statusTimer+=delta;
+            if(statusTimer > 0.1f) {
+                statusTimer = 0;
+                GameState.chunks = new Chunk[GameState.worldWidth / GameState.chunkSize][GameState.worldHeight / GameState.chunkSize];
 
-        currentStep++;
+                for (int i = 0; i < GameState.worldWidth / GameState.chunkSize; i++) {
+                    for (int j = 0; j < GameState.worldHeight / GameState.chunkSize; j++) {
+                        GameState.chunks[i][j] = new Chunk(false);
+                    }
+                }
+                currentStep++;
+            }
+        } else if(step == 3) {
+            statusTimer+=delta;
+            if(statusTimer > 0.1f) {
+                statusTimer = 0;
+                currentStage = "Finalizing...";
+                createPlayer();
+                currentStep++;
+            }
+        } else {
+            currentStep++;
+        }
     }
 
     public void createPlayer() {
@@ -143,6 +200,13 @@ public class WorldLoadingState extends State {
     }
 
     public void loadWorld(FileHandle tilemap, FileHandle wallmap, FileHandle herbsFile) {
+        if(tilemap == null || wallmap == null || herbsFile == null) {
+            ErrorLoadingState.reason = 2;
+            stateManager.setState(StateManager.CurrentState.ERROR_LOADING_STATE);
+            terminate = true;
+            return;
+        }
+
         Pixmap tiles = new Pixmap(tilemap);
         Pixmap walls = new Pixmap(wallmap);
         Pixmap debris = new Pixmap(debrisMap);
@@ -161,65 +225,71 @@ public class WorldLoadingState extends State {
         GameState.occupied = new boolean[GameState.worldWidth][GameState.worldHeight];
 
         // loading tiles
-        for(int y=0; y < GameState.worldHeight; y++){
-            for(int x=0; x < GameState.worldWidth; x++){
-                int color = tiles.getPixel(x, y);
-                String hexColor = Integer.toHexString(color);
-                int red = color >>> 24;
-                int green = (color & 0xFF0000) >>> 16;
-                int blue = (color & 0xFF00) >>> 8;
-                int alpha = color & 0xFF;
+        try {
+            for (int y = 0; y < GameState.worldHeight; y++) {
+                for (int x = 0; x < GameState.worldWidth; x++) {
+                    int color = tiles.getPixel(x, y);
+                    String hexColor = Integer.toHexString(color);
+                    int red = color >>> 24;
+                    int green = (color & 0xFF0000) >>> 16;
+                    int blue = (color & 0xFF00) >>> 8;
+                    int alpha = color & 0xFF;
 
-                if(red == 1 && green == 1 && blue == 1) {
-                    GameState.tiles[x][GameState.worldHeight - 1 - y] = new EarthTile(x, GameState.worldHeight - 1 - y);
+                    if (red == 1 && green == 1 && blue == 1) {
+                        GameState.tiles[x][GameState.worldHeight - 1 - y] = new EarthTile(x, GameState.worldHeight - 1 - y);
 
-                    int debrisColor = debris.getPixel(x, y);
-                    int dred = debrisColor >>> 24;
-                    int dgreen = (debrisColor & 0xFF0000) >>> 16;
-                    int dblue = (debrisColor & 0xFF00) >>> 8;
-                    if(dred == 0 && dgreen == 0 && dblue == 255) {
-                        GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 1;
-                        GameState.debris[x][GameState.worldHeight - 1 - y] = 1;
-                    } else {
-                        GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 0;
-                        GameState.debris[x][GameState.worldHeight - 1 - y] = 0;
+                        int debrisColor = debris.getPixel(x, y);
+                        int dred = debrisColor >>> 24;
+                        int dgreen = (debrisColor & 0xFF0000) >>> 16;
+                        int dblue = (debrisColor & 0xFF00) >>> 8;
+                        if (dred == 0 && dgreen == 0 && dblue == 255) {
+                            GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 1;
+                            GameState.debris[x][GameState.worldHeight - 1 - y] = 1;
+                        } else {
+                            GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 0;
+                            GameState.debris[x][GameState.worldHeight - 1 - y] = 0;
+                        }
                     }
                 }
             }
-        }
 
-        // loading walls
-        for(int y=0; y < GameState.worldHeight; y++){
-            for(int x=0; x < GameState.worldWidth; x++){
-                int color = walls.getPixel(x, y);
-                String hexColor = Integer.toHexString(color);
-                int red = color >>> 24;
-                int green = (color & 0xFF0000) >>> 16;
-                int blue = (color & 0xFF00) >>> 8;
-                int alpha = color & 0xFF;
+            // loading walls
+            for (int y = 0; y < GameState.worldHeight; y++) {
+                for (int x = 0; x < GameState.worldWidth; x++) {
+                    int color = walls.getPixel(x, y);
+                    String hexColor = Integer.toHexString(color);
+                    int red = color >>> 24;
+                    int green = (color & 0xFF0000) >>> 16;
+                    int blue = (color & 0xFF00) >>> 8;
+                    int alpha = color & 0xFF;
 
-                if(red == 1 && green == 1 && blue == 1) {
-                    GameState.walls[x][GameState.worldHeight - 1 - y] = new EarthWall(x, GameState.worldHeight - 1 - y);
+                    if (red == 1 && green == 1 && blue == 1) {
+                        GameState.walls[x][GameState.worldHeight - 1 - y] = new EarthWall(x, GameState.worldHeight - 1 - y);
+                    }
                 }
             }
-        }
 
-        // loading herbs
-        String read = herbsFile.readString();
-        String[] data = read.split("\n");
-        for(int i = 0; i < data.length; i++) {
-            String[] object = data[i].split(" ");
-            if(object[0].equals("Tree")) {
-                int treeX = Integer.parseInt(object[1]);
-                int treeY = Integer.parseInt(object[2]);
-                int treeHeight = Integer.parseInt(object[3]);
-                // System.out.println((GameState.worldHeight - 1 - treeY) + " " + GameState.worldHeight);
-                GameState.herbs[treeX][GameState.worldHeight - 1 - treeY] = new Tree(treeX, (GameState.worldHeight - 1 - treeY), treeHeight);
-                for(int j = 0; j < treeHeight; j++) {
-                    if(GameState.worldHeight - 1 - treeY + j < GameState.worldHeight)
-                        GameState.occupied[treeX][GameState.worldHeight - 1 - treeY + j] = true;
+            String read = herbsFile.readString();
+            String[] data = read.split("\n");
+            for (int i = 0; i < data.length; i++) {
+                String[] object = data[i].split(" ");
+                if (object[0].equals("Tree")) {
+                    int treeX = Integer.parseInt(object[1]);
+                    int treeY = Integer.parseInt(object[2]);
+                    int treeHeight = Integer.parseInt(object[3]);
+                    // System.out.println((GameState.worldHeight - 1 - treeY) + " " + GameState.worldHeight);
+                    GameState.herbs[treeX][GameState.worldHeight - 1 - treeY] = new Tree(treeX, (GameState.worldHeight - 1 - treeY), treeHeight);
+                    for (int j = 0; j < treeHeight; j++) {
+                        if (GameState.worldHeight - 1 - treeY + j < GameState.worldHeight)
+                            GameState.occupied[treeX][GameState.worldHeight - 1 - treeY + j] = true;
+                    }
                 }
             }
+        } catch(ArrayIndexOutOfBoundsException e) {
+            ErrorLoadingState.reason = 2;
+            stateManager.setState(StateManager.CurrentState.ERROR_LOADING_STATE);
+            terminate = true;
+            return;
         }
     }
 

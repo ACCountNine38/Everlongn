@@ -263,7 +263,7 @@ public class WorldGenerationState extends State {
             data.writeString("\n", true);
 
             FileHandle meta = Gdx.files.external("everlongn/meta/" + name + ".txt");
-            meta.writeString("0.1.0\n", false); // version
+            meta.writeString("0.2.0\n", false); // version
             meta.writeString((spawnX* Tile.TILESIZE) + "\n", true);
             meta.writeString(((worldHeight - 1 - spawnY)* Tile.TILESIZE) + "\n", true);
             meta.writeString((spawnX* Tile.TILESIZE) + "\n", true);

@@ -1,5 +1,6 @@
 package com.everlongn.tiles;
 
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.everlongn.assets.Herbs;
