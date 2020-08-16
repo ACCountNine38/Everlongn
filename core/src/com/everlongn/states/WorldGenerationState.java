@@ -238,7 +238,7 @@ public class WorldGenerationState extends State {
             FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
             PixmapIO.writePNG(wallFile, wallMap);
 
-            FileHandle mineralFile = Gdx.files.external("everlongn/realms/minerals/" + name + ".png");
+            FileHandle mineralFile = Gdx.files.external("everlongn/realms/debris/" + name + ".png");
             PixmapIO.writePNG(mineralFile, mineralMap);
 
             FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".txt");

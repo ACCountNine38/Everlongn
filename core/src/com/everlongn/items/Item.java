@@ -51,6 +51,9 @@ public class Item {
     public static Item mossyFluid = new Item(Items.mossyFluid, "Mossy Fluid", 6, true, true,
             50, 50, 60, 60, 4,"doesn't look very healthy...", 0, 0, null);
 
+    public static Item aerogel = new Item(Items.aerogel, "Aerogel", 7, true, true,
+            40, 40, 50, 50, 16,"doesn't look very healthy...", 0, 0, null);
+
     //----------
     public float x, y;
     public int width, height, id, count, capacity, itemWidth, itemHeight, direction;

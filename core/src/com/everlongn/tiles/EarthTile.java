@@ -16,13 +16,12 @@ public class EarthTile extends Tile {
 
     private int slantType = 0;
 
-    public int treePlanted = -1;
+    public int treePlanted = -1, upperCoverIndex = (int)(Math.random()*4), underCoverIndex = (int)(Math.random()*4);
 
     public EarthTile(int x, int y) {
         super(Tiles.earthTile, x, y, 1, true, true);
         slantType = (int)(Math.random()*2);
 
-        containType = 0;
         aerogelIndex = (int)(Math.random()*4);
         if((int)(Math.random()*2) == 0) {
             grass.flip(true, false);
@@ -219,6 +218,10 @@ public class EarthTile extends Tile {
                     } else {
                         EntityManager.items.add(TileItem.earth.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
                     }
+                    if(containType == 1) {
+                        EntityManager.items.add(TileItem.aerogel.createNew(x * Tile.TILESIZE, y * Tile.TILESIZE, 1, 0, 100));
+                        GameState.debris[x][y] = 0;
+                    }
                     dropped = true;
                 }
             }
@@ -229,11 +232,11 @@ public class EarthTile extends Tile {
             batch.draw(currentTexture, x * Tile.TILESIZE - TILESIZE / 2, y * Tile.TILESIZE - TILESIZE / 2, TILESIZE, TILESIZE);
         }
 
-        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && numAdjacent == 3) {
-            if(rotate)
-                batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
-            else
-                batch.draw(grass, x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
+        if(y+1 < GameState.worldHeight && GameState.tiles[x][y+1] == null && (numAdjacent == 3 || (right && left && !up && !down) || (!right && !left && up && down))) {
+            batch.draw(Tiles.cover[upperCoverIndex], x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 + Tile.TILESIZE, TILESIZE, TILESIZE);
+        }
+        if(y-1 >= 0 && GameState.tiles[x][y-1] == null && (numAdjacent == 3 || (right && left && !up && !down) || (!right && !left && up && down))) {
+            batch.draw(Tiles.ceil[underCoverIndex], x*Tile.TILESIZE - TILESIZE/2, y*Tile.TILESIZE - TILESIZE/2 - Tile.TILESIZE, TILESIZE, TILESIZE);
         }
 
         if(digged) {

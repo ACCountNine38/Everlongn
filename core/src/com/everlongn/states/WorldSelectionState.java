@@ -100,7 +100,8 @@ public class WorldSelectionState extends State  implements InputProcessor {
                             data[0], data[1], data[2], Integer.parseInt(data[3]), data[4], data[5],
                             Gdx.files.external("everlongn/realms/tile/" + data[0] + ".png"),
                             Gdx.files.external("everlongn/realms/wall/" + data[0] + ".png"),
-                            Gdx.files.external("everlongn/realms/herb/" + data[0] + ".txt")));
+                            Gdx.files.external("everlongn/realms/herb/" + data[0] + ".txt"),
+                            Gdx.files.external("everlongn/realms/debris/" + data[0] + ".png")));
 
                     numWorlds++;
                     if(!names.contains(data[0]))
@@ -140,7 +141,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
                 }
 
                 Sounds.menuMusic.stop();
-                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, diff, worlds.get(selectedIndex).mode, worlds.get(selectedIndex).worldName));
+                StateManager.states.push(new WorldLoadingState(stateManager, worlds.get(selectedIndex).tilemap, worlds.get(selectedIndex).wallmap, worlds.get(selectedIndex).herbsMap, worlds.get(selectedIndex).debrisMap, diff, worlds.get(selectedIndex).mode, worlds.get(selectedIndex).worldName));
             }
             return;
         }
@@ -226,7 +227,7 @@ public class WorldSelectionState extends State  implements InputProcessor {
             Gdx.files.external("everlongn/realms/tile/" + worlds.get(selectedIndex).worldName + ".png").delete();
             Gdx.files.external("everlongn/realms/wall/" + worlds.get(selectedIndex).worldName + ".png").delete();
             Gdx.files.external("everlongn/realms/herb/" + worlds.get(selectedIndex).worldName + ".txt").delete();
-            Gdx.files.external("everlongn/realms/minerals/" + worlds.get(selectedIndex).worldName + ".png").delete();
+            Gdx.files.external("everlongn/realms/debris/" + worlds.get(selectedIndex).worldName + ".png").delete();
 
             names.remove(worlds.get(selectedIndex).worldName);
             worlds.clear();

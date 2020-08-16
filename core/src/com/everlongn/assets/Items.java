@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Items {
     public static Texture logSprite, stoneSprite, omniEssenceSprite, omniCrystalSprite,
             demiEssenceSprite, demiCrystalSprite, spiderLimbSprite, mossyFluidSprite, glowStickSprite,
-            earthItemSprite;
+            earthItemSprite, aerogelSprite;
 
     public static TextureRegion log, stone, omniEssence, omniCrystal, demiEssence, demiCrystal, spiderLimb, mossyFluid,
-        glowStickL, glowStickR, earthItem;
+        glowStickL, glowStickR, earthItem, aerogel;
 
     public static void init() {
         logSprite = new Texture(Gdx.files.internal("items/logItem.png"),true);
@@ -55,6 +55,14 @@ public class Items {
         demiCrystalSprite = new Texture(Gdx.files.internal("items/DemiCrystal.png"), true);
         demiCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
         demiCrystal = new TextureRegion(demiCrystalSprite, 0, 0, demiCrystalSprite.getWidth(), demiCrystalSprite.getHeight());
+
+        demiCrystalSprite = new Texture(Gdx.files.internal("items/DemiCrystal.png"), true);
+        demiCrystalSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        demiCrystal = new TextureRegion(demiCrystalSprite, 0, 0, demiCrystalSprite.getWidth(), demiCrystalSprite.getHeight());
+
+        aerogelSprite = new Texture(Gdx.files.internal("items/aerogelItem.png"), true);
+        aerogelSprite.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear);
+        aerogel = new TextureRegion(aerogelSprite, 0, 0, aerogelSprite.getWidth(), aerogelSprite.getHeight());
 
         ArcaneWeapons.init();
         MeleeWeapons.init();

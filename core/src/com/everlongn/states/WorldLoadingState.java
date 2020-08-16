@@ -34,7 +34,7 @@ public class WorldLoadingState extends State {
     public GlyphLayout layout = new GlyphLayout();
     public static BitmapFont loadingFont = new BitmapFont(Gdx.files.internal("fonts/chalk22.fnt"));
 
-    public FileHandle tilemap, wallmap, herbFile;
+    public FileHandle tilemap, wallmap, herbFile, debrisMap;
 
     private boolean generated;
     private int currentStep, numSteps;
@@ -43,7 +43,7 @@ public class WorldLoadingState extends State {
     private float health, maxHealth, playerX, playerY;
     private String playerForm;
 
-    public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbFile, int difficulty, String mode, String name) {
+    public WorldLoadingState(StateManager stateManager, FileHandle tilemap, FileHandle wallmap, FileHandle herbFile, FileHandle debrisMap, int difficulty, String mode, String name) {
         super(stateManager);
 
         GameState.difficulty = difficulty;
@@ -53,6 +53,7 @@ public class WorldLoadingState extends State {
         this.tilemap = tilemap;
         this.wallmap = wallmap;
         this.herbFile = herbFile;
+        this.debrisMap = debrisMap;
         currentStep = 0;
         numSteps = 5;
     }
@@ -79,7 +80,7 @@ public class WorldLoadingState extends State {
                 String[] info = data[i].split(" ");
                 int id = Integer.parseInt(info[0]);
                 int amount = Integer.parseInt(info[1]);
-                Inventory.inventory[i - 5] = Item.items[id].createNew(amount);
+                Inventory.inventory[i - 8] = Item.items[id].createNew(amount);
             }
         }
     }
@@ -136,14 +137,15 @@ public class WorldLoadingState extends State {
             BackgroundManager.layers[i].y = 800/2 - 25*Tile.TILESIZE + 120;
         }
 
-        ControlCenter.camera.position.x = GameState.spawnX; //getting back to scale by *PPM
-        ControlCenter.camera.position.y = GameState.spawnY + 200;
+        ControlCenter.camera.position.x = playerX; //getting back to scale by *PPM
+        ControlCenter.camera.position.y = playerY + 200;
         ControlCenter.camera.update();//397 × 581
     }
 
     public void loadWorld(FileHandle tilemap, FileHandle wallmap, FileHandle herbsFile) {
         Pixmap tiles = new Pixmap(tilemap);
         Pixmap walls = new Pixmap(wallmap);
+        Pixmap debris = new Pixmap(debrisMap);
 
         Sounds.ambientPercentage = 1;
         Sounds.sfxPercentage = 1;
@@ -154,6 +156,7 @@ public class WorldLoadingState extends State {
         GameState.tiles = new Tile[GameState.worldWidth][GameState.worldHeight];
         GameState.walls = new Wall[GameState.worldWidth][GameState.worldHeight];
         GameState.herbs = new Entity[GameState.worldWidth][GameState.worldHeight];
+        GameState.debris = new int[GameState.worldWidth][GameState.worldHeight];
         GameState.lightmap = new PointLight[GameState.worldWidth][GameState.worldHeight];
         GameState.occupied = new boolean[GameState.worldWidth][GameState.worldHeight];
 
@@ -169,11 +172,19 @@ public class WorldLoadingState extends State {
 
                 if(red == 1 && green == 1 && blue == 1) {
                     GameState.tiles[x][GameState.worldHeight - 1 - y] = new EarthTile(x, GameState.worldHeight - 1 - y);
+
+                    int debrisColor = debris.getPixel(x, y);
+                    int dred = debrisColor >>> 24;
+                    int dgreen = (debrisColor & 0xFF0000) >>> 16;
+                    int dblue = (debrisColor & 0xFF00) >>> 8;
+                    if(dred == 0 && dgreen == 0 && dblue == 255) {
+                        GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 1;
+                        GameState.debris[x][GameState.worldHeight - 1 - y] = 1;
+                    } else {
+                        GameState.tiles[x][GameState.worldHeight - 1 - y].containType = 0;
+                        GameState.debris[x][GameState.worldHeight - 1 - y] = 0;
+                    }
                 }
-//                else if(red == 255 && green == 255 && blue == 255) {
-//                    GameState.spawnX = x;
-//                    GameState.spawnY = GameState.worldHeight - 1 - y;
-//                }
             }
         }
 

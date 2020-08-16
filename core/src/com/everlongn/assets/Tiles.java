@@ -15,7 +15,7 @@ public class Tiles {
 
     public static Texture earthWallsheet;
     public static TextureRegion earthWall, earthWallExpose4;
-    public static TextureRegion earthWallExpose1[], earthWallExpose2[], earthWallExpose3[];
+    public static TextureRegion earthWallExpose1[], earthWallExpose2[], earthWallExpose3[], ceil[], cover[];
 
     public static void init() {
         // temp tiles
@@ -35,8 +35,8 @@ public class Tiles {
         earthTileExpose2 = new TextureRegion[9];
         earthTileExpose2[0] = new TextureRegion(earthTilesheet, 0, 1000, defaultImageSize, defaultImageSize);
         earthTileExpose2[1] = new TextureRegion(earthTilesheet, 500, 1000, defaultImageSize, defaultImageSize);
-        earthTileExpose2[2] = new TextureRegion(earthTilesheet, 1000, 1000, defaultImageSize, defaultImageSize);
-        earthTileExpose2[3] = new TextureRegion(earthTilesheet, 1500, 1000, defaultImageSize, defaultImageSize);
+        earthTileExpose2[2] = new TextureRegion(earthTilesheet, 1000, 1000, defaultImageSize, defaultImageSize-1);
+        earthTileExpose2[3] = new TextureRegion(earthTilesheet, 1500, 1000, defaultImageSize, defaultImageSize-1);
         earthTileExpose2[4] = new TextureRegion(earthTilesheet, 0, 1500, defaultImageSize, defaultImageSize);
         earthTileExpose2[5] = new TextureRegion(earthTilesheet, 500, 1500, defaultImageSize, defaultImageSize);
         earthTileExpose2[6] = new TextureRegion(earthTilesheet, 1000, 1500, defaultImageSize, defaultImageSize);
@@ -50,6 +50,18 @@ public class Tiles {
         earthTileExpose3[2] = new TextureRegion(earthTilesheet, 1000, 500, defaultImageSize, defaultImageSize);
         earthTileExpose3[3] = new TextureRegion(earthTilesheet, 1500, 500, defaultImageSize, defaultImageSize);
 
+        cover = new TextureRegion[4];
+        cover[0] = new TextureRegion(earthTilesheet, 0, 2000, defaultImageSize, defaultImageSize);
+        cover[1] = new TextureRegion(earthTilesheet, 500, 2000, defaultImageSize, defaultImageSize);
+        cover[2] = new TextureRegion(earthTilesheet, 1000, 2000, defaultImageSize, defaultImageSize);
+        cover[3] = new TextureRegion(earthTilesheet, 1500, 2000, defaultImageSize, defaultImageSize);
+
+        ceil = new TextureRegion[4];
+        ceil[0] = new TextureRegion(earthTilesheet, 0, 2500, defaultImageSize, defaultImageSize);
+        ceil[1] = new TextureRegion(earthTilesheet, 500, 2500, defaultImageSize, defaultImageSize);
+        ceil[2] = new TextureRegion(earthTilesheet, 1000, 2500, defaultImageSize, defaultImageSize);
+        ceil[3] = new TextureRegion(earthTilesheet, 1500, 2500, defaultImageSize, defaultImageSize);
+
         earthWallsheet = new Texture(Gdx.files.internal("tiles/earthWallSpritesheet.png"),true);
 
         earthWall = new TextureRegion(earthWallsheet, 0, 0, defaultImageSize, defaultImageSize);
@@ -62,8 +74,8 @@ public class Tiles {
         earthWallExpose2 = new TextureRegion[5];
         earthWallExpose2[0] = new TextureRegion(earthWallsheet, 0, 1000, defaultImageSize, defaultImageSize);
         earthWallExpose2[1] = new TextureRegion(earthWallsheet, 500, 1000, defaultImageSize, defaultImageSize);
-        earthWallExpose2[2] = new TextureRegion(earthWallsheet, 1000, 1000, defaultImageSize, defaultImageSize);
-        earthWallExpose2[3] = new TextureRegion(earthWallsheet, 1500, 1000, defaultImageSize, defaultImageSize);
+        earthWallExpose2[2] = new TextureRegion(earthWallsheet, 1000, 1000, defaultImageSize, defaultImageSize-1);
+        earthWallExpose2[3] = new TextureRegion(earthWallsheet, 1500, 1000, defaultImageSize, defaultImageSize-1);
         earthWallExpose2[4] = new TextureRegion(earthWallsheet, 2000, 1000, defaultImageSize, defaultImageSize);
 
         earthWallExpose3 = new TextureRegion[4];

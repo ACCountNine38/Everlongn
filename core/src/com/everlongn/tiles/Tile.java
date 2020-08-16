@@ -62,14 +62,20 @@ public abstract class Tile {
         health -= damage;
 
         if(health <= 0 && !digged) {
-            //if(!exploded) {
+            if(!exploded) {
                 ParticleEffect explosion2 = new ParticleEffect();
                 explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
-                //explosion2.getEmitters().first().scaleSize(2);
+                explosion2.getEmitters().first().scaleSize(2);
                 explosion2.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
                 explosion2.start();
                 EntityManager.particles.add(explosion2);
-            //}
+            } else {
+                ParticleEffect explosion2 = new ParticleEffect();
+                explosion2.load(Gdx.files.internal("particles/digParticle"), Gdx.files.internal(""));
+                explosion2.getEmitters().first().setPosition(x * Tile.TILESIZE, y * Tile.TILESIZE - TILESIZE / 2);
+                explosion2.start();
+                EntityManager.particles.add(explosion2);
+            }
 
             digged = true;
 

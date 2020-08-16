@@ -52,10 +52,12 @@ public class GameState extends State {
     public static Tile[][] tiles;
     public static Wall[][] walls;
     public static Entity[][] herbs;
+    public static int[][] debris;
     public static PointLight[][] lightmap;
     public static BackgroundManager background;
     public static ArrayList<Entity> constantUpdateEntities;
     public static String mode, name;
+    public static Color aerogelColor = new Color(0.02f, 0.02f, 0.04f, 1f);
     public static boolean[][] occupied;
     public static boolean exiting;
     public static int chunkSize = 20, worldWidth, worldHeight, difficulty;
@@ -236,12 +238,18 @@ public class GameState extends State {
     public static void save() {
         Pixmap tilemap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
         Pixmap wallmap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
+        Pixmap debrisMap = new Pixmap(worldWidth, worldHeight, Pixmap.Format.RGBA8888);
 
         for(int i = 0; i < worldWidth; i++) {
             for(int j = 0; j < worldHeight; j++) {
                 if(tiles[i][GameState.worldHeight - 1 - j] instanceof EarthTile) {
                     tilemap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
                     tilemap.drawPixel(i, j);
+
+                    if(tiles[i][GameState.worldHeight - 1 - j].containType == 1) {
+                        debrisMap.setColor(Color.BLUE);
+                        debrisMap.drawPixel(i, j);
+                    }
                 }
                 if(walls[i][GameState.worldHeight - 1 - j] instanceof EarthWall) {
                     wallmap.setColor(1f/255f, 1f/255f, 1f/255f, 1);
@@ -255,6 +263,9 @@ public class GameState extends State {
 
         FileHandle wallFile = Gdx.files.external("everlongn/realms/wall/" + name + ".png");
         PixmapIO.writePNG(wallFile, wallmap);
+
+        FileHandle debrisFile = Gdx.files.external("everlongn/realms/debris/" + name + ".png");
+        PixmapIO.writePNG(debrisFile, debrisMap);
 
         FileHandle herbsFile = Gdx.files.external("everlongn/realms/herb/" + name + ".txt");
         boolean firstEnter = false;
@@ -353,7 +364,7 @@ public class GameState extends State {
         }
     }
 
-    public void updateChunks() {
+    public static void updateChunks() {
         for(int i = 0; i < chunks.length; i++) {
             for(int j = 0; j < chunks[i].length; j++) {
                 if(i >= Player.currentChunkX - 2 && i <= Player.currentChunkX + 2 &&
@@ -509,11 +520,12 @@ public class GameState extends State {
 
         renderWalls(batch);
         renderStaticEntity(batch);
-        entityManager.render(batch);
+
         for(int i = 0; i < constantUpdateEntities.size(); i++) {
             constantUpdateEntities.get(i).render(batch);
         }
 
+        entityManager.render(batch);
         renderTiles(batch);
 
         if(lightsOn)
@@ -687,6 +699,10 @@ public class GameState extends State {
                     } else if(walls[x][y].numAdjacent != 4) {
                         lightmap[x][y] = new PointLight(rayHandler, 100, Color.BLACK, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
                     }
+                }
+
+                if (lightmap[x][y] == null && tiles[x][y] != null && tiles[x][y].containType == 1) {
+                    lightmap[x][y] = new PointLight(rayHandler, 100, aerogelColor, 100, x * Tile.TILESIZE, y * Tile.TILESIZE);
                 }
 
                 if(tiles[x][y] != null && tiles[x][y].dropped) {

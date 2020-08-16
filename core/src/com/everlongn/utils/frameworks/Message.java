@@ -99,6 +99,7 @@ public class Message {
             return;
         } else if(text.equals("tp spawn")) {
             try {
+                GameState.updateChunks();
                 EntityManager.player.body.setTransform(GameState.spawnX/Tile.TILESIZE, GameState.spawnY/Tile.TILESIZE, 0);
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to spawn", false, Color.YELLOW));
             } catch (NumberFormatException e) {
@@ -295,6 +296,7 @@ public class Message {
             try {
                 if(Integer.parseInt(chars[1]) >= 0 && Integer.parseInt(chars[1]) < GameState.worldWidth &&
                         Integer.parseInt(chars[2]) >= 0 && Integer.parseInt(chars[2]) < GameState.worldHeight) {
+                    GameState.updateChunks();
                     EntityManager.player.body.setTransform(Integer.parseInt(chars[1]), Integer.parseInt(chars[2]), 0);
                     Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
                 } else {
