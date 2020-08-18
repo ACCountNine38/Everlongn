@@ -679,7 +679,22 @@ public class GameState extends State {
                 if(x < worldWidth && x >= 0 && y < worldHeight && y >= 0 && tiles[x][y] != null && tiles[x][y].containType != 0) {
                     if(tiles[x][y].containType == 1) {
                         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, tiles[x][y].alpha);
-                        batch.draw(Herbs.aerogel[tiles[x][y].aerogelIndex], x*Tile.TILESIZE - Tile.TILESIZE, y*Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE*2, Tile.TILESIZE*2);
+
+                        if(tiles[x][y].numAdjacent == 2) {
+                            if(tiles[x][y].down && tiles[x][y].left) {
+                                batch.draw(Herbs.diagonalAerogel[0], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                            } else if(tiles[x][y].down && tiles[x][y].right) {
+                                batch.draw(Herbs.diagonalAerogel[1], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                            } else if(tiles[x][y].up && tiles[x][y].left) {
+                                batch.draw(Herbs.diagonalAerogel[2], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                            } else if(tiles[x][y].up && tiles[x][y].right) {
+                                batch.draw(Herbs.diagonalAerogel[3], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                            } else {
+                                batch.draw(Herbs.aerogel[tiles[x][y].aerogelIndex], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                            }
+                        } else {
+                            batch.draw(Herbs.aerogel[tiles[x][y].aerogelIndex], x * Tile.TILESIZE - Tile.TILESIZE, y * Tile.TILESIZE - Tile.TILESIZE, Tile.TILESIZE * 2, Tile.TILESIZE * 2);
+                        }
                         batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1);
                     }
                 }

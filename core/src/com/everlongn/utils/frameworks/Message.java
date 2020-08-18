@@ -99,8 +99,8 @@ public class Message {
             return;
         } else if(text.equals("tp spawn")) {
             try {
-                GameState.updateChunks();
                 EntityManager.player.body.setTransform(GameState.spawnX/Tile.TILESIZE, GameState.spawnY/Tile.TILESIZE, 0);
+                GameState.updateChunks();
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to spawn", false, Color.YELLOW));
             } catch (NumberFormatException e) {
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Invalid Command", false, Color.YELLOW));
@@ -131,7 +131,7 @@ public class Message {
             GameState.inventory.addItem(Arcane.arcaneDevastation.createNew(1));
             GameState.inventory.addItem(Arcane.shadowStaff.createNew(1));
 
-            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Arcane Weapon", false, Color.YELLOW));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each arcane weapon", false, Color.YELLOW));
 
             return;
         } else if(text.equals("get melee set")) {
@@ -139,7 +139,7 @@ public class Message {
             GameState.inventory.addItem(Melee.metalSword.createNew(1));
             GameState.inventory.addItem(Melee.broadSword.createNew(1));
             GameState.inventory.addItem(Melee.dragondance.createNew(1));
-            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Melee Weapon", false, Color.YELLOW));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each melee weapon", false, Color.YELLOW));
 
             return;
         } else if(text.equals("get axe set")) {
@@ -148,7 +148,12 @@ public class Message {
             GameState.inventory.addItem(Melee.longAxe.createNew(1));
             GameState.inventory.addItem(Melee.nightmane.createNew(1));
             GameState.inventory.addItem(Melee.jawBreaker.createNew(1));
-            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each Axe", false, Color.YELLOW));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each axe", false, Color.YELLOW));
+
+            return;
+        } else if(text.equals("get pickaxeaxe set")) {
+            GameState.inventory.addItem(Melee.stonePickaxe.createNew(1));
+            Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each pickaxe", false, Color.YELLOW));
 
             return;
         } else if(text.equals("get item set")) {
@@ -160,6 +165,7 @@ public class Message {
             GameState.inventory.addItem(Item.demiCrystal.createNew(Item.demiCrystal.capacity));
             GameState.inventory.addItem(Item.spiderLimb.createNew(Item.spiderLimb.capacity));
             GameState.inventory.addItem(Item.mossyFluid.createNew(Item.mossyFluid.capacity));
+            GameState.inventory.addItem(Item.aerogel.createNew(Item.aerogel.capacity));
 
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each material item", false, Color.YELLOW));
 
@@ -179,10 +185,19 @@ public class Message {
                 Telepathy.messages.get(i).currentDuration = maxDuration;
             }
             return;
+        } else if(text.equals("display entity list")) {
+            String message = "Human\n" +
+                    "Spider\n" +
+                    "Hydra\n" +
+                    "Warf\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "displaying entity list:\n" + message, false, Color.YELLOW));
+            return;
         } else if(text.equals("help")) {
             String message = "/help stage : view stage control commands\n" +
                     "/help debug : view debug and testing commands\n" +
                     "/help player : view player customization commands\n" +
+                    "/help memory : view what the player can remember\n" +
                     "/help utility : view other commands\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Command catagories:\n" + message, false, Color.YELLOW));
@@ -199,7 +214,9 @@ public class Message {
                     "/lights out : disable/enable ray casting and remove all shadows\n" +
                     "/get item set : gets one of each existing miscellaneous item\n" +
                     "/get melee set : gets one of each existing melee weapon\n" +
-                    "/get arcane set : gets one of each existing arcane weapon\n";
+                    "/get arcane set : gets one of each existing arcane weapon\n" +
+                    "/get axe set : gets one of each existing axe\n" +
+                    "/get pickaxe set : gets one of each existing pickaxe\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Debug and Testing Commands:\n" + message, false, Color.YELLOW));
             return;
@@ -214,7 +231,8 @@ public class Message {
                     "/set-spawn x y : sets the spawn location of the player\n" +
                     "/learn skill : learns the specified skill\n" +
                     "/forget skill : forgets the specified skill\n" +
-                    "/wipe memory : return to your original form and forget all skills\n";
+                    "/wipe memory : return to your original form and forget all skills\n" +
+                    "/transform form: transforms into a specified form\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Player Customization Commands:\n" + message, false, Color.YELLOW));
             return;
@@ -225,6 +243,11 @@ public class Message {
                     "/get name amount : get a specific amount of a requested item\n" +
                     "/spawn name x y : spawns a specific entity at location x, y\n" +
                     "/clear text : removes all the messages\n";
+            layout.setText(TextManager.bfont, message);
+            Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Utility Commands:\n" + message, false, Color.YELLOW));
+            return;
+        } else if(text.equals("help memory")) {
+            String message = "/display entity list : shows every entity in the game\n";
             layout.setText(TextManager.bfont, message);
             Telepathy.messages.add(new Message((int)x, (int)y , height + layout.height, "Utility Commands:\n" + message, false, Color.YELLOW));
             return;
@@ -296,8 +319,8 @@ public class Message {
             try {
                 if(Integer.parseInt(chars[1]) >= 0 && Integer.parseInt(chars[1]) < GameState.worldWidth &&
                         Integer.parseInt(chars[2]) >= 0 && Integer.parseInt(chars[2]) < GameState.worldHeight) {
-                    GameState.updateChunks();
                     EntityManager.player.body.setTransform(Integer.parseInt(chars[1]), Integer.parseInt(chars[2]), 0);
+                    GameState.updateChunks();
                     Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
                 } else {
                     Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleportation out of bounds", false, Color.YELLOW));
@@ -487,6 +510,31 @@ public class Message {
                     EntityManager.player.stabbing = false;
                     EntityManager.player.recharging = false;
                     EntityManager.player.stabPaused = false;
+
+                    GameState.shakeForce.add(new ScreenShake(10, 0.25f));
+                    ParticleEffect explosion = new ParticleEffect();
+                    explosion.load(Gdx.files.internal("particles/destroyed"), Gdx.files.internal(""));
+                    explosion.getEmitters().first().setPosition(EntityManager.player.body.getPosition().x * Constants.PPM, EntityManager.player.body.getPosition().y * Constants.PPM);
+                    explosion.start();
+                    EntityManager.particles.add(explosion);
+
+                    Telepathy.messages.add(new Message((int) x, (int) y, height, "You have transformed into " + entity, false, Color.YELLOW));
+                }
+                else if (entity.equals("Warf") || entity.equals("warf")) {
+                    EntityManager.player.form = "warf";
+                    EntityManager.player.warfAttack = false;
+                    EntityManager.player.warfChase[0].currentIndex = 0;
+                    EntityManager.player.warfChase[1].currentIndex = 0;
+                    EntityManager.player.warfAtk[0].currentIndex = 0;
+                    EntityManager.player.warfAtk[1].currentIndex = 0;
+                    float sx = EntityManager.player.body.getPosition().x * Constants.PPM - 12.5f;
+                    float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
+                    GameState.world.destroyBody(EntityManager.player.body);
+                    EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+
+                    EntityManager.player.boundWidth = 16;
+                    EntityManager.player.boundHeight = 100;
 
                     GameState.shakeForce.add(new ScreenShake(10, 0.25f));
                     ParticleEffect explosion = new ParticleEffect();

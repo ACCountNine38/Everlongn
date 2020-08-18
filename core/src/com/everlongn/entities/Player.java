@@ -3,6 +3,7 @@ package com.everlongn.entities;
 import box2dLight.PointLight;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Net;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -86,11 +87,14 @@ public class Player extends Creature {
     // spider
     public static float spiderLandTimer;
     public static boolean spiderLeap, spiderLanded, canHurt;
-    private Animation[] spiderRun = new Animation[2],
-            hydraChase = new Animation[2];
+    public static Animation[] spiderRun = new Animation[2],
+            hydraChase = new Animation[2], warfChase = new Animation[2], warfAtk = new Animation[2];
     // hydra
     public static float stabCooldown, stabAngle, stabTimer, speedBoostTimer;
     public static boolean stabbing, recharging, stabPaused;
+
+    // warf
+    public static boolean warfAttack;
 
     public Player(float x, float y, int width, int height, float maxHealth, float health) {
         super(x, y, width, height, 2.5f, 5);
@@ -156,6 +160,12 @@ public class Player extends Creature {
 
         hydraChase[0] = new Animation(1f/50f, Entities.hydraFly[0], true);
         hydraChase[1] = new Animation(1f/50f, Entities.hydraFly[1], true);
+
+        warfChase[0] = new Animation(1f/25f, Entities.warfWalk[0], true);
+        warfChase[1] = new Animation(1f/25f, Entities.warfWalk[1], true);
+
+        warfAtk[0] = new Animation(1f/35f, Entities.warfAttack[0], true);
+        warfAtk[1] = new Animation(1f/35f, Entities.warfAttack[1], true);
     }
 
     public void checkSpecialCase() {
@@ -389,6 +399,61 @@ public class Player extends Creature {
                 }
                 hydraChase[0].tick(ControlCenter.delta);
                 hydraChase[1].tick(ControlCenter.delta);
+            }
+        }
+
+        else if(form.equals("warf")) {
+            if(!warfAttack) {
+                if(ControlCenter.leftClick) {
+                    warfAttack = true;
+                }
+            } else {
+                warfAtk[direction].tick(ControlCenter.delta);
+                if(warfAtk[direction].currentIndex == warfAtk[direction].textures.length-1) {
+                    warfAttack = false;
+                    warfChase[0].currentIndex = 0;
+                    warfChase[1].currentIndex = 0;
+                    warfAtk[direction].currentIndex = 0;
+
+                    Rectangle attackRectangle;
+                    if(direction == 1) {
+                        attackRectangle = new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM - height/2, 100, height);
+                    } else {
+                        attackRectangle = new Rectangle(body.getPosition().x*Constants.PPM - 100, body.getPosition().y*Constants.PPM - height/2, 100, height);
+                    }
+                    for(Entity e: EntityManager.entities) {
+                        if(e.getBound().overlaps(attackRectangle)) {
+                            if(e instanceof Creature && e != this && !e.form.equals("warf")) {
+                                e.stunned = true;
+                                if (direction == 0)
+                                    e.body.applyForceToCenter(-1000, 0, false);
+                                else
+                                    e.body.applyForceToCenter( 1000, 0, false);
+                                e.hurt(100, this);
+                            }
+                        }
+                    }
+                }
+                else if(warfAtk[direction].currentIndex == 32) {
+                    Rectangle attackRectangle;
+                    if(direction == 1) {
+                        attackRectangle = new Rectangle(body.getPosition().x*Constants.PPM, body.getPosition().y*Constants.PPM - height/2, 100, height);
+                    } else {
+                        attackRectangle = new Rectangle(body.getPosition().x*Constants.PPM - 100, body.getPosition().y*Constants.PPM - height/2, 100, height);
+                    }
+                    for(Entity e: EntityManager.entities) {
+                        if(e.getBound().overlaps(attackRectangle)) {
+                            if(e instanceof Creature && e != this && !e.form.equals("warf")) {
+                                e.stunned = true;
+                                if (direction == 0)
+                                    e.body.applyForceToCenter(-1000, 0, false);
+                                else
+                                    e.body.applyForceToCenter( 1000, 0, false);
+                                e.hurt(100, this);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -2205,9 +2270,7 @@ public class Player extends Creature {
                     currentSpeed = -speed;
                 }
                 direction = 0;
-            }
-
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D)) {
                 horizontalForce = 1;
                 currentSpeed += 0.5f;
                 if (currentSpeed >= speed) {
@@ -2271,7 +2334,7 @@ public class Player extends Creature {
                 }
             }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.D) && !spiderLeap && !spiderLanded) {
+            else if (Gdx.input.isKeyPressed(Input.Keys.D) && !spiderLeap && !spiderLanded) {
                 horizontalForce = 1;
                 currentSpeed += 0.5f;
                 if (currentSpeed >= 3) {
@@ -2342,6 +2405,28 @@ public class Player extends Creature {
                     stabAngle = (float)Math.atan2(ey - sy, ex - sx);
                     stabTimer = 0;
                 }
+            }
+        }
+
+        else if(form.equals("warf")) {
+            if (Gdx.input.isKeyPressed(Input.Keys.A) && !warfAttack) {
+                horizontalForce = -1;
+                currentSpeed -= 0.05f;
+                if (currentSpeed <= -0.75f) {
+                    currentSpeed = -0.75f;
+                }
+                direction = 0;
+                warfChase[0].tick(ControlCenter.delta);
+                warfChase[1].tick(ControlCenter.delta);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.D) && !warfAttack) {
+                horizontalForce = 1;
+                currentSpeed += 0.05f;
+                if (currentSpeed >= 0.75f) {
+                    currentSpeed = 0.75f;
+                }
+                direction = 1;
+                warfChase[0].tick(ControlCenter.delta);
+                warfChase[1].tick(ControlCenter.delta);
             }
         }
     }
@@ -2700,6 +2785,22 @@ public class Player extends Creature {
             batch.draw(Entities.hydraBody[direction], body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
             batch.draw(hydraChase[direction].getFrame(), body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
             batch.draw(Entities.hydraHead[direction], body.getPosition().x * PPM - 85 + width/2, body.getPosition().y * PPM - 20, 170, 170);
+        }
+        else if(form.equals("warf")) {
+            if(warfAttack) {
+                batch.draw(warfAtk[direction].getFrame(),
+                        body.getPosition().x * PPM - 175 + width/2,
+                        body.getPosition().y * PPM - 115, 350, 350);
+            } else {
+                if(body.getLinearVelocity().x == 0 && warfChase[direction].currentIndex == 0) {
+                    batch.draw(Entities.warfBody[direction], body.getPosition().x * PPM - 175 + width / 2, body.getPosition().y * PPM - 115, 350, 350);
+                    batch.draw(Entities.warfHead[direction], body.getPosition().x * PPM - 175 + width / 2, body.getPosition().y * PPM - 115, 350, 350);
+                } else {
+                    batch.draw(warfChase[direction].getFrame(),
+                            body.getPosition().x * PPM - 175 + width / 2,
+                            body.getPosition().y * PPM - 115, 350, 350);
+                }
+            }
         }
         batch.end();
     }

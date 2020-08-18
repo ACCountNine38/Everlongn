@@ -76,23 +76,20 @@ public class Spiderling extends Creature {
             }
             sightBound.setPosition(body.getPosition().x*Constants.PPM - sightWidth/2, body.getPosition().y*Constants.PPM - sightHeight/2);
             sightBound.setSize(sightWidth, sightHeight);
+
+            if(Math.abs(body.getLinearVelocity().y) < 0.1f) {
+                canJump = true;
+            }
             if (target == null) {
                 findTarget();
                 natural();
             } else {
                 if(paused) {
-                    if(target.body != null) {
-                        if (target.body.getPosition().x > body.getPosition().x) {
-                            direction = 1;
-                        } else if (target.body.getPosition().x < body.getPosition().x) {
-                            direction = 0;
-                        }
-                    }
-                    stunned = true;
+                    //stunned = true;
                     pausedTimer += Gdx.graphics.getDeltaTime();
                     body.setLinearVelocity(0, body.getLinearVelocity().y);
                     if(pausedTimer > 0.5 && health > 0) {
-                        stunned = false;
+                        //stunned = false;
                         paused = false;
                         pausedTimer = 0;
                         leapStrike();
@@ -101,9 +98,16 @@ public class Spiderling extends Creature {
                     body.setLinearVelocity(body.getLinearVelocity().x/1.08f, body.getLinearVelocity().y);
                     landTimer += Gdx.graphics.getDeltaTime();
                     if(landTimer > Math.random()*0.4 + 0.6) {
-                       landTimer = 0;
-                       landed = false;
-                       leaping = false;
+                        landTimer = 0;
+                        landed = false;
+                        leaping = false;
+                        if(target.body != null) {
+                            if (target.body.getPosition().x > body.getPosition().x) {
+                                direction = 1;
+                            } else if (target.body.getPosition().x < body.getPosition().x) {
+                                direction = 0;
+                            }
+                        }
                     }
                 } else if(!leaping) {
                     leapBound.setPosition(body.getPosition().x * Constants.PPM - 180 + width/2, body.getPosition().y * Constants.PPM - 180);
@@ -183,15 +187,15 @@ public class Spiderling extends Creature {
         if(alive) {
             //batch.draw(Tiles.blackTile, leapBound.x, leapBound.y, leapBound.width, leapBound.height);
             if(leaping)
-                batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
+                batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f - height/15f, width, height);
             else if(getCurrentFrame() != null)
-                batch.draw(getCurrentFrame(), body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
+                batch.draw(getCurrentFrame(), body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f - height/15f, width, height);
         } else {
             batch.setColor(0f, 0f, 0f, fadeAlpha);
             if(leaping)
-                batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
+                batch.draw(Entities.spiderLeap[direction], body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f - height/15f, width, height);
             else if(getCurrentFrame() != null)
-                batch.draw(getCurrentFrame(), body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f, width, height);
+                batch.draw(getCurrentFrame(), body.getPosition().x * PPM, body.getPosition().y * PPM - height/3f - height/15f, width, height);
             batch.setColor(1f, 1f, 1f, 1f);
             destroyed[destroyedDirection].draw(batch);
         }

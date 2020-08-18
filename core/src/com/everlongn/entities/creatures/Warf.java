@@ -207,6 +207,32 @@ public class Warf extends Creature {
         }
     }
 
+    @Override
+    public void findTarget() {
+        Entity possibleTarget = null;
+
+        for(int i = 0; i < EntityManager.entities.size(); i++) {
+            Entity e = EntityManager.entities.get(i);
+            if(e instanceof Creature && e != this) {
+                Creature c = (Creature)e;
+                for(int j = 0; j < c.type.size(); j++) {
+                    if(enemyList.contains(c.type.get(j)) && sightBound.overlaps(c.getBound()) && c.health > 0) {
+                        if(possibleTarget == null) {
+                            possibleTarget = c;
+                        } else {
+                            if(Math.abs(x - possibleTarget.x) > Math.abs(x - c.x)) {
+                                possibleTarget = c;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+            }
+        }
+        target = possibleTarget;
+    }
+
     public void attack() {
         body.setLinearVelocity(0, body.getLinearVelocity().y);
         attack[direction].tick(ControlCenter.delta);
@@ -228,6 +254,7 @@ public class Warf extends Creature {
                                 else
                                     ((Player) e).xThrust += width / 50;
                             } else {
+                                e.stunned = true;
                                 if (direction == 0)
                                     e.body.applyForceToCenter(-width * 2, 0, false);
                                 else
