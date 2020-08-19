@@ -176,6 +176,7 @@ public class Message {
             GameState.inventory.addItem(Throwing.shuriken.createNew(Throwing.shuriken.capacity));
             GameState.inventory.addItem(Throwing.dagger.createNew(Throwing.dagger.capacity));
             GameState.inventory.addItem(Throwing.throwKnife.createNew(Throwing.throwKnife.capacity));
+            GameState.inventory.addItem(Throwing.bomb.createNew(Throwing.bomb.capacity));
 
             Telepathy.messages.add(new Message((int)x, (int)y , height, "Given 1 of each throwing item", false, Color.YELLOW));
 

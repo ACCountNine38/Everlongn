@@ -89,7 +89,7 @@ public class CondensedDarkEnergy extends StaticEntity {
         }
 
         if(exploded) {
-            chargeRadius += 15f;
+            chargeRadius += 18f;
             explosionTimer += ControlCenter.delta;
             if(explosionTimer >= 0.1f && !heights.isEmpty()) {
                 explosionTimer = 0;
@@ -188,15 +188,15 @@ public class CondensedDarkEnergy extends StaticEntity {
                     int force = 0;
                     if(dx < 250) {
                         c.hurt((float) 2000, EntityManager.player);
-                        thrust = 30;
+                        thrust = 35;
                         force = 1800;
                     } else if(dx < 750) {
                         c.hurt((float) 1000, EntityManager.player);
-                        thrust = 20;
+                        thrust = 25;
                         force = 1500;
                     } else {
                         c.hurt((float) 50, EntityManager.player);
-                        thrust = 10;
+                        thrust = 15;
                         force = 1200;
                     }
 
