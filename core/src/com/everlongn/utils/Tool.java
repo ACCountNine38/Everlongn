@@ -3,9 +3,14 @@ package com.everlongn.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.states.GameState;
 import com.everlongn.tiles.Tile;
+
+import java.util.ArrayList;
 
 public class Tool {
     public static int cursorID;
@@ -48,6 +53,27 @@ public class Tool {
         body.createFixture(fixtureDef).setUserData(object);
         shape.dispose();
         return body;
+    }
+
+    public static ArrayList<Body> createRope(int x, int y, int width, int height, float density,
+                                  short cBits, short mBits, short gIndex, Object object, int length) {
+        ArrayList<Body> bodies = new ArrayList<>();
+        bodies.add(createBox(x, y, width, height, true, true, density, cBits, mBits, gIndex, object));
+
+        for(int i = 1; i < length; i++) {
+            bodies.add(createBox(x, y-i*height, width, height, false, false, density, cBits, mBits, gIndex, object));
+
+            RopeJointDef rDef = new RopeJointDef();
+            rDef.bodyA = bodies.get(i-1);
+            rDef.bodyB = bodies.get(i);
+            rDef.collideConnected = true;
+            rDef.maxLength = .1f;
+            rDef.localAnchorA.set(0, -.05f);
+            rDef.localAnchorB.set(0, .05f);
+            GameState.world.createJoint(rDef);
+        }
+
+        return bodies;
     }
 
     public static Body createTile(int x, int y,
@@ -150,7 +176,7 @@ public class Tool {
         return body;
     }
 
-    public static Body createBox(int x, int y, int width, int height, boolean isStatic, float density,
+    public static Body createBox(int x, int y, int width, int height, boolean isStatic, boolean fixRotation, float density,
                                  short cBits, short mBits, short gIndex, Object object) {
         Body body;
         // describes the physical properties the body have
@@ -163,20 +189,16 @@ public class Tool {
         }
 
         def.position.set(x/Constants.PPM, y/Constants.PPM);
-        def.fixedRotation = true;
+        def.fixedRotation = fixRotation;
+        def.angularDamping = 20f;
 
         PolygonShape shape = new PolygonShape();
-        //size is taken from the center, size 50 by 50
-//        Vector2[] vertices = {new Vector2(0, 0),
-//                new Vector2(0, height/Constants.PPM),
-//                new Vector2(width/Constants.PPM, height/Constants.PPM), new Vector2(width/ Constants.PPM, 0)};
-//        shape.set(vertices);
+
         shape.setAsBox(width/2/Constants.PPM, height/2/Constants.PPM); // divide PPM to turn into box2D units
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = density;
-        //fixtureDef.friction = 0;
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = mBits;
         fixtureDef.filter.groupIndex = gIndex;

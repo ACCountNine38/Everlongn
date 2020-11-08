@@ -21,6 +21,8 @@ import com.everlongn.tiles.Tile;
 import com.everlongn.utils.Constants;
 import com.everlongn.utils.Tool;
 
+import java.util.ArrayList;
+
 import static com.everlongn.utils.Constants.PPM;
 
 public class Tree extends StaticEntity {
@@ -28,12 +30,37 @@ public class Tree extends StaticEntity {
     public float currentAngle, fallSpeed = 0.005f, treeAlpha = 1f, impactForce;
     public int direction;
 
+    public int numCorpse;
+
     public Tree(float x, float y, int height) {
         super(x, y, 50, height, 5);
 
         resetHealth(3000);
         resistance = 10;
         baseRegenAmount = 0.2f;
+
+        /*
+        numCorpse = (int)(Math.random()*5);
+        int corpseId = (int)(Math.random()*4);
+        float xPoint = x * PPM - Tile.TILESIZE * 2 - Tile.TILESIZE / 2 - Tile.TILESIZE / 4;
+        float yPoint = y * PPM - Tile.TILESIZE * 2;
+        if(corpseId == 0) {
+            corpseList.add(new HangedMan(xPoint + 33f, yPoint + (float)(height * Tile.TILESIZE) / 1200 * 850, this));
+        } else if(corpseId == 1) {
+            corpseList.add(new HangedMan(xPoint + 95f, yPoint + (float)(height * Tile.TILESIZE) / 1200 * 950, this));
+        }  else if(corpseId == 2) {
+            corpseList.add(new HangedMan(xPoint + 218f, yPoint + (float)(height * Tile.TILESIZE) / 1200 * 850, this));
+        }  else if(corpseId == 3) {
+            corpseList.add(new HangedMan(xPoint + 115f, yPoint + (float)(height * Tile.TILESIZE) / 1200 * 950, this));
+        }
+        }*/
+        /*
+        5 * Tile.TILESIZE
+        65 850
+        190 950
+        435 850
+        310 950
+        */
     }
 
     @Override

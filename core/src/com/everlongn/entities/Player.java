@@ -19,6 +19,7 @@ import com.everlongn.entities.creatures.Spiderling;
 import com.everlongn.entities.creatures.Warf;
 import com.everlongn.entities.projectiles.*;
 import com.everlongn.entities.staticEntity.CondensedDarkEnergy;
+import com.everlongn.entities.staticEntity.HangedMan;
 import com.everlongn.entities.staticEntity.Tree;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.*;
@@ -116,7 +117,7 @@ public class Player extends Creature {
         initAnimation();
 
         body = Tool.createEntity((int)(x), (int)(y), width, height, false, density, false,
-                Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PLAYER), (short)0, this);
 
         // particle effects
         eruptionCharge = new ParticleEffect();
@@ -2215,8 +2216,13 @@ public class Player extends Creature {
         if(Gdx.input.isKeyJustPressed(Input.Keys.U)) {
             EntityManager.entities.add(new Hydra(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 100, (int)(Math.random()*50) + 150));
         }
+
         if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
             EntityManager.entities.add(new Warf(body.getPosition().x * PPM - 500, body.getPosition().y * PPM + 100,  (int)(Math.random()*100) + 550));
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+            //EntityManager.entities.add(new HangedMan(body.getPosition().x * PPM - 300, body.getPosition().y * PPM + 300));
         }
 
         if(form.equals("human")) {
@@ -2539,10 +2545,14 @@ public class Player extends Creature {
         return new Rectangle(body.getPosition().x * Constants.PPM, body.getPosition().y * Constants.PPM, boundWidth, boundHeight);
     }
 
+    public static Rectangle sightBound() {
+        return new Rectangle(GameState.xStart*Constants.PPM, GameState.yStart*Constants.PPM, GameState.xEnd - GameState.xStart, GameState.yEnd - GameState.yStart);
+    }
+
     @Override
     public void render(SpriteBatch batch) {
         batch.begin();
-//       batch.draw(Tiles.blackTile, attackRectangle.x, attackRectangle.y, attackRectangle.width, attackRectangle.height);
+        batch.draw(Tiles.blackTile, sightBound().x, sightBound().y, sightBound().width, sightBound().height);
         if(form.equals("human")) {
             if(tilePlacing) {
                 int tileX = (int)((Player.mouseWorldPos().x + Tile.TILESIZE/2)/Tile.TILESIZE);

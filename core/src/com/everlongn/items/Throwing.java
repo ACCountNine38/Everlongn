@@ -40,7 +40,7 @@ public class Throwing extends Weapon {
         Throwing i = new Throwing(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display, elemental, drawSpeed, throwSpeed, throwingDamage, hold);
         i.setPosition(x, y);
         i.count = amount;
-        i.body = Tool.createBox((int)x, (int)y, width, height, false, 1.75f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, true, 1.75f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
         if(forceX > 0) {
             i.direction = 1;
         } else {

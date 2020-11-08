@@ -38,6 +38,10 @@ public class WorldGenerationState extends State {
 
     private ArrayList<String> herbData = new ArrayList<String>();
 
+    /*
+    biomes:
+    corpse field
+    */
     public WorldGenerationState(StateManager stateManager, String name, int seed, String size, String difficulty, String mode) {
         super(stateManager);
 

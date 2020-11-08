@@ -81,7 +81,7 @@ public class Melee extends Weapon {
         Melee i = new Melee(texture, name, id, stackable, degeneratable, width, height, itemWidth, itemHeight, capacity, description, holdX, holdY, display, elemental, damage, drawSpeed, swingSpeed, critChance, force, heavy, swingSound, isAxe, isPick);
         i.setPosition(x, y);
         i.count = amount;
-        i.body = Tool.createBox((int)x, (int)y, width, height, false, 0.25f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
+        i.body = Tool.createBox((int)x, (int)y, width, height, false, true, 0.25f, Constants.BIT_PROJECTILE, Constants.BIT_TILE, (short)0, i);
         if(forceX > 0) {
             i.direction = 1;
         } else {

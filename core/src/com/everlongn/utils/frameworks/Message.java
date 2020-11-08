@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.everlongn.entities.Entity;
 import com.everlongn.entities.EntityManager;
 import com.everlongn.entities.Player;
 import com.everlongn.entities.creatures.Spiderling;
+import com.everlongn.entities.staticEntity.HangedMan;
 import com.everlongn.game.ControlCenter;
 import com.everlongn.items.*;
 import com.everlongn.states.GameState;
@@ -99,7 +101,8 @@ public class Message {
             return;
         } else if(text.equals("tp spawn")) {
             try {
-                EntityManager.player.body.setTransform(GameState.spawnX/Tile.TILESIZE, GameState.spawnY/Tile.TILESIZE, 0);
+                GameState.updateChunks();
+                EntityManager.player.body.setTransform(GameState.spawnX/Tile.TILESIZE, GameState.spawnY/Tile.TILESIZE + 0.5f, 0);
                 GameState.updateChunks();
                 Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to spawn", false, Color.YELLOW));
             } catch (NumberFormatException e) {
@@ -320,7 +323,8 @@ public class Message {
             try {
                 if(Integer.parseInt(chars[1]) >= 0 && Integer.parseInt(chars[1]) < GameState.worldWidth &&
                         Integer.parseInt(chars[2]) >= 0 && Integer.parseInt(chars[2]) < GameState.worldHeight) {
-                    EntityManager.player.body.setTransform(Integer.parseInt(chars[1]), Integer.parseInt(chars[2]), 0);
+                    GameState.updateChunks();
+                    EntityManager.player.body.setTransform(Integer.parseInt(chars[1]), Integer.parseInt(chars[2]) + 0.5f, 0);
                     GameState.updateChunks();
                     Telepathy.messages.add(new Message((int)x, (int)y , height, "Teleported to: " + Integer.parseInt(chars[1]) + ", " + Integer.parseInt(chars[2]), false, Color.YELLOW));
                 } else {
@@ -451,13 +455,13 @@ public class Message {
                 }
                 entity = entity.substring(0, entity.length() - 1);
 
-                if (entity.equals("Human") || entity.equals("human")) {
+                if(entity.equals("Human") || entity.equals("human")) {
                     EntityManager.player.form = "human";
                     float sx = EntityManager.player.body.getPosition().x * Constants.PPM - 12.5f;
                     float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
-                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PLAYER), (short)0, this);
 
                     EntityManager.player.boundWidth = 16;
                     EntityManager.player.boundHeight = 100;
@@ -480,7 +484,7 @@ public class Message {
                     float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 104, 57, false, 1.5f, false,
-                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PLAYER), (short)0, this);
 
                     EntityManager.player.boundWidth = 94;
                     EntityManager.player.boundHeight = 57;
@@ -500,7 +504,7 @@ public class Message {
                     float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
-                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PLAYER), (short)0, this);
 
                     EntityManager.player.boundWidth = 16;
                     EntityManager.player.boundHeight = 100;
@@ -532,7 +536,7 @@ public class Message {
                     float sy = EntityManager.player.body.getPosition().y * Constants.PPM;
                     GameState.world.destroyBody(EntityManager.player.body);
                     EntityManager.player.body = Tool.createEntity((int)(sx), (int)(sy), 25, 110, false, 2.5f, false,
-                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE), (short)0, this);
+                            Constants.BIT_ENEMY, (short)(Constants.BIT_TILE | Constants.BIT_PLAYER), (short)0, this);
 
                     EntityManager.player.boundWidth = 16;
                     EntityManager.player.boundHeight = 100;
